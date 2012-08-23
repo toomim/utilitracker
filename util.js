@@ -1,3 +1,5 @@
+1/0;
+
 if(! Array.prototype.map ) {
     Array.prototype.map = function( fun /*, thisp*/ ) {
         var len = this.length;

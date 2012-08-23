@@ -4,7 +4,7 @@
 	"manifest_version": 2,
 	"description": "Ground-up implementation of our extension",
 	"background": {
-		"scripts": ["background.js"]
+		"scripts": ["util.js", "background.js"]
 	},
 	"permissions": [
 		"tabs"

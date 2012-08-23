@@ -1,6 +1,5 @@
 // Options
-var urls = ['bing.com', 'facebook.com', 'reddit.com',
-            'renren.com'];
+var urls = ['bing.com', 'facebook.com', 'reddit.com', 'renren.com'];
 
 // State variables
 var sites = urls.map(function (url) {
@@ -19,6 +18,7 @@ function check_for_new_day () {
 // "Main" function - checks for blocked sites whenever a tab is updated.
 // Redirects to our block page. 
 function tab_event_listener (tab_id, change_info, tab) {
+    console.log('tab_event_listener of', tab);
 	if(is_blacklisted(get_hostname(tab.url))){
 		chrome.tabs.update(tab.id, 
 		{ "url" : chrome.extension.getURL("blocked.html") + "?url=" + escape(tab.url) });
@@ -30,6 +30,7 @@ chrome.tabs.onUpdated.addListener(tab_event_listener);
 // Extracts hostname from the URL
 // eg: https://www.google.com/webhp?hl=en&tab=nw&authuser=0 -> www.google.com
 function get_hostname(str) {
+    console.log('get hostname of', str);
 	var re = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
 	return str.match(re)[1].toString();
 }
