@@ -20,16 +20,14 @@ function check_for_new_day () {
     // and go through all tabs and re-block what's needed
 }
 
+// "Main" function - checks for blocked sites whenever a tab is updated.
+// Redirects to our block page. 
 function tab_event_listener (tab_id, change_info, tab) {
 	if(is_blacklisted(get_hostname(tab.url))){
 		chrome.tabs.update(tab.id, 
 		{ "url" : chrome.extension.getURL("blocked.html") + "?url=" + escape(tab.url) });
 	}
 }
-
-
-// "Main" function - checks for blocked sites whenever a tab is updated.
-// Redirects to our block page. 
 chrome.tabs.onUpdated.addListener(tab_event_listener);
 
 
@@ -43,8 +41,8 @@ function get_hostname(str) {
 // Finds blocked urls from a given url.
 // Returns true if given url is blocked, false if otherwise. 
 function is_blacklisted(url){
-    return sites.find(function (s) {
-		return url.search(s.url_pattern) != -1;});
+    return sites.find(function (site) {
+		return url.search(site.url_pattern) != -1;});
 }
 
 // Stores url, time/date of block in localStorage
