@@ -1,0 +1,105 @@
+body {
+	background-image: url("background.jpg");
+	font-size: 20pt;
+	font-family: Helvetica, Arial;
+	text-align: center;
+	
+}
+
+#blockinformation {
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10%;
+	border: solid 3pt black;
+	background-color: #000000;
+	opacity: 0.70;
+	color: #ffffff;
+}
+
+#usernameview {
+	font-weight: bold;
+	font-size: larger;
+	
+}
+
+#errorAlert {
+	color: red;
+	font-size: 30pt;
+}
+
+/*
+#goThroughButton {
+	height: 25pt;
+	font-size:18pt;
+	font-weight: bold;
+	border: 0px;
+	padding: 0px;
+}
+*/
+
+.utilityHightlight {
+	color: cyan;
+}
+
+#blockinformation div {
+	margin: 1em;
+	vertical-align: middle;
+	overflow; hidden;
+	font-size: 20pt;
+}
+
+h1 {
+	margin-bottom: 0em;
+	font-size: 50pt;
+}
+
+#horizontalRule {
+	height: 4px;
+	color: black;
+}
+
+#url {
+	font-size: larger;
+}
+
+hr {
+	background-color: black;
+	width: 99%;
+}
+
+a {
+	color: #ffffff;
+}
+
+#valueInput {
+	width: 75px;
+}
+
+.valueInputArea {
+	background-color: grey;
+	color: #000000;
+	font-size: 18pt;
+	border: 0px;
+	padding: 1pt;
+}
+
+.valueInputArea input {
+	font-size: 20pt;
+	font-weight: bold;
+	border: 0px;
+	margin: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+ul {
+	list-style-type: none;
+	padding: 0px;
+}
+
+ul li {
+	display: inline;
+}

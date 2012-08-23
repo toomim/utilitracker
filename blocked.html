@@ -1,0 +1,229 @@
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+<html>
+    <head>
+	<script type="text/javascript" src="siteblock.js"></script>
+	<script type="text/javascript" src="background.js"></script>
+	<link href="blocked.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript">
+        // <!--
+		
+function onload() {
+	var ws = window.location.search;
+
+	if (ws !== undefined) {
+		var kvs = ws.substring(1).split('&');
+		for (var i = 0; i < kvs.length; i++) {
+			var kv = kvs[i].split('=');
+			if (kv[0] == 'url') {
+				var u = document.getElementById("url");	   
+				var url = decodeURIComponent(kv[1]);
+				u.href = url;
+				
+				var urlText = url.split('//')[1];
+				if(urlText.lastIndexOf('/') == urlText.length-1) {
+					urlText = urlText.substr(0, urlText.length-1);
+				}
+				u.appendChild(document.createTextNode(urlText));
+			}
+		}
+	}
+	var opts = csapuntz.siteblock.read_options();
+	//document.getElementById("usernameview").appendChild(document.createTextNode(opts.username));
+	// check whether this is the second time.
+	if(opts.timeClicked > 0) {
+		refreshFunc();
+	} else {
+		document.getElementById("moreClickOnGoThrough").style.display = "none";
+		document.getElementById('finishSession').style.display = "none";
+	}
+	// document.getElementById("moreClickOnGoThrough").style.display = "none";
+	
+	// auto focus the value box
+	document.getElementsByName('valueInput')[0].focus();
+	
+}
+
+function getUrl() {
+	var a = document.getElementById("url");
+	return a.href;
+}
+
+function toGoogle() {
+	window.location = "http://www.google.com";
+}
+
+function redirectTo() {
+	re_allow_better();
+	var url = document.getElementById("url");
+	window.location = url.href + "";
+}
+
+// one way to unblock the site: make the unblock time to be 0 minute.
+function re_allow() {
+	var opts = csapuntz.siteblock.read_options();
+    
+	opts.allowed = Number(60);
+	opts.period = Number(60);
+
+	csapuntz.siteblock.write_options(opts);
+	chrome.extension.getBackgroundPage().onOptionsChanged(opts);
+}
+
+// another way to unblock the site: delete the block rule.
+function re_allow_opt() {
+	var opts = csapuntz.siteblock.read_options();
+	
+	// var ori_rules = opt.rules;
+	// var new_rules = ori_rules.replace('', '');
+	opts.rules = "";
+
+	csapuntz.siteblock.write_options(opts);
+	chrome.extension.getBackgroundPage().onOptionsChanged(opts);	
+}
+
+// better way to block. block the site first, then each time user click go through,
+// another minute is allowed before the site is blocked again
+function re_allow_better() {
+	var opts = csapuntz.siteblock.read_options();
+	
+	opts.allowed = Number(1);
+	opts.period = Number(24*60);
+	
+	csapuntz.siteblock.write_options(opts);
+	chrome.extension.getBackgroundPage().onOptionsChanged(opts);		
+	
+	// reset the timer
+	// var time_current = csapuntz.siteblock.newUsageTracker.time_cb;
+	// var reset = csapuntz.siteblock.newUsageTracker.check_reset;
+}
+
+function getUserName() {
+	var opts = csapuntz.siteblock.read_options();
+	return opts.username;
+}
+
+function checkIsValidNumber() {
+	var valuuu = document.getElementsByName('valueInput')[0].value;
+	var status = document.getElementById("errorAlert");
+
+	if(!IsPositiveNumber(valuuu)) {
+		status.innerHTML = "Number is invalid.";
+		return false;
+	} else {
+		status.innerHTML = "";
+		return true;
+	}
+}
+
+function IsPositiveNumber(strString) {
+	//  check for valid numeric strings	
+	var strValidChars = "0123456789.";
+	var strChar;
+	var blnResult = true;
+
+	if (strString.length == 0) {
+		return false;
+	}
+	
+	//  test strString consists of valid characters listed above
+	for (i = 0; i < strString.length && blnResult == true; i++) {
+		strChar = strString.charAt(i);
+		if (strValidChars.indexOf(strChar) == -1) {
+			blnResult = false;
+		}
+	}
+	return blnResult;
+}
+
+function finishSessionFunc() {
+	var opts = csapuntz.siteblock.read_options();
+
+	opts.timeClicked = 0;
+	
+	csapuntz.siteblock.write_options(opts);
+	chrome.extension.getBackgroundPage().onOptionsChanged(opts);
+	
+	// alert("session ended, restart another. ");
+	self.close();
+}
+
+function goThroughFunc() {
+	if(checkIsValidNumber()) {
+		// the number entering is valid number
+		var opts = csapuntz.siteblock.read_options();
+
+		// alert(opts.timeClicked);
+		
+		// check whether this is repaid and send the information to the server.
+		if(Number(opts.timeClicked) > 0) {
+			storeBlockData("repaid", getUserName(), getUrl(), document.getElementsByName("valueInput")[0].value);
+		} else {
+			storeBlockData("paid", getUserName(), getUrl(), document.getElementsByName("valueInput")[0].value);	
+		}
+		
+		// storeBlockData("paid", getUserName(), getUrl(), document.getElementsByName("valueInput")[0].value);	
+
+		opts.lastPaid = document.getElementById("valueInput").value;
+		opts.timeClicked += 1;
+		// add current time to opts
+		var d = new Date();
+		opts.lastAllowClick = d.toDateString();
+		csapuntz.siteblock.write_options(opts);
+		chrome.extension.getBackgroundPage().onOptionsChanged(opts);		
+			
+		redirectTo();
+	}
+}
+
+// for the user to hit enter to submit the form
+function enterGoThroughFunc() {
+	if(event.keyCode == 13) {
+		goThroughFunc();
+	}	
+}
+
+// reset the timer in the siteblock.js file
+function refreshFunc() {
+	// a little trick to reset the timer in the siteblock.js file. set the period to 0 and then set it back to normal. hehe
+	var opts = csapuntz.siteblock.read_options();
+	opts.allowed = Number(0);
+	opts.period = Number(0*60);
+	csapuntz.siteblock.write_options(opts);
+	chrome.extension.getBackgroundPage().onOptionsChanged(opts);		
+	document.getElementById("moreClickOnGoThrough").style.display = "true";
+	document.getElementById("singleClickOnGoThrough").style.display = "none";
+	document.getElementById("goThroughButton").value = "get extra minute!";
+	
+	// get what user paid last time and put into the valueInput
+	document.getElementById("valueInput").value = opts.lastPaid;
+}
+
+
+// -->
+// <--
+// ^ |
+// | v
+    </script>
+    </head>
+
+	<body onload="onload()" onkeyup="enterGoThroughFunc()">
+		<div id="blockinformation">
+			<h1><span class="utilityHightlight">U</span>tility<span class="utilityHightlight">T</span>racker</h1>
+			<div id="horizontalRule"><hr /></div>
+			<p>
+				<div id="errorAlert"></div>
+				<div id="moreClickOnGoThrough" >One more minute?</div>
+				<div id="singleClickOnGoThrough">How much would you pay for a day of</div>
+				<div><a id="url"></a></div>
+				<div>?</div>
+				<div>
+					<ul>
+						$<li class="valueInputArea"><input type="text" name="valueInput" id="valueInput"></li>
+						<li class="valueInputArea"><input id="goThroughButton" type="submit" value="Go!" onclick="goThroughFunc();"/></li>
+					</ul>
+				</div>
+				<div><input id="finishSession" type="button" value="I am finished with this action" onclick="finishSessionFunc();" /></div>
+			</p>
+		</div>
+	</body>
+</html>
