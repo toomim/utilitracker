@@ -21,7 +21,7 @@ function check_for_new_day () {
 }
 
 function tab_event_listener (tab_id, change_info, tab) {
-	if(isBlocked(getHostname(tab.url))){
+	if(is_blocked(get_hostname(tab.url))){
 		chrome.tabs.update(tab.id, 
 		{ "url" : chrome.extension.getURL("blocked.html") + "?url=" + escape(tab.url) });
 	}
@@ -35,12 +35,12 @@ chrome.tabs.onUpdated.addListener(tab_event_listener);
 
 // Extracts hostname from the URL
 // eg: https://www.google.com/webhp?hl=en&tab=nw&authuser=0 -> www.google.com
-function getHostname(str) {
+function get_hostname(str) {
 	var re = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
 	return str.match(re)[1].toString();
 }
 
-function getBlocked(){
+function get_blocked(){
 	// Replace with code to get sites from our server
 	var urls = ["bing.com", "bbc.co.uk"];
 	return urls;
@@ -48,11 +48,11 @@ function getBlocked(){
 
 // Finds blocked urls from a given url.
 // Returns true if given url is blocked, false if otherwise. 
-function isBlocked(url){
-	var blocked = getBlocked();
+function is_blocked(url){
+	var blocked = get_blocked();
 	for(var i = 0; i < blocked.length; i++){
-		var blockUrl = blocked[i];
-		if (url.search(blockUrl) != -1){
+		var block_url = blocked[i];
+		if (url.search(block_url) != -1){
 			return true;
 		}
 	}
@@ -60,7 +60,7 @@ function isBlocked(url){
 }
 
 // Stores url, time/date of block in localStorage
-function storeBlockData(event, user, tab_url, value) {
+function store_block_data(event, user, tab_url, value) {
 	// Get the time of block
 	var time = new Date();
 	var month = time.getMonth() + 1;
@@ -71,7 +71,7 @@ function storeBlockData(event, user, tab_url, value) {
 	var second = time.getSeconds();
 	
 	// Formatting time and date
-	var timeDate = month + "/" + day + "/" + year + " ";
+	var timedate = month + "/" + day + "/" + year + " ";
 	
 	if(minute < 10){
 		minute = "0" + minute;
@@ -80,17 +80,17 @@ function storeBlockData(event, user, tab_url, value) {
 		second = "0" + second;
 	}
 	
-	timeDate = timeDate + hour + ":" + minute + ":" + second;
+	timedate = timedate + hour + ":" + minute + ":" + second;
 	if(localStorage['log'] == undefined){
 		localStorage['log'] = JSON.stringify([]);
 	}
 	
 	// Stores data online
-	postToServer(event, user, timeDate, tab_url, value);
+	post_to_server(event, user, timeDate, tab_url, value);
 	
 	// Stores second copy in localStorage
 	var array = JSON.parse(localStorage['log']);
-	array.push(event, user, timeDate, tab_url, value);
+	array.push(event, user, timedate, tab_url, value);
 	localStorage['log'] = JSON.stringify(array);
 }
 
@@ -101,7 +101,7 @@ function storeBlockData(event, user, tab_url, value) {
 
 // Pushes data about site blocks to the server:
 // Type of block, user info, time, url, and surveyed value
-function postToServer(event, user, timeDate, url, value) {
+function post_to_server(event, user, timeDate, url, value) {
 	
 	// another solution:
 	var xmlHttp = new XMLHttpRequest();
@@ -126,6 +126,6 @@ function postToServer(event, user, timeDate, url, value) {
 				console.log(xmlHttp.responseText);
 			}
 	    }
-	}
+	};
 	xmlHttp.send(params);
 }
