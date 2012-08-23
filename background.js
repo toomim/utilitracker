@@ -21,7 +21,7 @@ function check_for_new_day () {
 }
 
 function tab_event_listener (tab_id, change_info, tab) {
-	if(is_blocked(get_hostname(tab.url))){
+	if(is_blacklisted(get_hostname(tab.url))){
 		chrome.tabs.update(tab.id, 
 		{ "url" : chrome.extension.getURL("blocked.html") + "?url=" + escape(tab.url) });
 	}
@@ -48,7 +48,7 @@ function get_blocked(){
 
 // Finds blocked urls from a given url.
 // Returns true if given url is blocked, false if otherwise. 
-function is_blocked(url){
+function is_blacklisted(url){
 	var blocked = get_blocked();
 	for(var i = 0; i < blocked.length; i++){
 		var block_url = blocked[i];
