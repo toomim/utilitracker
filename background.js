@@ -1,11 +1,36 @@
-// "Main" function - checks for blocked sites whenever a tab is updated.
-// Redirects to our block page. 
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
+// State variables
+
+var sites = [{url_pattern: 'bing.com',
+              our_offer: null,
+              user_offer: null
+             },
+             {url_pattern: 'facebook.com',
+              our_offer: null,
+              user_offer: null
+             },
+             {url_pattern: 'facebook.com',
+              our_offer: null,
+              user_offer: null
+             }];
+
+var last_event_time = Date();
+function check_for_new_day () {
+    // Check to see if it's a new day
+    // If so, reset offers
+    // and go through all tabs and re-block what's needed
+}
+
+function tab_event_listener (tab_id, change_info, tab) {
 	if(isBlocked(getHostname(tab.url))){
 		chrome.tabs.update(tab.id, 
 		{ "url" : chrome.extension.getURL("blocked.html") + "?url=" + escape(tab.url) });
 	}
-});
+}
+
+
+// "Main" function - checks for blocked sites whenever a tab is updated.
+// Redirects to our block page. 
+chrome.tabs.onUpdated.addListener(tab_event_listener);
 
 
 // Extracts hostname from the URL
@@ -68,6 +93,11 @@ function storeBlockData(event, user, tab_url, value) {
 	array.push(event, user, timeDate, tab_url, value);
 	localStorage['log'] = JSON.stringify(array);
 }
+
+
+
+
+// **************** SERVER INTERACTION ******************* //
 
 // Pushes data about site blocks to the server:
 // Type of block, user info, time, url, and surveyed value
