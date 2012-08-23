@@ -40,23 +40,11 @@ function get_hostname(str) {
 	return str.match(re)[1].toString();
 }
 
-function get_blocked(){
-	// Replace with code to get sites from our server
-	var urls = ["bing.com", "bbc.co.uk"];
-	return urls;
-}
-
 // Finds blocked urls from a given url.
 // Returns true if given url is blocked, false if otherwise. 
 function is_blacklisted(url){
-	var blocked = get_blocked();
-	for(var i = 0; i < blocked.length; i++){
-		var block_url = blocked[i];
-		if (url.search(block_url) != -1){
-			return true;
-		}
-	}
-	return false;
+    return sites.find(function (s) {
+		return url.search(s.url_pattern) != -1;});
 }
 
 // Stores url, time/date of block in localStorage
