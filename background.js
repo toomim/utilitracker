@@ -30,7 +30,6 @@ chrome.tabs.onUpdated.addListener(tab_event_listener);
 // Extracts hostname from the URL
 // eg: https://www.google.com/webhp?hl=en&tab=nw&authuser=0 -> www.google.com
 function get_hostname(str) {
-    console.log('get hostname of', str);
 	var re = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
 	return str.match(re)[1].toString();
 }
