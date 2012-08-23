@@ -1,24 +1,20 @@
+// Options
+var urls = ['bing.com', 'facebook.com', 'reddit.com',
+            'renren.com'];
+
 // State variables
+var sites = urls.map(function (url) {
+    return {url_pattern: url, our_offer: null, user_offer: null}; });
 
-var sites = [{url_pattern: 'bing.com',
-              our_offer: null,
-              user_offer: null
-             },
-             {url_pattern: 'facebook.com',
-              our_offer: null,
-              user_offer: null
-             },
-             {url_pattern: 'facebook.com',
-              our_offer: null,
-              user_offer: null
-             }];
 
+// New day
 var last_event_time = Date();
 function check_for_new_day () {
     // Check to see if it's a new day
     // If so, reset offers
     // and go through all tabs and re-block what's needed
 }
+
 
 // "Main" function - checks for blocked sites whenever a tab is updated.
 // Redirects to our block page. 
