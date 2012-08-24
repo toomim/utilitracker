@@ -7,11 +7,22 @@ var sites = urls.map(function (url) {
 
 
 // New day
-var last_event_time = Date();
+var last_event_time = new Date();
 function check_for_new_day () {
     // Check to see if it's a new day
-    // If so, reset offers
+	var today_time = new Date();
+	var is_new_day = true;
+	if(today_time.toDateString() != last_event_time.toDateString()) {
+		// If so, reset offers
+		for(var i = 0; i < urls.length; i++) {
+			urls.map(urls[i]) = {url_pattern: urls[i], our_offer: null, user_offer: null;};
+		}
+		last_event_time = new Date();
+	}
+	
     // and go through all tabs and re-block what's needed
+	
+	
 }
 
 
