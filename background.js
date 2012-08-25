@@ -1,13 +1,15 @@
 // Options
 var urls = ['bing.com', 'facebook.com', 'reddit.com', 'renren.com'];
+var user = "Debug"
+
 
 // State variables
 var sites = urls.map(function (url) {
     return {url_pattern: url, our_offer: null, user_offer: null}; });
 
-
 // New day
 var last_event_time = new Date();
+
 function check_for_new_day () {
     // Check to see if it's a new day
 	var today_time = new Date();
@@ -19,10 +21,7 @@ function check_for_new_day () {
 		}
 		last_event_time = new Date();
 	}
-	
     // and go through all tabs and re-block what's needed
-	
-	
 }
 
 
@@ -31,12 +30,13 @@ function check_for_new_day () {
 function tab_event_listener (tab_id, change_info, tab) {
     console.log('tab_event_listener of', tab);
 	if(is_blacklisted(get_hostname(tab.url))){
+		// Redirect tab to blocked.html
 		chrome.tabs.update(tab.id, 
-		{ "url" : chrome.extension.getURL("blocked.html") + "?url=" + escape(tab.url) });
+			{ "url" : chrome.extension.getURL("blocked.html") + "?url=" + escape(tab.url) });
+		store_block_data("paid", getUserName(), getUrl(), document.getElementsByName("valueInput")[0].value);
 	}
 }
 chrome.tabs.onUpdated.addListener(tab_event_listener);
-
 
 // Extracts hostname from the URL
 // eg: https://www.google.com/webhp?hl=en&tab=nw&authuser=0 -> www.google.com
@@ -88,15 +88,12 @@ function store_block_data(event, user, tab_url, value) {
 }
 
 
-
-
 // **************** SERVER INTERACTION ******************* //
 
 // Pushes data about site blocks to the server:
 // Type of block, user info, time, url, and surveyed value
 function post_to_server(event, user, timeDate, url, value) {
 	
-	// another solution:
 	var xmlHttp = new XMLHttpRequest();
 	var tourl = "http://yuno.us:8989/save_event";
 	var params = 

@@ -1,7 +1,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
 <html>
     <head>
-	<script type="text/javascript" src="siteblock.js"></script>
 	<script type="text/javascript" src="background.js"></script>
 	<link href="blocked.css" type="text/css" rel="stylesheet" />
     <script type="text/javascript">
@@ -97,42 +96,55 @@ function re_allow_better() {
 	// var reset = csapuntz.siteblock.newUsageTracker.check_reset;
 }
 
+/*
 function getUserName() {
 	var opts = csapuntz.siteblock.read_options();
 	return opts.username;
 }
+*/
 
-function checkIsValidNumber() {
-	var valuuu = document.getElementsByName('valueInput')[0].value;
-	var status = document.getElementById("errorAlert");
+// Checks to see if the value entered in the text box is valid.
+// Valid values consist of numbers and up to one decimal point.
+// Displays an error on the page if value is invalid. Returns false
+// if value is invalid, returns true if value is valid. 
 
-	if(!IsPositiveNumber(valuuu)) {
-		status.innerHTML = "Number is invalid.";
-		return false;
-	} else {
-		status.innerHTML = "";
-		return true;
-	}
-}
-
-function IsPositiveNumber(strString) {
-	//  check for valid numeric strings	
-	var strValidChars = "0123456789.";
-	var strChar;
-	var blnResult = true;
-
-	if (strString.length == 0) {
-		return false;
-	}
+function is_valid_value() {
+	var value = document.getElementsByName('valueInput')[0].value;
+	var error = document.getElementById("errorAlert");
 	
-	//  test strString consists of valid characters listed above
-	for (i = 0; i < strString.length && blnResult == true; i++) {
-		strChar = strString.charAt(i);
-		if (strValidChars.indexOf(strChar) == -1) {
-			blnResult = false;
+	
+	// Make sure value contains only numbers and up to one decimal point
+	var valid_characters = "0123456789.";	
+	var char_result = true;	
+	var point = 0;
+	
+	// Check each character for validity, decimal points
+	for (i = 0; i < value.length && result == true; i++) {
+		var temp = value.charAt(i);
+		if (valid_characters.indexOf(temp) == -1) {
+			char_result = false;
+		}
+		if (temp == "."){
+			point++;
 		}
 	}
-	return blnResult;
+	// Checks decimal point count
+	if(point > 1){
+		char_result = false;
+	}
+	
+	// Display error in page
+	if (value.length == 0) {
+		error.innerHTML = "You must enter a value";
+		return false;
+	}
+	if(!char_result) {
+		error.innerHTML = "You can only enter numbers and a decimal point";
+		return false;
+	} else {
+		error.innerHTML = "";
+		return true;
+	}
 }
 
 function finishSessionFunc() {
@@ -147,38 +159,17 @@ function finishSessionFunc() {
 	self.close();
 }
 
-function goThroughFunc() {
-	if(checkIsValidNumber()) {
-		// the number entering is valid number
-		var opts = csapuntz.siteblock.read_options();
-
-		// alert(opts.timeClicked);
-		
-		// check whether this is repaid and send the information to the server.
-		if(Number(opts.timeClicked) > 0) {
-			storeBlockData("repaid", getUserName(), getUrl(), document.getElementsByName("valueInput")[0].value);
-		} else {
-			storeBlockData("paid", getUserName(), getUrl(), document.getElementsByName("valueInput")[0].value);	
-		}
-		
-		// storeBlockData("paid", getUserName(), getUrl(), document.getElementsByName("valueInput")[0].value);	
-
-		opts.lastPaid = document.getElementById("valueInput").value;
-		opts.timeClicked += 1;
-		// add current time to opts
-		var d = new Date();
-		opts.lastAllowClick = d.toDateString();
-		csapuntz.siteblock.write_options(opts);
-		chrome.extension.getBackgroundPage().onOptionsChanged(opts);		
-			
+function continue() {
+	if(is_valid_value()) {	
+		store_block_data("paid", getUserName(), getUrl(), document.getElementsByName("valueInput")[0].value);	
 		redirectTo();
 	}
 }
 
 // for the user to hit enter to submit the form
-function enterGoThroughFunc() {
+function keyboard_continue() {
 	if(event.keyCode == 13) {
-		goThroughFunc();
+		continue();
 	}	
 }
 
@@ -200,13 +191,11 @@ function refreshFunc() {
 
 
 // -->
-// <--
-// ^ |
-// | v
+
     </script>
     </head>
 
-	<body onload="onload()" onkeyup="enterGoThroughFunc()">
+	<body onload="onload()" onkeyup="keyboard_continue()">
 		<div id="blockinformation">
 			<h1><span class="utilityHightlight">U</span>tility<span class="utilityHightlight">T</span>racker</h1>
 			<div id="horizontalRule"><hr /></div>
@@ -219,7 +208,7 @@ function refreshFunc() {
 				<div>
 					<ul>
 						$<li class="valueInputArea"><input type="text" name="valueInput" id="valueInput"></li>
-						<li class="valueInputArea"><input id="goThroughButton" type="submit" value="Go!" onclick="goThroughFunc();"/></li>
+						<li class="valueInputArea"><input id="goThroughButton" type="submit" value="Go!" onclick="continue();"/></li>
 					</ul>
 				</div>
 				<div><input id="finishSession" type="button" value="I am finished with this action" onclick="finishSessionFunc();" /></div>
