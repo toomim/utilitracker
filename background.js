@@ -7,20 +7,18 @@ var user = "Debug";
 var sites = urls.map(function (url) {
     return {url_pattern: url, our_offer: null, user_offer: null}; });
 
-// New day
-var last_event_time = new Date();
-
+// New day check
+var last_day_check = new Date();
 function check_for_new_day () {
     // Check to see if it's a new day
 	var today_time = new Date();
-	var is_new_day = true;
-	if(today_time.toDateString() != last_event_time.toDateString()) {
+	if(today_time.toDateString() != last_day_check.toDateString()) {
         // If so, reset offers
         sites.each(function (site) {
             site.our_offer = null;
             site.user_offer = null; });
-        last_event_time = new Date();
 	}
+    last_day_check = new Date();
     // and go through all tabs and re-block what's needed
 }
 
