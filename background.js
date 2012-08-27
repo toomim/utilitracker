@@ -29,11 +29,14 @@ function check_for_new_day () {
 // Redirects to our block page. 
 function tab_event_listener (tab_id, change_info, tab) {
     console.log('tab_event_listener of', tab);
-	if(is_blacklisted(get_hostname(tab.url))){
+	if (is_blocked(tab.url)) {
 		// Redirect tab to blocked.html
 		chrome.tabs.update(tab.id, 
-			{ "url" : chrome.extension.getURL("blocked.html") + "?url=" + escape(tab.url) });
-		store_block_data("paid", getUserName(), getUrl(), document.getElementsByName("valueInput")[0].value);
+			{ "url" : chrome.extension.getURL("blocked.html")
+              + "?url=" + escape(tab.url) });
+
+        // Record the block event
+		store_block_data("block", getUserName(), getUrl(), null);
 	}
 }
 chrome.tabs.onUpdated.addListener(tab_event_listener);
@@ -45,11 +48,22 @@ function get_hostname(str) {
 	return str.match(re)[1].toString();
 }
 
-// Finds blocked urls from a given url.
-// Returns true if given url is blocked, false if otherwise. 
-function is_blacklisted(url){
+function site_for(url) {
+    // We just care about the hostname
+    url = get_hostname(url);
+
     return sites.find(function (site) {
-		return url.search(site.url_pattern) != -1;});
+		return url.search(site.url_pattern) != -1;
+    });
+}
+
+function is_blocked(url) {
+    //  We should show the block page if:
+    //    • The user has not given an offer yet
+    //    • Or they did, and it was less than our offer (so we gave them
+    //      our offer instead)
+    var site = site_for(url);
+    return site && !site.user_offer || site.user_offer < site_our_offer;
 }
 
 // Stores url, time/date of block in localStorage
