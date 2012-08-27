@@ -17,7 +17,7 @@ function check_for_new_day () {
 	if(today_time.toDateString() != last_event_time.toDateString()) {
 		// If so, reset offers
 		for(var i = 0; i < urls.length; i++) {
-			urls.map(urls[i]) = {url_pattern: urls[i], our_offer: null, user_offer: null;};
+			urls.map(urls[i]) = {url_pattern: urls[i], our_offer: null, user_offer: null};
 		}
 		last_event_time = new Date();
 	}

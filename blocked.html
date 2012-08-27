@@ -7,10 +7,16 @@
         // <!--
 		
 function onload() {
-	var ws = window.location.search;
-
-	if (ws !== undefined) {
-		var kvs = ws.substring(1).split('&');
+	var tab_url = "";
+	
+	chrome.tabs.getCurrent(function(tab){
+		tab_url = tab.url;
+	});
+	
+	
+	if (tab_url !== undefined) {
+		alert("Getting blocked url");
+		var kvs = tab_url.substring(1).split('&');
 		for (var i = 0; i < kvs.length; i++) {
 			var kv = kvs[i].split('=');
 			if (kv[0] == 'url') {
@@ -104,9 +110,9 @@ function getUserName() {
 */
 
 // Checks to see if the value entered in the text box is valid.
-// Valid values consist of numbers and up to one decimal point.
-// Displays an error on the page if value is invalid. Returns false
-// if value is invalid, returns true if value is valid. 
+// Valid values are positive dollar amounts. Displays an error on 
+// the page if value is invalid. Returns false if value is invalid,
+// returns true if value is valid. 
 
 function is_valid_value() {
 	var value = document.getElementsByName('valueInput')[0].value;
@@ -183,7 +189,7 @@ function refreshFunc() {
 	chrome.extension.getBackgroundPage().onOptionsChanged(opts);		
 	document.getElementById("moreClickOnGoThrough").style.display = "true";
 	document.getElementById("singleClickOnGoThrough").style.display = "none";
-	document.getElementById("goThroughButton").value = "get extra minute!";
+	document.getElementById("continueButton").value = "get extra minute!";
 	
 	// get what user paid last time and put into the valueInput
 	document.getElementById("valueInput").value = opts.lastPaid;
@@ -201,14 +207,14 @@ function refreshFunc() {
 			<div id="horizontalRule"><hr /></div>
 			<p>
 				<div id="errorAlert"></div>
-				<div id="moreClickOnGoThrough" >One more minute?</div>
+				<!-- <div id="moreClickOnGoThrough" >One more minute?</div> -->
 				<div id="singleClickOnGoThrough">How much would you pay for a day of</div>
 				<div><a id="url"></a></div>
 				<div>?</div>
 				<div>
 					<ul>
 						$<li class="valueInputArea"><input type="text" name="valueInput" id="valueInput"></li>
-						<li class="valueInputArea"><input id="goThroughButton" type="submit" value="Go!" onclick="continue();"/></li>
+						<li class="valueInputArea"><input id="continueButton" type="submit" value="Go!" onclick="continue();"/></li>
 					</ul>
 				</div>
 				<div><input id="finishSession" type="button" value="I am finished with this action" onclick="finishSessionFunc();" /></div>
