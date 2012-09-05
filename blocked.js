@@ -1,3 +1,5 @@
+
+document.addEventListener("DOMContentLoaded", onload, false);
 		
 function onload() {
 	alert("Executing onload");
