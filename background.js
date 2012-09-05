@@ -34,7 +34,7 @@ function tab_event_listener (tab_id, change_info, tab) {
               + "?url=" + escape(tab.url) });
 
         // Record the block event
-		store_block_data("block", getUserName(), getUrl(), null);
+		store_block_data("block", get_username(), get_url(), null);
 	}
 }
 chrome.tabs.onUpdated.addListener(tab_event_listener);

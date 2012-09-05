@@ -1,10 +1,16 @@
-
+// These listeners allows this javascript to be executed in the extension without
+// being blocked by Chrome for security reasons
 document.addEventListener("DOMContentLoaded", onload, false);
-		
-function onload() {
-	alert("Executing onload");
-	var ws = window.location.search;
 
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelector('.valueInputButton').addEventListener('click', clickHandler);
+});
+
+// Called by the event listener when the page loads
+function onload() {
+
+	// Parses the extension url to get the incoming url
+	var ws = window.location.search;
 	if (ws !== undefined) {
 		var kvs = ws.substring(1).split('&');
 		for (var i = 0; i < kvs.length; i++) {
@@ -19,70 +25,43 @@ function onload() {
 			}
 		}
 	}
-	document.getElementsByName('valueInput')[0].focus();
 	
+	// Focuses on the text box
+	document.getElementsByName('valueInput')[0].focus();
 }
 
-function getUrl() {
+// Submits the value inputted by the user to the server. 
+function submit() {
+	if(is_valid_value()) {	
+		store_block_data("value submitted", get_username(), get_url(), document.getElementsByName("valueInput")[0].value);	
+		unblock();
+	}
+}
+
+// Called by the event listener when the submit button is clicked
+function clickHandler(e) {
+	submit();
+}
+
+
+// Gets the url
+function get_url() {
 	var a = document.getElementById("url");
 	return a.href;
 }
 
-function toGoogle() {
-	window.location = "http://www.google.com";
-}
-
-function redirectTo() {
-	re_allow_better();
+// Redirects the tab to the page the user intended to go to.
+function unblock() {
+	alert("unblocking");
 	var url = document.getElementById("url");
 	window.location = url.href + "";
 }
 
-// one way to unblock the site: make the unblock time to be 0 minute.
-function re_allow() {
-	var opts = csapuntz.siteblock.read_options();
-    
-	opts.allowed = Number(60);
-	opts.period = Number(60);
-
-	csapuntz.siteblock.write_options(opts);
-	chrome.extension.getBackgroundPage().onOptionsChanged(opts);
+// Temporary function, replace with account system code
+function get_username() {
+	return "test user";
 }
 
-// another way to unblock the site: delete the block rule.
-function re_allow_opt() {
-	var opts = csapuntz.siteblock.read_options();
-	
-	// var ori_rules = opt.rules;
-	// var new_rules = ori_rules.replace('', '');
-	opts.rules = "";
-
-	csapuntz.siteblock.write_options(opts);
-	chrome.extension.getBackgroundPage().onOptionsChanged(opts);	
-}
-
-// better way to block. block the site first, then each time user click go through,
-// another minute is allowed before the site is blocked again
-function re_allow_better() {
-	var opts = csapuntz.siteblock.read_options();
-	
-	opts.allowed = Number(1);
-	opts.period = Number(24*60);
-	
-	csapuntz.siteblock.write_options(opts);
-	chrome.extension.getBackgroundPage().onOptionsChanged(opts);		
-	
-	// reset the timer
-	// var time_current = csapuntz.siteblock.newUsageTracker.time_cb;
-	// var reset = csapuntz.siteblock.newUsageTracker.check_reset;
-}
-
-/*
-function getUserName() {
-	var opts = csapuntz.siteblock.read_options();
-	return opts.username;
-}
-*/
 
 // Checks to see if the value entered in the text box is valid.
 // Valid values are positive dollar amounts. Displays an error on 
@@ -128,50 +107,11 @@ function is_valid_value() {
 	}
 }
 
-/*
-function finishSessionFunc() {
-	var opts = csapuntz.siteblock.read_options();
 
-	opts.timeClicked = 0;
-	
-	csapuntz.siteblock.write_options(opts);
-	chrome.extension.getBackgroundPage().onOptionsChanged(opts);
-	
-	// alert("session ended, restart another. ");
-	self.close();
-}
-*/
-
-function submit() {
-	if(is_valid_value()) {	
-		store_block_data("paid", getUserName(), getUrl(), document.getElementsByName("valueInput")[0].value);	
-		redirectTo();
-	}
-}
-
-// for the user to hit enter to submit the form
+// Allows user to use enter key to submit
 function keyboard_submit() {
 	if(event.keyCode == 13) {
 		submit();
 	}	
 }
 
-
-/* 
-// reset the timer in the siteblock.js file
-function refreshFunc() {
-	// a little trick to reset the timer in the siteblock.js file. set the period to 0 and then set it back to normal. hehe
-	var opts = csapuntz.siteblock.read_options();
-	opts.allowed = Number(0);
-	opts.period = Number(0*60);
-	csapuntz.siteblock.write_options(opts);
-	chrome.extension.getBackgroundPage().onOptionsChanged(opts);		
-	document.getElementById("moreClickOnGoThrough").style.display = "true";
-	document.getElementById("singleClickOnGoThrough").style.display = "none";
-	document.getElementById("continueButton").value = "get extra minute!";
-	
-	// get what user paid last time and put into the valueInput
-	document.getElementById("valueInput").value = opts.lastPaid;
-}
-
-*/
