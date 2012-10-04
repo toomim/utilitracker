@@ -5,11 +5,11 @@ var user = "Debug";
 // State variables
 var sites = urls.map(function (url) {
     return {url_pattern: url, our_offer: null, user_offer: null}; });
-
-// New day check /24 hrs later
 var last_day_check = new Date();
+
+// Check to see if it's a new day/ over 24 hours
 function check_for_new_day () {
-    // Check to see if it's a new day/ over 24 hours
+	console.log('check_for_new_day()');
 	var today_time = new Date();
 	
 	if(today_time.getTime() - last_day_check.getTime() >= (1000 * 60 * 60 * 24)) {
@@ -20,27 +20,24 @@ function check_for_new_day () {
 	
         }
     last_day_check = today_time;
-    // and go through all tabs and re-block what's needed
-    
+    // and go through all tabs and re-block what's needed    
     console.log('should check tabs and reblock');
+    
 }
 
 // "Main" function - checks for blocked sites whenever a tab is updated.
 // Redirects to our block page. 
 function tabs_update_listener(tab_id, change_info, tab) {
     console.log('tab_updated ', tab.id);    
-	if (is_blocked(tab.url)) {
-		// Redirect tab to blocked.html
-		chrome.tabs.update(tab.id, 
-			{ 'url' : chrome.extension.getURL("blocked.html")
-              + "?url=" + escape(tab.url) });
-
-        // Record the block event
-		store_block_data("block", get_username(), get_url(), null);
-	}	
+	block_tab(tab);	
 }
 function tabs_created_listener(tab) {
 	console.log('tab_created', tab.id);
+	block_tab(tab);
+}
+
+// helper function, check whether the tab is blocked, if so, block the tab
+function block_tab(tab) {
 	if (is_blocked(tab.url)) {
 		// Redirect tab to blocked.html
 		chrome.tabs.update(tab.id, 
@@ -49,45 +46,38 @@ function tabs_created_listener(tab) {
 
         // Record the block event
 		store_block_data("block", get_username(), get_url(), null);
-	}		
+	}			
 }
 
+// add listener when created the tab or updated the tab
 chrome.tabs.onUpdated.addListener(tabs_update_listener);
-
 chrome.tabs.onCreated.addListener(tabs_created_listener);
 
-chrome.tabs.onRemoved.addListener(function(tab) {
-	console.log('tab_removed ', tab.id);
+chrome.tabs.onRemoved.addListener(function(tab_id, remove_info) {
+	console.log('tab_removed ', tab_id);
 });
 
 
 // Extracts hostname from the URL
 // eg: https://www.google.com/webhp?hl=en&tab=nw&authuser=0 -> www.google.com
 function get_hostname(str) {
-	var exp = str.split('//')[1].split('/')[0].substr(4);
+	var exp = str.split('//')[1].split('/')[0];
 	return exp;
 }
 
-function site_for(url) {
-    // We just care about the hostname
-    url = get_hostname(url);
-
-	return urls.indexOf(url);
-}
-
 function is_blocked(url) {
+
     //  We should show the block page if:
     //    • The user has not given an offer yet
     //    • Or they did, and it was less than our offer (so we gave them
     //      our offer instead)
-    
-
     var site = get_hostname(url);
 	console.log('is_blocked', site);
 	
 	// check whether this url is blocked right now
 	var boo = !!sites.find(function(this_site) {
-		return this_site.url_pattern == site && !this_site.user_offer;	
+	
+		return (site.indexOf(this_site.url_pattern) != -1) && (!this_site.user_offer);	
 	});
 	console.log('is_blocked', boo);
 
@@ -96,6 +86,10 @@ function is_blocked(url) {
 
 function get_username() {
 	return user;
+}
+
+function get_url() {
+	
 }
 
 
@@ -111,27 +105,32 @@ function store_block_data(event, user, tab_url, value) {
 	var second = time.getSeconds();
 	
 	// Formatting time and date
-	var timedate = month + "/" + day + "/" + year + " ";
+	var time_date = month + "/" + day + "/" + year + " ";
+	if(minute < 10){ minute = "0" + minute; }
+	if(second < 10){ second = "0" + second; }
+	time_date = time_date + hour + ":" + minute + ":" + second;
 	
-	if(minute < 10){
-		minute = "0" + minute;
-	}
-	if(second < 10){
-		second = "0" + second;
-	}
-	
-	timedate = timedate + hour + ":" + minute + ":" + second;
 	if(localStorage['log'] == undefined){
 		localStorage['log'] = JSON.stringify([]);
 	}
 	
 	// Stores data online
-	post_to_server(event, user, timeDate, tab_url, value);
+	// disable since server is not up yet
+	//
+	//
+	// post_to_server(event, user, time_date, tab_url, value);
+	//
+	//
+	//
 	
+	
+	/* why do we need to store second copy?? 
+	//
 	// Stores second copy in localStorage
 	var array = JSON.parse(localStorage['log']);
-	array.push(event, user, timedate, tab_url, value);
+	array.push(event, user, time_date, tab_url, value);
 	localStorage['log'] = JSON.stringify(array);
+	*/
 }
 
 
@@ -139,7 +138,7 @@ function store_block_data(event, user, tab_url, value) {
 
 // Pushes data about site blocks to the server:
 // Type of block, user info, time, url, and surveyed value
-function post_to_server(event, user, timeDate, url, value) {
+function post_to_server(event, user, time_date, url, value) {
 	
 	var xmlHttp = new XMLHttpRequest();
 	var tourl = "http://yuno.us:8989/save_event";
@@ -147,7 +146,7 @@ function post_to_server(event, user, timeDate, url, value) {
 		"paid=" + value +
 		"&what=" + event +  
 		"&who=" + user + 
-		"&when=" + timeDate +
+		"&when=" + time_date +
 		"&url=" + url;
 	xmlHttp.open("POST", tourl, false);
 	
