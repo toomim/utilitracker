@@ -3,15 +3,17 @@ var urls = ['bing.com', 'facebook.com', 'reddit.com', 'renren.com'];
 var user = "Debug";
 var sites;
 
+
+// The extension needs to save state across sessions:
+//   - The blocked status of each website
+//   - The last day we've checked to see what to block/unblock
 var state;
-// Load state variables from storage
 if (localStorage['state'])
     state = JSON.parse(localStorage['state'])
 else {
+    // Initialize state variables from scratch if they don't exist yet
     var sites = urls.map(function (url) {
         return {url_pattern: url, our_offer: null, user_offer: null} })
-
-    // Store it
     localStorage['state'] = JSON.stringify({sites: sites,
                                             last_day_check: new Date()})
 }
