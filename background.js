@@ -1,28 +1,66 @@
-// Options
-var urls = ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com'];
-var user = "Debug";
+// data stored:
 
-// State variables
-var sites = urls.map(function (url) {
-    return {url_pattern: url, our_offer: null, user_offer: null}; });
-var last_day_check = new Date();
+
+// Options
+window['urls'] = ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com'];
+window['user'] = "Debug_user";
+
+initial_urls_status(window['urls']);
+
+// test
+console.log('current monitoring: ', window['urls_status']);
+console.log('user name: ', window['user']);
+
+console.log(window['urls_status'][2].user_offer == null);
+window['urls_status'][2].user_offer = 3;
+console.log(window['urls_status'][2].user_offer == null);
+
+//
+
+
+// initialize the urls_status
+function initial_urls_status(urls) {
+	// State variables
+	var sites = urls.map(function (url) {
+	    return {url_pattern: url, user_offer: null, last_day_check: null}; 
+	});
+	window['urls_status'] = sites;
+}
+
+// remove the monitoring urls from urls_status
+function remove_urls_status(urls) {
+	for(i = 0; i < urls.length; i++) {
+		var le = window['urls_status'].length;
+		for(j = 0; j < le; j++) {
+			if(window['urls_status'][j].url_pattern == urls[i]) {
+				window['urls_status'].splice(j, 1);
+				le -= 1;
+			}
+		}
+	}
+}
 
 // Check to see if it's a new day/ over 24 hours
-function check_for_new_day () {
-	console.log('check_for_new_day()');
+function check_for_new_day (url) {
+	console.log('check_for_new_day() ', url);
 	var today_time = new Date();
 	
-	if(today_time.getTime() - last_day_check.getTime() >= (1000 * 60 * 60 * 24)) {
-        // If so, reset offers
-        sites.each(function (site) {
-            site.our_offer = null;
-            site.user_offer = null; });
+	for(i = 0; i < window['urls_status'].length; i++) {
+		var last_view = window['urls_status'][i].last_day_check;
+		if(url.indexOf(window['urls_status'][i].url_pattern) != 1 &&  last_view != null) {
+			// if the page is viewed before
+			if(today_time.getTime() - last_view.getTime() >= (1000 * 60 * 60 * 24)) {
+      			// If so, reset offers
+				window['urls_status'][i].user_offer = null;
+				window['urls_status'][i].last_day_check = today_time;
+        	}
+			
+		}
+	}	
 	
-        }
-    last_day_check = today_time;
     // and go through all tabs and re-block what's needed    
-    console.log('should check tabs and reblock');
-    
+
+    console.log('should check tabs and reblock');    
 }
 
 // "Main" function - checks for blocked sites whenever a tab is updated.
@@ -71,21 +109,24 @@ function is_blocked(url) {
     //    • The user has not given an offer yet
     //    • Or they did, and it was less than our offer (so we gave them
     //      our offer instead)
+    
+    // check whether is a new day
+    check_for_new_day(url);
+    
     var site = get_hostname(url);
-	console.log('is_blocked', site);
-	
 	// check whether this url is blocked right now
-	var boo = !!sites.find(function(this_site) {
-	
-		return (site.indexOf(this_site.url_pattern) != -1) && (!this_site.user_offer);	
-	});
-	console.log('is_blocked', boo);
-
-	return boo;
+	// if the block_array is not empty, then the url is being blocked
+	for(i = 0; i < window['urls_status'].length; i++) {
+		var ob = window['urls_status'][i];
+		if(site.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function get_username() {
-	return user;
+	return window['user'];
 }
 
 function get_url() {
@@ -95,6 +136,22 @@ function get_url() {
 
 // Stores url, time/date of block in localStorage
 function store_block_data(event, user, tab_url, value) {
+	// first store the data local:
+	// store the user_offer
+	
+	if(event == 'value submitted') {
+		// the user submit the data store in the sites
+		for(i = 0; i < window['urls_status'].length; i++) {
+			var ob = window['urls_status'][i];
+			if(tab_url.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
+				console.log(ob.url_pattern, ' is trying to go through');
+				window['urls_status'][i].user_offer = value;
+				console.log(window['urls_status'][i].user_offer);
+			}
+		}
+	}
+
+	
 	// Get the time of block
 	var time = new Date();
 	var month = time.getMonth() + 1;
