@@ -1,22 +1,13 @@
 // data stored:
+var local = chrome.storage.local;
 
 
 // Options
-window['urls'] = ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com'];
-window['user'] = "Debug_user";
 
-initial_urls_status(window['urls']);
+set_data('urls', ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com']);
+set_data('user', 'Debug_user');
 
-// test
-console.log('current monitoring: ', window['urls_status']);
-console.log('user name: ', window['user']);
-
-console.log(window['urls_status'][2].user_offer == null);
-window['urls_status'][2].user_offer = 3;
-console.log(window['urls_status'][2].user_offer == null);
-
-//
-
+initial_urls_status(get_data('urls'));
 
 // initialize the urls_status
 function initial_urls_status(urls) {
@@ -24,19 +15,38 @@ function initial_urls_status(urls) {
 	var sites = urls.map(function (url) {
 	    return {url_pattern: url, user_offer: null, last_day_check: null}; 
 	});
-	window['urls_status'] = sites;
+	set_data('urls_status', sites);
 }
+
+// retrieve data from localStorage
+function get_data(item) {
+	return JSON.parse(localStorage[item]);
+}
+
+// store data to localStorage
+function set_data(item, data) {
+	localStorage[item] = JSON.stringify(data);
+}
+
+
+// test
+
+//
+
+
 
 // remove the monitoring urls from urls_status
 function remove_urls_status(urls) {
 	for(i = 0; i < urls.length; i++) {
-		var le = window['urls_status'].length;
+		var le = get_data('urls_status').length;
+		var status = get_data('urls_status');
 		for(j = 0; j < le; j++) {
-			if(window['urls_status'][j].url_pattern == urls[i]) {
-				window['urls_status'].splice(j, 1);
+			if(status[j].url_pattern == urls[i]) {
+				status.splice(j, 1);
 				le -= 1;
 			}
 		}
+		set_data('urls_status', status);
 	}
 }
 
@@ -44,18 +54,19 @@ function remove_urls_status(urls) {
 function check_for_new_day (url) {
 	console.log('check_for_new_day() ', url);
 	var today_time = new Date();
-	
-	for(i = 0; i < window['urls_status'].length; i++) {
-		var last_view = window['urls_status'][i].last_day_check;
-		if(url.indexOf(window['urls_status'][i].url_pattern) != 1 &&  last_view != null) {
+	var status = get_data('urls_status');
+	for(i = 0; i < status.length; i++) {
+		var last_view = status[i].last_day_check;
+		if(url.indexOf(status[i].url_pattern) != 1 &&  last_view != null) {
 			// if the page is viewed before
 			if(today_time.getTime() - last_view.getTime() >= (1000 * 60 * 60 * 24)) {
       			// If so, reset offers
-				window['urls_status'][i].user_offer = null;
-				window['urls_status'][i].last_day_check = today_time;
+      			console.log('reset offer for: ', url);
+				status[i].user_offer = null;
+				status[i].last_day_check = today_time;
         	}
-			
 		}
+	set_data('urls_status', status);
 	}	
 	
     // and go through all tabs and re-block what's needed    
@@ -116,8 +127,8 @@ function is_blocked(url) {
     var site = get_hostname(url);
 	// check whether this url is blocked right now
 	// if the block_array is not empty, then the url is being blocked
-	for(i = 0; i < window['urls_status'].length; i++) {
-		var ob = window['urls_status'][i];
+	for(i = 0; i < get_data('urls_status').length; i++) {
+		var ob = get_data('urls_status')[i];
 		if(site.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
 			return true;
 		}
@@ -126,7 +137,7 @@ function is_blocked(url) {
 }
 
 function get_username() {
-	return window['user'];
+	return get_data('user');
 }
 
 function get_url() {
@@ -141,14 +152,17 @@ function store_block_data(event, user, tab_url, value) {
 	
 	if(event == 'value submitted') {
 		// the user submit the data store in the sites
-		for(i = 0; i < window['urls_status'].length; i++) {
-			var ob = window['urls_status'][i];
+		console.log('store submit value');
+		var status = get_data('urls_status');
+		for(i = 0; i < status.length; i++) {
+			var ob = status[i];
 			if(tab_url.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
 				console.log(ob.url_pattern, ' is trying to go through');
-				window['urls_status'][i].user_offer = value;
-				console.log(window['urls_status'][i].user_offer);
+				status[i].user_offer = value;
+				alert(status[i].user_offer);
 			}
 		}
+		set_data('urls_status', status);
 	}
 
 	
