@@ -53,18 +53,25 @@ function remove_urls_status(urls) {
 // Check to see if it's a new day/ over 24 hours
 function check_for_new_day (url) {
 	console.log('check_for_new_day() ', url);
+    console.log(get_data('urls_status'));
+
 	var today_time = new Date();
 	var status = get_data('urls_status');
 	for(i = 0; i < status.length; i++) {
 		var last_view = status[i].last_day_check;
-		if(url.indexOf(status[i].url_pattern) != 1 &&  last_view != null) {
-			// if the page is viewed before
-			if(today_time.getTime() - last_view.getTime() >= (1000 * 60 * 60 * 24)) {
-      			// If so, reset offers
-      			console.log('reset offer for: ', url);
-				status[i].user_offer = null;
-				status[i].last_day_check = today_time;
-        	}
+		if(url.indexOf(status[i].url_pattern) != -1) {
+			if(last_view != null) {
+				// if the page is viewed before
+				if(today_time.getTime() - last_view >= (1000 * 60 * 60 * 24)) {
+   		   			// If so, reset offers
+   	 	  			console.log('reset offer for: ', url);
+					status[i].user_offer = null;
+					status[i].last_day_check = today_time.getTime();
+       		 	}
+			} else {
+				// the page is not viewed before.
+				status[i].last_day_check = today_time.getTime();
+			}
 		}
 	set_data('urls_status', status);
 	}	
@@ -123,7 +130,7 @@ function is_blocked(url) {
     
     // check whether is a new day
     check_for_new_day(url);
-    
+        
     var site = get_hostname(url);
 	// check whether this url is blocked right now
 	// if the block_array is not empty, then the url is being blocked
