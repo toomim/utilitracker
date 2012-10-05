@@ -3,7 +3,8 @@
 document.addEventListener("DOMContentLoaded", onload, false);
 
 document.addEventListener('DOMContentLoaded', function () {
-  document.querySelector('.valueInputButton').addEventListener('click', clickHandler);
+	document.querySelector('body').addEventListener('keypress', keyboard_submit);
+	document.querySelector('#continueButton').addEventListener('click', clickHandler);
 });
 
 // Called by the event listener when the page loads
@@ -28,21 +29,32 @@ function onload() {
 	
 	// Focuses on the text box
 	document.getElementsByName('valueInput')[0].focus();
+	
+	console.log('block.js loaded');
 }
 
 // Submits the value inputted by the user to the server. 
 function submit() {
-	if(is_valid_value()) {	
+	if(is_valid_value()) {
 		store_block_data("value submitted", get_username(), get_url(), document.getElementsByName("valueInput")[0].value);	
 		unblock();
+	} else {
+		document.getElementsByName('valueInput')[0].value = "";
+		document.getElementsByName('valueInput')[0].focus();		
 	}
 }
 
 // Called by the event listener when the submit button is clicked
-function clickHandler(e) {
+function clickHandler(event) {
 	submit();
 }
 
+// Allows user to use enter key to submit
+function keyboard_submit(event) {
+	if(event.keyCode == 13) {
+		submit();
+	}	
+}
 
 // Gets the url
 function get_url() {
@@ -50,17 +62,23 @@ function get_url() {
 	return a.href;
 }
 
-// Redirects the tab to the page the user intended to go to.
-function unblock() {
-	alert("unblocking");
-	var url = document.getElementById("url");
-	window.location = url.href + "";
+function get_user_offer() {
+	return document.getElementsByName('valueInput')[0].value;		
 }
 
 // Temporary function, replace with account system code
 function get_username() {
 	return "test user";
 }
+
+// Redirects the tab to the page the user intended to go to.
+function unblock() {
+	console.log('unblocking: ', get_url());
+	var url = document.getElementById("url");
+	
+	window.location = url.href + "";
+}
+
 
 
 // Checks to see if the value entered in the text box is valid.
@@ -79,7 +97,7 @@ function is_valid_value() {
 	var point = 0;
 	
 	// Check each character for validity, decimal points
-	for (i = 0; i < value.length && result == true; i++) {
+	for (i = 0; i < value.length && char_result == true; i++) {
 		var temp = value.charAt(i);
 		if (valid_characters.indexOf(temp) == -1) {
 			char_result = false;
@@ -107,11 +125,4 @@ function is_valid_value() {
 	}
 }
 
-
-// Allows user to use enter key to submit
-function keyboard_submit() {
-	if(event.keyCode == 13) {
-		submit();
-	}	
-}
 
