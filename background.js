@@ -1,24 +1,33 @@
 // Options
 var urls = ['bing.com', 'facebook.com', 'reddit.com', 'renren.com'];
 var user = "Debug";
+var sites;
 
+var state;
+// Load state variables from storage
+if (localStorage['state'])
+    state = JSON.parse(localStorage['state'])
+else {
+    var sites = urls.map(function (url) {
+        return {url_pattern: url, our_offer: null, user_offer: null} })
 
-// State variables
-var sites = urls.map(function (url) {
-    return {url_pattern: url, our_offer: null, user_offer: null}; });
+    // Store it
+    localStorage['state'] = JSON.stringify({sites: sites,
+                                            last_day_check: new Date()})
+}
+function save_state() { localStorage['state'] = JSON.stringify(state) }
 
-// New day check
-var last_day_check = new Date();
 function check_for_new_day () {
     // Check to see if it's a new day
 	var today_time = new Date();
-	if(today_time.toDateString() != last_day_check.toDateString()) {
+	if(today_time.toDateString() != state.last_day_check.toDateString()) {
         // If so, reset offers
-        sites.each(function (site) {
+        state.sites.each(function (site) {
             site.our_offer = null;
             site.user_offer = null; });
 	}
-    last_day_check = new Date();
+    state.last_day_check = new Date();
+    save_state()
     // and go through all tabs and re-block what's needed
 }
 
@@ -50,7 +59,7 @@ function site_for(url) {
     // We just care about the hostname
     url = get_hostname(url);
 
-    return sites.find(function (site) {
+    return state.sites.find(function (site) {
 		return url.search(site.url_pattern) != -1;
     });
 }
