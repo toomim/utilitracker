@@ -53,6 +53,7 @@ function remove_urls_status(urls) {
 // Check to see if it's a new day/ over 24 hours
 function check_for_new_day (url) {
 	console.log('check_for_new_day() ', url);
+	console.log('before checking: ', get_data('urls_status'));
 
 	var today_time = new Date();
 	var status = get_data('urls_status');
@@ -83,6 +84,8 @@ function check_for_new_day (url) {
 		}
 	}	
 	set_data('urls_status', status);
+	
+	console.log('after checking: ', get_data('urls_status'));
 	
     // and go through all tabs and re-block what's needed    
     console.log('should check tabs and reblock');   
