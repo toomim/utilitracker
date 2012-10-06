@@ -20,8 +20,7 @@ function initial_urls_status(urls) {
 
 // retrieve data from localStorage
 function get_data(item) {
-	var result = (JSON.parse(localStorage[item]));
-	return result;
+	return JSON.parse(localStorage[item]);
 }
 
 // store data to localStorage
@@ -38,10 +37,10 @@ function set_data(item, data) {
 
 // remove the monitoring urls from urls_status
 function remove_urls_status(urls) {
-	for(i = 0; i < urls.length; i++) {
+	for(var i = 0; i < urls.length; i++) {
 		var le = get_data('urls_status').length;
 		var status = get_data('urls_status');
-		for(j = 0; j < le; j++) {
+		for(var j = 0; j < le; j++) {
 			if(status[j].url_pattern == urls[i]) {
 				status.splice(j, 1);
 				le -= 1;
@@ -57,7 +56,7 @@ function check_for_new_day (url) {
 
 	var today_time = new Date();
 	var status = get_data('urls_status');
-	for(i = 0; i < status.length; i++) {
+	for(var i = 0; i < status.length; i++) {
 		if(get_hostname(url).indexOf(status[i].url_pattern) != -1) {
 		
 			console.log('matched: ', status[i].url_pattern);
