@@ -20,7 +20,8 @@ function initial_urls_status(urls) {
 
 // retrieve data from localStorage
 function get_data(item) {
-	return JSON.parse(localStorage[item]);
+	var result = (JSON.parse(localStorage[item]));
+	return result;
 }
 
 // store data to localStorage
@@ -53,15 +54,20 @@ function remove_urls_status(urls) {
 // Check to see if it's a new day/ over 24 hours
 function check_for_new_day (url) {
 	console.log('check_for_new_day() ', url);
-    console.log(get_data('urls_status'));
 
 	var today_time = new Date();
 	var status = get_data('urls_status');
 	for(i = 0; i < status.length; i++) {
-		var last_view = status[i].last_day_check;
-		if(url.indexOf(status[i].url_pattern) != -1) {
+		if(get_hostname(url).indexOf(status[i].url_pattern) != -1) {
+		
+			console.log('matched: ', status[i].url_pattern);
+			
+			var last_view = status[i].last_day_check;
 			if(last_view != null) {
 				// if the page is viewed before
+				
+				console.log('the page have been viewed before');
+				
 				if(today_time.getTime() - last_view >= (1000 * 60 * 60 * 24)) {
    		   			// If so, reset offers
    	 	  			console.log('reset offer for: ', url);
@@ -70,19 +76,22 @@ function check_for_new_day (url) {
        		 	}
 			} else {
 				// the page is not viewed before.
+				
+				console.log('the page have NOT been viewed before');
+				
 				status[i].last_day_check = today_time.getTime();
 			}
 		}
-	set_data('urls_status', status);
 	}	
+	set_data('urls_status', status);
 	
     // and go through all tabs and re-block what's needed    
-
-    console.log('should check tabs and reblock');    
+    console.log('should check tabs and reblock');   
 }
 
 // "Main" function - checks for blocked sites whenever a tab is updated.
 // Redirects to our block page. 
+
 function tabs_update_listener(tab_id, change_info, tab) {
     console.log('tab_updated ', tab.id);    
 	block_tab(tab);	
@@ -134,8 +143,9 @@ function is_blocked(url) {
     var site = get_hostname(url);
 	// check whether this url is blocked right now
 	// if the block_array is not empty, then the url is being blocked
-	for(i = 0; i < get_data('urls_status').length; i++) {
-		var ob = get_data('urls_status')[i];
+	var status = get_data('urls_status');
+	for(i = 0; i < status.length; i++) {
+		var ob = status[i];
 		if(site.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
 			return true;
 		}
@@ -161,15 +171,17 @@ function store_block_data(event, user, tab_url, value) {
 		// the user submit the data store in the sites
 		console.log('store submit value');
 		var status = get_data('urls_status');
+		console.log(status);
+		alert('check console');
 		for(i = 0; i < status.length; i++) {
 			var ob = status[i];
 			if(tab_url.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
 				console.log(ob.url_pattern, ' is trying to go through');
 				status[i].user_offer = value;
-				alert(status[i].user_offer);
 			}
 		}
 		set_data('urls_status', status);
+		console.log(status);
 	}
 
 	
@@ -188,10 +200,6 @@ function store_block_data(event, user, tab_url, value) {
 	if(second < 10){ second = "0" + second; }
 	time_date = time_date + hour + ":" + minute + ":" + second;
 	
-	if(localStorage['log'] == undefined){
-		localStorage['log'] = JSON.stringify([]);
-	}
-	
 	// Stores data online
 	// disable since server is not up yet
 	//
@@ -202,13 +210,13 @@ function store_block_data(event, user, tab_url, value) {
 	//
 	
 	
-	/* why do we need to store second copy?? 
-	//
 	// Stores second copy in localStorage
+	/*
 	var array = JSON.parse(localStorage['log']);
 	array.push(event, user, time_date, tab_url, value);
 	localStorage['log'] = JSON.stringify(array);
 	*/
+	
 }
 
 
