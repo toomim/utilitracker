@@ -1,9 +1,9 @@
-// data stored:
-var local = chrome.storage.local;
+var urg_data = store_data.read();
+// urg_data.user_name = 'edward';
+// store_data.write(urg_data);
 
 
 // Options
-
 set_data('urls', ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com']);
 set_data('user', 'Debug_user');
 
@@ -19,15 +19,16 @@ function initial_urls_status(urls) {
 }
 
 // retrieve data from localStorage
-function get_data(item) {
-	return JSON.parse(localStorage[item]);
+function get_data(key) {
+	var stg = localStorage;
+	return JSON.parse(stg.getItem(key));
 }
 
 // store data to localStorage
-function set_data(item, data) {
-	localStorage[item] = JSON.stringify(data);
+function set_data(key, value) {
+	var stg = localStorage;
+	stg.setItem(key, JSON.stringify(value));
 }
-
 
 // test
 
@@ -60,7 +61,7 @@ function check_for_new_day (url) {
 	for(var i = 0; i < status.length; i++) {
 		if(get_hostname(url).indexOf(status[i].url_pattern) != -1) {
 		
-			console.log('matched: ', status[i].url_pattern);
+			console.log('matched: ', i, ' url: ', status[i].url_pattern);
 			
 			var last_view = status[i].last_day_check;
 			if(last_view != null) {
