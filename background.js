@@ -110,7 +110,7 @@ function tabs_created_listener(tab) {
 
 // helper function, check whether the tab is blocked, if so, block the tab
 function block_tab(tab) {
-	if (is_blocked(tab.url)) {
+	if (is_blocked(tab.url) == 1) {
 		// Redirect tab to blocked.html
 		chrome.tabs.update(tab.id, 
 			{ 'url' : chrome.extension.getURL("blocked.html")
@@ -118,7 +118,12 @@ function block_tab(tab) {
 
         // Record the block event
 		store_block_data("block", get_username(), get_url(), null);
-	}			
+	} else if (is_blocked(tab.url) == 2) {
+		// Redirect tab to blocked.html
+		chrome.tabs.update(tab.id, 
+			{ 'url' : chrome.extension.getURL("countdown.html")
+              + "?url=" + escape(tab.url) });
+	}		
 }
 
 // add listener when created the tab or updated the tab
@@ -143,6 +148,9 @@ function is_blocked(url) {
     //    • The user has not given an offer yet
     //    • Or they did, and it was less than our offer (so we gave them
     //      our offer instead)
+	//  if return 0 --> unblock
+	//  if return 1 --> block, and let user enter their offer today
+	//  if return 2 --> block, user has already entered offer, redirect to count down page
     
     // check whether is a new day
     check_for_new_day(url);
@@ -153,11 +161,15 @@ function is_blocked(url) {
 	var status = get_data('urls_status');
 	for(var i = 0; i < status.length; i++) {
 		var ob = status[i];
-		if(site.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
-			return true;
+		if(site.indexOf(ob.url_pattern) != -1) {
+			if(ob.user_offer == null) {
+				return 1;
+			} else {
+				return 2;
+			}	
 		}
 	}
-	return false;
+	return 0;
 }
 
 function get_username() {
