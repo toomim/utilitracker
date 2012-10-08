@@ -1,4 +1,8 @@
-store_data = (function () {
+if (typeof urg == "undefined") {
+    var urg = {};
+}
+
+urg.store_data = (function () {
   var self = {
     read : function(stg) {
        var opts = {};

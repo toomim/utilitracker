@@ -1,8 +1,3 @@
-var urg_data = store_data.read();
-// urg_data['user'] = 'edward';
-// store_data.write(urg_data);
-// console.log(store_data.read().user_name);
-
 // Options
 set_data('urls', ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com']);
 set_data('user', 'Debug_user');
@@ -20,24 +15,18 @@ function initial_urls_status(urls) {
 
 // retrieve data from localStorage
 function get_data(key) {
-	return JSON.parse(localStorage.getItem(key));
-	// var temp_data = store_data.read();
-	// return urg_data[key];
+	// return JSON.parse(localStorage.getItem(key));
+	var temp_data = urg.store_data.read();
+	return temp_data[key];
 }
 
 // store data to localStorage
 function set_data(key, value) {
-	localStorage.setItem(key, JSON.stringify(value));
-	// var temp_data = store_data.read();
-	// console.log(temp_data);
-	// temp_data[key] = value;
-	// store_data.write(temp_data);
+	// localStorage.setItem(key, JSON.stringify(value));	
+	var temp_data = urg.store_data.read();
+    temp_data[key] = value;
+	urg.store_data.write(temp_data);	
 }
-
-// test
-
-//
-
 
 
 // remove the monitoring urls from urls_status
@@ -58,21 +47,16 @@ function remove_urls_status(urls) {
 // Check to see if it's a new day/ over 24 hours
 function check_for_new_day (url) {
 	console.log('check_for_new_day() ', url);
-	console.log('before checking: ', get_data('urls_status'));
-
+	// console.log('before checking: ', get_data('urls_status'));
 	var today_time = new Date();
 	var status = get_data('urls_status');
 	for(var i = 0; i < status.length; i++) {
 		if(get_hostname(url).indexOf(status[i].url_pattern) != -1) {
-		
-			console.log('matched: ', i, ' url: ', status[i].url_pattern);
-			
+			// console.log('matched: ', i, ' url: ', status[i].url_pattern);			
 			var last_view = status[i].last_day_check;
 			if(last_view != null) {
-				// if the page is viewed before
-				
-				console.log('the page have been viewed before');
-				
+				// if the page is viewed before				
+				// console.log('the page have been viewed before');
 				if(today_time.getTime() - last_view >= (1000 * 60 * 60 * 24)) {
    		   			// If so, reset offers
    	 	  			console.log('reset offer for: ', url);
@@ -81,19 +65,15 @@ function check_for_new_day (url) {
        		 	}
 			} else {
 				// the page is not viewed before.
-				
-				console.log('the page have NOT been viewed before');
-				
+				// console.log('the page have NOT been viewed before');
 				status[i].last_day_check = today_time.getTime();
 			}
 		}
 	}	
 	set_data('urls_status', status);
-	
-	console.log('after checking: ', get_data('urls_status'));
-	
+	// console.log('after checking: ', get_data('urls_status'));
     // and go through all tabs and re-block what's needed    
-    console.log('should check tabs and reblock');   
+    // console.log('should check tabs and reblock');   
 }
 
 // "Main" function - checks for blocked sites whenever a tab is updated.
@@ -149,9 +129,9 @@ function is_blocked(url) {
     //    • The user has not given an offer yet
     //    • Or they did, and it was less than our offer (so we gave them
     //      our offer instead)
-	//  if return 0 --> unblock
-	//  if return 1 --> block, and let user enter their offer today
-	//  if return 2 --> block, user has already entered offer, redirect to count down page
+	//  if return 'pass' --> unblock
+	//  if return 'needs offer' --> block, and let user enter their offer today
+	//  if return 'blocked' --> block, user has already entered offer, redirect to count down page
     
     // check whether is a new day
     check_for_new_day(url);
@@ -191,17 +171,17 @@ function store_block_data(event, user, tab_url, value) {
 		// the user submit the data store in the sites
 		console.log('store submit value');
 		var status = get_data('urls_status');
-		console.log(status);
+		// console.log(status);
 		// alert('check console');
 		for(i = 0; i < status.length; i++) {
 			var ob = status[i];
 			if(tab_url.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
-				console.log(ob.url_pattern, ' is trying to go through');
+				// console.log(ob.url_pattern, ' is trying to go through');
 				status[i].user_offer = value;
 			}
 		}
 		set_data('urls_status', status);
-		console.log(status);
+		// console.log(status);
 	}
 
 	
