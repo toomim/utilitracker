@@ -22,7 +22,7 @@ function onload() {
 					   
 				var url = decodeURIComponent(kv[1]);
 				u.href = url;
-				u.appendChild(document.createTextNode(url));
+				u.appendChild(document.createTextNode(get_hostname(url)));
 			}
 		}
 	}

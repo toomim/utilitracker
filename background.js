@@ -151,7 +151,7 @@ function is_blocked(url) {
 	// check whether this url is blocked right now
 	// if the block_array is not empty, then the url is being blocked
 	var status = get_data('urls_status');
-	for(i = 0; i < status.length; i++) {
+	for(var i = 0; i < status.length; i++) {
 		var ob = status[i];
 		if(site.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
 			return true;
