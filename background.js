@@ -1,7 +1,7 @@
 var urg_data = store_data.read();
-// urg_data.user_name = 'edward';
+// urg_data['user'] = 'edward';
 // store_data.write(urg_data);
-
+// console.log(store_data.read().user_name);
 
 // Options
 set_data('urls', ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com']);
@@ -20,14 +20,18 @@ function initial_urls_status(urls) {
 
 // retrieve data from localStorage
 function get_data(key) {
-	var stg = localStorage;
-	return JSON.parse(stg.getItem(key));
+	return JSON.parse(localStorage.getItem(key));
+	// var temp_data = store_data.read();
+	// return urg_data[key];
 }
 
 // store data to localStorage
 function set_data(key, value) {
-	var stg = localStorage;
-	stg.setItem(key, JSON.stringify(value));
+	localStorage.setItem(key, JSON.stringify(value));
+	// var temp_data = store_data.read();
+	// console.log(temp_data);
+	// temp_data[key] = value;
+	// store_data.write(temp_data);
 }
 
 // test
@@ -175,7 +179,7 @@ function store_block_data(event, user, tab_url, value) {
 		console.log('store submit value');
 		var status = get_data('urls_status');
 		console.log(status);
-		alert('check console');
+		// alert('check console');
 		for(i = 0; i < status.length; i++) {
 			var ob = status[i];
 			if(tab_url.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {

@@ -11,11 +11,16 @@ store_data = (function () {
          opts = JSON.parse(stg['urg_data']);
        }
 
-	   if (! ("user_name" in opts))
+	   if (! ("user" in opts))
 		  opts.username = "default_user";
 		  
+	   if (! ("urls" in opts))
+		  opts.urls = [];
+				  
 	   if (! ("urls_status" in opts))
 		  opts.urls_status = {};
+		  
+		  
        return opts;
     },
 
@@ -24,7 +29,7 @@ store_data = (function () {
           stg = localStorage;
        } 
 
-       stg['settings'] = JSON.stringify(opts);
+       stg['urg_data'] = JSON.stringify(opts);
     }
   };
   return self;
