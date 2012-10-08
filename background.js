@@ -110,7 +110,7 @@ function tabs_created_listener(tab) {
 
 // helper function, check whether the tab is blocked, if so, block the tab
 function block_tab(tab) {
-	if (is_blocked(tab.url) == 1) {
+	if (is_blocked(tab.url) == 'needs offer') {
 		// Redirect tab to blocked.html
 		chrome.tabs.update(tab.id, 
 			{ 'url' : chrome.extension.getURL("blocked.html")
@@ -118,12 +118,13 @@ function block_tab(tab) {
 
         // Record the block event
 		store_block_data("block", get_username(), get_url(), null);
-	} else if (is_blocked(tab.url) == 2) {
-		// Redirect tab to blocked.html
+	} else if (is_blocked(tab.url) == 'blocked') {
+		// Redirect tab to countdown.html
 		chrome.tabs.update(tab.id, 
 			{ 'url' : chrome.extension.getURL("countdown.html")
               + "?url=" + escape(tab.url) });
-	}		
+	}
+    // Otherwise, it's time to pass through
 }
 
 // add listener when created the tab or updated the tab
@@ -163,13 +164,13 @@ function is_blocked(url) {
 		var ob = status[i];
 		if(site.indexOf(ob.url_pattern) != -1) {
 			if(ob.user_offer == null) {
-				return 1;
+				return 'needs offer';
 			} else {
-				return 2;
+				return 'blocked';
 			}	
 		}
 	}
-	return 0;
+	return 'pass';
 }
 
 function get_username() {
