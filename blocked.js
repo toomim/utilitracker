@@ -30,6 +30,9 @@ function onload() {
 	// Focuses on the text box
 	document.getElementsByName('valueInput')[0].focus();
 	
+	// show the original url in the iframe
+	document.getElementById('background_url').src = get_url();
+	
 	console.log('block.js loaded');
 }
 

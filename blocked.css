@@ -106,3 +106,15 @@ ul {
 ul li {
 	display: inline;
 }
+
+#background_url {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	frameborder: 0px;
+	scrolling: no;
+	opacity: 0.50;
+	z-index: -100;
+}
