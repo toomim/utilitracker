@@ -100,6 +100,7 @@ function block_tab(tab) {
 		store_block_data("block", get_username(), get_url(), null);
 	} else if (is_blocked(tab.url) == 'blocked') {
 		// Redirect tab to countdown.html
+        set_notification('thank you for your input!! the countdown is started');
 		chrome.tabs.update(tab.id, 
 			{ 'url' : chrome.extension.getURL("countdown.html")
               + "?url=" + escape(tab.url) });
@@ -159,6 +160,19 @@ function get_username() {
 
 function get_url() {
 	
+}
+
+function set_notification(words_to_be_shown) {
+    var notification = webkitNotifications.createNotification(
+        'icon.png',
+        'URG notification!',  // notification title
+        words_to_be_shown  // notification body text
+    );
+    notification.show();
+    
+    setTimeout(function() { 
+        notification.cancel(); 
+    }, 5000);
 }
 
 

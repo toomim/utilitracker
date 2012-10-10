@@ -36,7 +36,7 @@ function get_remaining_time(url) {
             		    var passed = now.getTime() - temp_data[i].last_day_check;
             		    console.log('passed: ' + passed);
             		    console.log('remaining' + (60*60*24*1000 - passed) / 1000);
-            		    return ((60*60*24*1000 - passed) / 1000);
+            		    return parseInt((60*60*24*1000 - passed) / 1000);
             		}
 		}
 		// cannot find it;
