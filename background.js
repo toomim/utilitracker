@@ -57,7 +57,7 @@ function check_for_new_day (url) {
 			if(last_view != null) {
 				// if the page is viewed before				
 				// console.log('the page have been viewed before');
-				if(today_time.getTime() - last_view >= (1000 * 60 * 60 * 24)) {
+				if(today_time.getTime() - last_view >= (1000 * 60 * 60)) {
    		   			// If so, reset offers
    	 	  			console.log('reset offer for: ', url);
 					status[i].user_offer = null;
@@ -101,9 +101,11 @@ function block_tab(tab) {
 	} else if (is_blocked(tab.url) == 'blocked') {
 		// Redirect tab to countdown.html
         set_notification('thank you for your input!! the countdown is started');
+        /*
 		chrome.tabs.update(tab.id, 
 			{ 'url' : chrome.extension.getURL("countdown.html")
               + "?url=" + escape(tab.url) });
+        */
 	}
     // Otherwise, it's time to pass through
 }
