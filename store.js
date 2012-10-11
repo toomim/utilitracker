@@ -24,6 +24,8 @@ urg.store_data = (function () {
 	   if (! ("urls_status" in opts))
 		  opts.urls_status = {};
 		  
+	   if (! ("real_money" in opts))
+	      opts.real_money = 'false';
 		  
        return opts;
     },
