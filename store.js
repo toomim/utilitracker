@@ -1,42 +1,44 @@
-if (typeof urg == "undefined") {
-    var urg = {};
-}
+var store = {
+    read : function() {
+        var stg = localStorage;
 
-urg.store_data = (function () {
-  var self = {
-    read : function(stg) {
-       var opts = {};
+        // Load options from localStorage
+        var opts = JSON.parse(stg['urg_data'] || '{}')
 
-       if (stg === undefined) {
-         stg = localStorage;
-       }
-
-       if ("urg_data" in stg) {
-         opts = JSON.parse(stg['urg_data']);
-       }
-
-	   if (! ("user" in opts))
-		  opts.username = "default_user";
+        // Now replace defaults that haven't been set yet
+	    if (! ("user" in opts))
+		    opts.username = "default_user";
 		  
-	   if (! ("urls" in opts))
-		  opts.urls = [];
+	    if (! ("urls" in opts))
+		    opts.urls = [];
 				  
-	   if (! ("urls_status" in opts))
-		  opts.urls_status = {};
+	    if (! ("urls_status" in opts))
+		    opts.urls_status = {};
 		  
-	   if (! ("real_money" in opts))
-	      opts.real_money = 'false';
+	    if (! ("real_money" in opts))
+	        opts.real_money = 'false';
 		  
-       return opts;
+        return opts;
     },
 
     write : function(opts, stg) {
-       if (stg === undefined) {
-          stg = localStorage;
-       } 
+        var stg = localStorage;
 
-       stg['urg_data'] = JSON.stringify(opts);
+        stg['urg_data'] = JSON.stringify(opts);
     }
-  };
-  return self;
-})();
+};
+
+// retrieve data from localStorage
+function get_data(key) {
+	// return JSON.parse(localStorage.getItem(key));
+	var temp_data = store.read();
+	return temp_data[key];
+}
+
+// store data to localStorage
+function set_data(key, value) {
+	// localStorage.setItem(key, JSON.stringify(value));	
+	var temp_data = store.read();
+    temp_data[key] = value;
+	store.write(temp_data);	
+}

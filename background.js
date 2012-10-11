@@ -13,21 +13,6 @@ function initial_urls_status(urls) {
 	set_data('urls_status', sites);
 }
 
-// retrieve data from localStorage
-function get_data(key) {
-	// return JSON.parse(localStorage.getItem(key));
-	var temp_data = urg.store_data.read();
-	return temp_data[key];
-}
-
-// store data to localStorage
-function set_data(key, value) {
-	// localStorage.setItem(key, JSON.stringify(value));	
-	var temp_data = urg.store_data.read();
-    temp_data[key] = value;
-	urg.store_data.write(temp_data);	
-}
-
 
 // remove the monitoring urls from urls_status
 function remove_urls_status(urls) {

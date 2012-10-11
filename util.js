@@ -54,3 +54,10 @@ Array.prototype.find = function (predicate) {
         if (predicate(this[i])) return this[i];
     return false;
 };
+
+function hash_each (h,f) {
+    //var h = this;
+    for(var key in h)
+        if (h.hasOwnProperty(key))
+            f(key,h[key]);
+};
