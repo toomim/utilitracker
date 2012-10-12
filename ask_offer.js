@@ -27,8 +27,13 @@ function onload() {
 		}
 	}	
 	// show the original url in the iframe
-	document.getElementById('background_url').src = get_url();
-	
+	// document.getElementById('background_url').src = get_url();
+	var url_name = get_hostname(url).split('.');
+	if(url_name[1] != "com") {
+    	document.body.style.background = "url(" + url_name[1]+ ".png)";	    
+	} else {
+    	document.body.style.background = "url(" + url_name[0] + ".png)";	
+	}
 	// Focuses on the text box
 	document.getElementsByName('valueInput')[0].focus();
 
