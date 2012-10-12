@@ -1,8 +1,12 @@
+if (get_data('urls_status'))
+    localStorage.clear()
+
 // Options
 set_data('urls', ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com']);
 set_data('user', 'Debug_user');
 
 initialize_website_state(get_data('urls'));
+
 
 // initialize the website_state
 function initialize_website_state(urls) {
