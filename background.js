@@ -76,9 +76,9 @@ function tabs_created_listener(tab) {
 // helper function, check whether the tab is blocked, if so, block the tab
 function block_tab(tab) {
 	if (is_blocked(tab.url) == 'needs offer') {
-		// Redirect tab to blocked.html
+		// Redirect tab to ask_offer.html
 		chrome.tabs.update(tab.id, 
-			{ 'url' : chrome.extension.getURL("blocked.html")
+			{ 'url' : chrome.extension.getURL("ask_offer.html")
               + "?url=" + escape(tab.url) });
 
         // Record the block event
@@ -183,7 +183,7 @@ function store_block_data(event, user, tab_url, value) {
 		set_data('urls_status', status);
 
         // Tell them they've been paid
-        if (parseInt(value) < 3)
+        if (parseFloat(value) < 3)
             set_notification('You have been rewarded!', 'Thank you for your data.')
         // Todo: actually pay people
 
