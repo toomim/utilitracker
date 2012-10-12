@@ -85,7 +85,7 @@ function block_tab(tab) {
 		store_block_data("block", get_username(), get_url(), null);
 	} else if (is_blocked(tab.url) == 'blocked') {
 		// Redirect tab to countdown.html
-        set_notification('thank you for your input!! the countdown is started');
+        //set_notification('thank you for your input!! the countdown is started');
         /*
 		chrome.tabs.update(tab.id, 
 			{ 'url' : chrome.extension.getURL("countdown.html")
@@ -149,11 +149,11 @@ function get_url() {
 	
 }
 
-function set_notification(words_to_be_shown) {
+function set_notification(title, body) {
     var notification = webkitNotifications.createNotification(
         'icon.png',
-        'URG notification!',  // notification title
-        words_to_be_shown  // notification body text
+        title,  // notification title
+        body  // notification body text
     );
     notification.show();
     
@@ -161,7 +161,6 @@ function set_notification(words_to_be_shown) {
         notification.cancel(); 
     }, 5000);
 }
-
 
 // Stores url, time/date of block in localStorage
 function store_block_data(event, user, tab_url, value) {
@@ -174,7 +173,7 @@ function store_block_data(event, user, tab_url, value) {
 		var status = get_data('urls_status');
 		// console.log(status);
 		// alert('check console');
-		for(i = 0; i < status.length; i++) {
+		for(var i = 0; i < status.length; i++) {
 			var ob = status[i];
 			if(tab_url.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
 				// console.log(ob.url_pattern, ' is trying to go through');
@@ -182,6 +181,12 @@ function store_block_data(event, user, tab_url, value) {
 			}
 		}
 		set_data('urls_status', status);
+
+        // Tell them they've been paid
+        if (parseInt(value) < 3)
+            set_notification('You have been rewarded!', 'Thank you for your data.')
+        // Todo: actually pay people
+
 		// console.log(status);
 	}
 

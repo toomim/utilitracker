@@ -31,8 +31,7 @@ var store = {
 // retrieve data from localStorage
 function get_data(key) {
 	// return JSON.parse(localStorage.getItem(key));
-	var temp_data = store.read();
-	return temp_data[key];
+	return store.read()[key];
 }
 
 // store data to localStorage
@@ -42,3 +41,5 @@ function set_data(key, value) {
     temp_data[key] = value;
 	store.write(temp_data);	
 }
+
+console.log('Loaded store.js')

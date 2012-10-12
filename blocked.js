@@ -38,7 +38,8 @@ function onload() {
 // Submits the value inputted by the user to the server. 
 function submit() {
 	if(is_valid_value()) {
-		store_block_data("value submitted", get_username(), get_url(), document.getElementsByName("valueInput")[0].value);	
+        store_block_data("value submitted", get_username(), get_url(),
+                         document.getElementsByName("valueInput")[0].value);
 		unblock();
 	} else {
 		document.getElementsByName('valueInput')[0].value = "";
