@@ -1,5 +1,3 @@
-console.log('Loading util.js')
-
 if(! Array.prototype.map ) {
     Array.prototype.map = function (fun) {
         var len = this.length;
@@ -65,7 +63,6 @@ function hash_each (h,f) {
 };
 
 
-
 // Storage Read and Write
 
 var store = {
@@ -82,11 +79,11 @@ var store = {
 	    if (! ("urls" in opts))
 		    opts.urls = [];
 				  
-	    if (! ("urls_status" in opts))
-		    opts.urls_status = {};
+	    if (! ("website_state" in opts))
+		    opts.website_state = {};
 		  
 	    if (! ("real_money" in opts))
-	        opts.real_money = 'false';
+	        opts.real_money = false;
 		  
         return opts;
     },
@@ -111,5 +108,3 @@ function set_data(key, value) {
     temp_data[key] = value;
 	store.write(temp_data);	
 }
-
-console.log('Loaded util and store')

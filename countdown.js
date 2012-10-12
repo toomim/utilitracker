@@ -27,7 +27,7 @@ function onload() {
 }
 
 function get_remaining_time(url) {
-		var temp_data = background.get_data('urls_status');
+		var temp_data = background.get_data('website_state');
 		console.log(temp_data);
 		for(var i = 0; i < temp_data.length; i++) {
             		if(url.indexOf(temp_data[i].url_pattern) != -1) {

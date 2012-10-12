@@ -1,64 +1,62 @@
-console.log('Loading background.js')
-
 // Options
 set_data('urls', ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com']);
 set_data('user', 'Debug_user');
 
-initial_urls_status(get_data('urls'));
+initialize_website_state(get_data('urls'));
 
-// initialize the urls_status
-function initial_urls_status(urls) {
+// initialize the website_state
+function initialize_website_state(urls) {
 	// State variables
 	var sites = urls.map(function (url) {
 	    return {url_pattern: url, user_offer: null, last_day_check: null}; 
 	});
-	set_data('urls_status', sites);
+	set_data('website_state', sites);
 }
 
+// remove the monitoring urls from website_state
+function remove_website_state(urls) {
+    var new_website_state = get_data('website_state').filter(
+        // Keep this one if it doesn't match any of the urls
+        function (website) {
+            return urls.indexOf(website.url_pattern) != -1; })
+    set_data('website_state', new_website_state);
+}
 
-// remove the monitoring urls from urls_status
-function remove_urls_status(urls) {
-	for(var i = 0; i < urls.length; i++) {
-		var le = get_data('urls_status').length;
-		var status = get_data('urls_status');
-		for(var j = 0; j < le; j++) {
-			if(status[j].url_pattern == urls[i]) {
-				status.splice(j, 1);
-				le -= 1;
-			}
-		}
-		set_data('urls_status', status);
-	}
+function find_website_state(url) {
+    url = get_hostname(url) || url;
+    return get_data('website_state').find(function (site) {
+        return url.indexOf(site.url_pattern) != -1;
+    })
 }
 
 // Check to see if it's a new day/ over 24 hours
 function check_for_new_day (url) {
-	console.log('check_for_new_day() ', url);
-	// console.log('before checking: ', get_data('urls_status'));
+	// console.log('before checking: ', get_data('website_state'));
 	var today_time = new Date();
-	var status = get_data('urls_status');
-	for(var i = 0; i < status.length; i++) {
-		if(get_hostname(url).indexOf(status[i].url_pattern) != -1) {
-			// console.log('matched: ', i, ' url: ', status[i].url_pattern);			
-			var last_view = status[i].last_day_check;
+	var states = get_data('website_state');
+    states.each(function (state) {
+		if(get_hostname(url).indexOf(state.url_pattern) != -1) {
+			// console.log('matched: ', i, ' url: ', state.url_pattern);			
+			var last_view = state.last_day_check;
 			if(last_view != null) {
 				// if the page is viewed before				
 				// console.log('the page have been viewed before');
 				if(today_time.getTime() - last_view >= (1000 * 60 * 60)) {
    		   			// If so, reset offers
    	 	  			console.log('reset offer for: ', url);
-					status[i].user_offer = null;
-					status[i].last_day_check = today_time.getTime();
+					state.user_offer = null;
+					state.last_day_check = today_time.getTime();
        		 	}
 			} else {
 				// the page is not viewed before.
 				// console.log('the page have NOT been viewed before');
-				status[i].last_day_check = today_time.getTime();
+				state.last_day_check = today_time.getTime();
 			}
 		}
-	}	
-	set_data('urls_status', status);
-	// console.log('after checking: ', get_data('urls_status'));
+    });
+
+	set_data('website_state', states);
+	// console.log('after checking: ', get_data('website_state'));
     // and go through all tabs and re-block what's needed    
     // console.log('should check tabs and reblock');   
 }
@@ -67,43 +65,46 @@ function check_for_new_day (url) {
 // Redirects to our block page. 
 
 function tabs_update_listener(tab_id, change_info, tab) {
-    console.log('tab_updated ', tab.id);    
-	block_tab(tab);	
-}
-function tabs_created_listener(tab) {
-	console.log('tab_created', tab.id);
-	block_tab(tab);
-}
+    // check whether is a new day
+    check_for_new_day(tab.url);
+        
+	// Get the blocked state of the url
+    var site = find_website_state(tab.url)
 
-// helper function, check whether the tab is blocked, if so, block the tab
-function block_tab(tab) {
-	if (is_blocked(tab.url) == 'needs offer') {
+    // If we don't care about this site, let's go away
+    if (!site) return;
+
+    // If this site needs an offer, ask for it
+    if (site.user_offer == null) {
 		// Redirect tab to ask_offer.html
 		chrome.tabs.update(tab.id, 
 			{ 'url' : chrome.extension.getURL("ask_offer.html")
               + "?url=" + escape(tab.url) });
 
         // Record the block event
-		store_block_data("block", get_username(), get_url(), null);
-	} else if (is_blocked(tab.url) == 'blocked') {
+		store_block_data("ask offer", get_username(), tab.url, null);
+    }
+
+	// Otherwise, we have a user's offer for this
+    // If the user's offer is less than ours, then we pay them and block
+    var our_offer = 3; // Temporary until we get it from the server
+    if (site.user_offer < our_offer) {
 		// Redirect tab to countdown.html
-        //set_notification('thank you for your input!! the countdown is started');
-        /*
-		chrome.tabs.update(tab.id, 
-			{ 'url' : chrome.extension.getURL("countdown.html")
-              + "?url=" + escape(tab.url) });
-        */
+        if (get_data('real_money')) {
+		    chrome.tabs.update(tab.id, 
+			                   { 'url' : chrome.extension.getURL("countdown.html")
+                                 + "?url=" + escape(tab.url) });
+        }
 	}
-    // Otherwise, it's time to pass through
+}
+function tabs_created_listener(tab) {
+	console.log('tab_created', tab.id);
+	tabs_update_listener(null, null, tab);
 }
 
 // add listener when created the tab or updated the tab
 chrome.tabs.onUpdated.addListener(tabs_update_listener);
 chrome.tabs.onCreated.addListener(tabs_created_listener);
-
-chrome.tabs.onRemoved.addListener(function(tab_id, remove_info) {
-	console.log('tab_removed ', tab_id);
-});
 
 
 // Extracts hostname from the URL
@@ -112,43 +113,8 @@ function get_hostname(str) {
 	var exp = str.split('//')[1].split('/')[0];
 	return exp;
 }
-
-function is_blocked(url) {
-
-    //  We should show the block page if:
-    //    • The user has not given an offer yet
-    //    • Or they did, and it was less than our offer (so we gave them
-    //      our offer instead)
-	//  if return 'pass' --> unblock
-	//  if return 'needs offer' --> block, and let user enter their offer today
-	//  if return 'blocked' --> block, user has already entered offer, redirect to count down page
-    
-    // check whether is a new day
-    check_for_new_day(url);
-        
-    var site = get_hostname(url);
-	// check whether this url is blocked right now
-	// if the block_array is not empty, then the url is being blocked
-	var status = get_data('urls_status');
-	for(var i = 0; i < status.length; i++) {
-		var ob = status[i];
-		if(site.indexOf(ob.url_pattern) != -1) {
-			if(ob.user_offer == null) {
-				return 'needs offer';
-			} else {
-				return 'blocked';
-			}	
-		}
-	}
-	return 'pass';
-}
-
 function get_username() {
 	return get_data('user');
-}
-
-function get_url() {
-	
 }
 
 function set_notification(title, body) {
@@ -172,7 +138,7 @@ function store_block_data(event, user, tab_url, value) {
 	if(event == 'value submitted') {
 		// the user submit the data store in the sites
 		console.log('store submit value');
-		var status = get_data('urls_status');
+		var status = get_data('website_state');
 		// console.log(status);
 		// alert('check console');
 		for(var i = 0; i < status.length; i++) {
@@ -182,7 +148,7 @@ function store_block_data(event, user, tab_url, value) {
 				status[i].user_offer = value;
 			}
 		}
-		set_data('urls_status', status);
+		set_data('website_state', status);
 
         // Tell them they've been paid
         if (parseFloat(value) < 3)

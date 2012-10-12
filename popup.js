@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", onload);
 var background = chrome.extension.getBackgroundPage();
 function onload() {
-	var status = background.get_data("urls_status");
+	var status = background.get_data("website_state");
 	var ul = document.createElement('ul');
 	for(var i = 0; i < status.length; i++) {
 	    var tmp = document.createElement('li'); 
