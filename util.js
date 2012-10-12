@@ -76,11 +76,8 @@ var store = {
 	    if (! ("user" in opts))
 		    opts.username = "default_user";
 		  
-	    if (! ("urls" in opts))
-		    opts.urls = [];
-				  
 	    if (! ("website_state" in opts))
-		    opts.website_state = {};
+		    opts.website_state = null;
 		  
 	    if (! ("real_money" in opts))
 	        opts.real_money = false;

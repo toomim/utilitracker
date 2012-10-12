@@ -2,20 +2,22 @@ if (get_data('urls_status'))
     localStorage.clear()
 
 // Options
-set_data('urls', ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com']);
+var urls = ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com'];
 set_data('user', 'Debug_user');
-
-initialize_website_state(get_data('urls'));
 
 
 // initialize the website_state
 function initialize_website_state(urls) {
-	// State variables
-	var sites = urls.map(function (url) {
-	    return {url_pattern: url, user_offer: null, last_day_check: null}; 
-	});
-	set_data('website_state', sites);
+    var state = get_data('website_state')
+    if (!state || state.length < 1)
+        set_data('website_state',
+                 urls.map(function (url) {
+	                 return {url_pattern: url,
+                             user_offer: null,
+                             last_day_check: null}; 
+	             }));
 }
+initialize_website_state(urls);
 
 // remove the monitoring urls from website_state
 function remove_website_state(urls) {
@@ -26,10 +28,13 @@ function remove_website_state(urls) {
     set_data('website_state', new_website_state);
 }
 
+function url_matches(url, website_state) {
+    url = get_hostname(url) || url
+    return url.indexOf(website_state.url_pattern) != -1
+}
 function find_website_state(url) {
-    url = get_hostname(url) || url;
     return get_data('website_state').find(function (site) {
-        return url.indexOf(site.url_pattern) != -1;
+        return url_matches(url, site)
     })
 }
 
@@ -39,7 +44,7 @@ function check_for_new_day (url) {
 	var today_time = new Date();
 	var states = get_data('website_state');
     states.each(function (state) {
-		if(get_hostname(url).indexOf(state.url_pattern) != -1) {
+		if(url_matches(url, state)) {
 			// console.log('matched: ', i, ' url: ', state.url_pattern);			
 			var last_view = state.last_day_check;
 			if(last_view != null) {
