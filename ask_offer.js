@@ -32,7 +32,7 @@ function onload() {
 	// Focuses on the text box
 	document.getElementsByName('valueInput')[0].focus();
 
-	console.log('block.js loaded');
+	console.log('ask_offer.js loaded');
 }
 
 // Submits the value inputted by the user to the server. 

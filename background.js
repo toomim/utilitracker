@@ -1,3 +1,5 @@
+console.log('Loading background.js')
+
 // Options
 set_data('urls', ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com']);
 set_data('user', 'Debug_user');

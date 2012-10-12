@@ -1,3 +1,5 @@
+console.log('Loading util.js')
+
 if(! Array.prototype.map ) {
     Array.prototype.map = function (fun) {
         var len = this.length;
@@ -109,3 +111,5 @@ function set_data(key, value) {
     temp_data[key] = value;
 	store.write(temp_data);	
 }
+
+console.log('Loaded util and store')
