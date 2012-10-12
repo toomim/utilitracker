@@ -11,9 +11,12 @@
 		"default_popup": "popup.html"
 	},
 	"permissions": [
+		"http://*/*",
+		"webRequest",
+		"webRequestBlocking",
 		"tabs", 
 		"storage",
-	       "notifications"
+		"notifications"
 	],
 	"web_accessible_resources": [
 		"icon.png"

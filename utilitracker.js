@@ -111,9 +111,46 @@ function tabs_created_listener(tab) {
 	tabs_update_listener(null, null, tab);
 }
 
+function test_listener(details) {
+    console.log('test_listener');
+    // check whether is a new day
+    check_for_new_day(details.url);
+	// Get the blocked state of the url
+    var site = find_website_state(details.url);
+    // If we don't care about this site, let's go away
+    if (!site) {
+        return {cancel: false};
+    } else if (site.user_offer == null) {
+        // If this site needs an offer, ask for it
+		// Redirect tab to ask_offer.html
+		return { redirectUrl : chrome.extension.getURL("ask_offer.html")
+              + "?url=" + escape(details.url) };
+
+        // Record the block event
+		store_block_data("ask offer", get_username(), details.url, null);
+    }
+
+	// Otherwise, we have a user's offer for this
+    // If the user's offer is less than ours, then we pay them and block
+    var our_offer = 3; // Temporary until we get it from the server
+    if (site.user_offer < our_offer) {
+		// Redirect tab to countdown.html
+        if (get_data('real_money')) {
+            return { 'url' : chrome.extension.getURL("countdown.html")
+              + "?url=" + escape(tab.url) };
+        }
+	}    
+}
+
+// add listener before request
+chrome.webRequest.onBeforeRequest.addListener(
+    test_listener, 
+    {urls: ['<all_urls>']}, 
+    ['blocking']);
+
 // add listener when created the tab or updated the tab
-chrome.tabs.onUpdated.addListener(tabs_update_listener);
-chrome.tabs.onCreated.addListener(tabs_created_listener);
+// chrome.tabs.onUpdated.addListener(tabs_update_listener);
+// chrome.tabs.onCreated.addListener(tabs_created_listener);
 
 
 // Extracts hostname from the URL
