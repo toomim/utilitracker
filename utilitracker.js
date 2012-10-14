@@ -164,6 +164,7 @@ function get_username() {
 }
 
 function set_notification(title, body) {
+    /*
     var notification = webkitNotifications.createNotification(
         'icon.png',
         title,  // notification title
@@ -174,6 +175,18 @@ function set_notification(title, body) {
     setTimeout(function() { 
         notification.cancel(); 
     }, 5000);
+    */
+    
+    var window_id;
+    chrome.windows.create({'url':'notification.html', 'type':'popup', 'height':200, 'width':300}, function(window) {
+        window_id = window.id;
+        chrome.windows.update(window_id, {'drawAttention':true, 'focused':true});
+
+        setTimeout(function() {
+            alert('good');
+            chrome.windows.remove(window.id, function() {})
+        }, 3000);
+    });    
 }
 
 // Stores url, time/date of block in localStorage
