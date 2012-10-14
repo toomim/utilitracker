@@ -73,16 +73,7 @@ a {
 	font-weight: bold;
 }
 
-.valueInputArea {
-	background-color: grey;
-	color: #000000;
-	font-size: 20pt;
-	font-weight: bold;
-	border: 0px;
-	padding: 1pt;
-}
-
-.valueInputButton input {
+input {
 	font-size: 20pt;
 	font-weight: bold;
 	border: 0px;
@@ -91,15 +82,6 @@ a {
 	padding-bottom: 0px;
 	padding-left: 2px;
 	padding-right: 2px;
-}
-
-ul {
-	list-style-type: none;
-	padding: 20px; margin: 0;
-}
-
-ul li {
-	display: inline;
 }
 
 #background_url {
