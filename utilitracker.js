@@ -118,14 +118,17 @@ function tabs_created_listener(tab) {
 
 function test_listener(details) {
     console.log('test_listener');
-    // check whether is a new day
-    check_for_new_day(details.url);
 	// Get the blocked state of the url
     var site = find_website_state(details.url);
     // If we don't care about this site, let's go away
     if (!site) {
         return {cancel: false};
-    } else if (site.user_offer == null) {
+    }
+    
+    // check whether is a new day
+    check_for_new_day(details.url);
+
+    if (site.user_offer == null) {
         // If this site needs an offer, ask for it
 		// Redirect tab to ask_offer.html
 		return { redirectUrl : chrome.extension.getURL("ask_offer.html")
