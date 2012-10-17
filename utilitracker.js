@@ -34,8 +34,8 @@ function url_matches(url, website_state) {
     return url.indexOf(website_state.url_pattern) != -1
 }
 /** The second `state' parameter is optional */
-function find_website_state(url, state) {
-    state = state || get_data('website_state')
+function find_website_state(url, optional_state) {
+    var state = optional_state || get_data('website_state')
     return state.find(function (site) {
         return url_matches(url, site)
     })
