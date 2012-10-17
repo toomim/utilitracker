@@ -9,7 +9,7 @@ body {
 #tint {
 	width: 100%;
 	height: 100%;
-	background-color: rgba(25, 25, 25, .85);
+	background-color: rgba(25, 25, 25, .70);
 	position: absolute;
 	top: 0; left: 0;
 }
@@ -20,7 +20,7 @@ body {
 	margin-top: 10%;
 	padding: 20px 40px;
 	background-color: #444;
-	opacity: 1;
+	opacity: 0.8;
 	color: #ffffff;
 }
 
