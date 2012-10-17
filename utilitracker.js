@@ -36,7 +36,6 @@ function url_matches(url, website_state) {
 /** The second `state' parameter is optional */
 function find_website_state(url, optional_state) {
     var state = optional_state || get_data('website_state');
-    // if there is no data in the localStorage, return false
     if(!state) return false;
     return state.find(function (site) {
         return url_matches(url, site)

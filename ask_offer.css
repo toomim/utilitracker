@@ -9,7 +9,7 @@ body {
 #tint {
 	width: 100%;
 	height: 100%;
-	background-color: rgba(25, 25, 25, .70);
+	background-color: rgba(20, 20, 20, .90);
 	position: absolute;
 	top: 0; left: 0;
 }
@@ -19,8 +19,8 @@ body {
 	margin-right: auto;
 	margin-top: 10%;
 	padding: 20px 40px;
-	background-color: #444;
-	opacity: 0.8;
+	/*background-color: #444;
+	opacity: 0.8;*/
 	color: #ffffff;
 }
 
@@ -53,16 +53,6 @@ h1 {
 	font-size: 50pt;
 }
 
-#rule {
-	height: 24px;
-	color: black;
-}
-
-hr {
-	background-color: black;
-	width: 99%;
-}
-
 a {
 	color: #ffffff;
 }
@@ -75,6 +65,7 @@ a {
 
 input {
 	font-size: 20pt;
+	font-family: helvetia, arial;
 	font-weight: bold;
 	border: 0px;
 	margin: 0px;
@@ -96,3 +87,4 @@ input {
 	/* -webkit-filter: blur(1px); */
 	opacity: 0.50;
 }
+
