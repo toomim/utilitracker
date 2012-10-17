@@ -2,20 +2,21 @@ if (get_data('urls_status'))
     localStorage.clear()
 
 // Options
-var urls = ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com'];
+var urls = ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com',
+            'quora.com', 'news.ycombinator.com', 'twitter.com',
+            'google.com', 'friendbo.com', 'youtube.com'];
 set_data('user', 'Debug_user');
 
 
 // initialize the website_state
 function initialize_website_state(urls) {
     var state = get_data('website_state')
-    if (!state || state.length < 1)
-        set_data('website_state',
-                 urls.map(function (url) {
-	                 return {url_pattern: url,
-                             user_offer: null,
-                             last_day_check: null}; 
-	             }));
+    set_data('website_state',
+             urls.map(function (url) {
+                 return find_website_state(url, state) ||
+                     {url_pattern: url,
+                      user_offer: null,
+                      last_day_check: null} }))
 }
 initialize_website_state(urls);
 
@@ -32,8 +33,10 @@ function url_matches(url, website_state) {
     url = get_hostname(url) || url
     return url.indexOf(website_state.url_pattern) != -1
 }
-function find_website_state(url) {
-    return get_data('website_state').find(function (site) {
+/** The second `state' parameter is optional */
+function find_website_state(url, state) {
+    state = state || get_data('website_state')
+    return state.find(function (site) {
         return url_matches(url, site)
     })
 }
@@ -156,8 +159,14 @@ chrome.webRequest.onBeforeRequest.addListener(
 // Extracts hostname from the URL
 // eg: https://www.google.com/webhp?hl=en&tab=nw&authuser=0 -> www.google.com
 function get_hostname(str) {
-	var exp = str.split('//')[1].split('/')[0];
-	return exp;
+    // Split at the http:// part
+    var tmp = str.split('//')
+
+    // If the // existed, grab the second part
+    tmp = (tmp.length > 1) ? tmp[1] : tmp[0]
+
+    // Now grab everything up to the first /
+	return tmp.split('/')[0];
 }
 function get_username() {
 	return get_data('user');
