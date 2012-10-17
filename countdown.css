@@ -1,3 +1,17 @@
+body {
+	background-color: #3d3d3d;
+	margin: 30px;
+	font-family: helvetica, arial;
+	color: #fff;
+	font-size: 31px;
+}
+
+a {color: #fff;}
+p {
+	width: 500px;
+}
+
 #remaining_time {
-    font-size: 80pt;
+    font-size: 70pt;
+	font-family: monaco, courier;
 }

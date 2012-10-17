@@ -142,7 +142,8 @@ function test_listener(details) {
     var our_offer = 3; // Temporary until we get it from the server
     if (site.user_offer < our_offer) {
 		// Redirect tab to countdown.html
-        if (get_data('real_money')) {
+		// get_data('real_money')
+        if (true) {
             return { 'url' : chrome.extension.getURL("countdown.html")
               + "?url=" + escape(tab.url) };
         }
