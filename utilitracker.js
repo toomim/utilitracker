@@ -35,7 +35,7 @@ function url_matches(url, website_state) {
 }
 /** The second `state' parameter is optional */
 function find_website_state(url, optional_state) {
-    var state = optional_state || get_data('website_state')
+    var state = optional_state || get_data('website_state');
     return state.find(function (site) {
         return url_matches(url, site)
     })
