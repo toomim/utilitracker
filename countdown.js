@@ -25,7 +25,7 @@ function onload() {
         countdown(remain_time);
 	}
 
-    document.getElementById('our_offer').innerHTML = get_today_offer(url);
+    document.getElementById('our_offer').innerHTML = get_today_offer(url).toFixed(2);
     document.getElementById('reset_data').onclick = clear_data;
     
     // add listener skip the countdown page (for sneaky experts like us)
