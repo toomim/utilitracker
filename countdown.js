@@ -16,15 +16,16 @@ function onload() {
 				u.href = url;
 				u.appendChild(document.createTextNode(background.get_hostname(url)));
 			}
-		}
-		
-		// set the remaining time div
-		var remain_time = get_remaining_time(url);
-		if(remain_time != 'not clicked') {
-            countdown(remain_time);
-		}
+		}		
 	}	
 
+	// set the remaining time div
+	var remain_time = get_remaining_time(url);
+	if(remain_time != 'not clicked') {
+        countdown(remain_time);
+	}
+
+    document.getElementById('our_offer').innerHTML = get_today_offer(url);
     document.getElementById('reset_data').onclick = clear_data;
     
     // add listener skip the countdown page (for sneaky experts like us)

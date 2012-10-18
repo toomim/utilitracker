@@ -6,7 +6,6 @@ var urls = ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com',
             'quora.com', 'news.ycombinator.com', 'twitter.com',
             'google.com', 'friendbo.com', 'youtube.com'];
 set_data('user', 'Debug_user');
-var our_offer = 15; // Temporary until we get it from the server
 
 // initialize the website_state
 function initialize_website_state(urls) {
@@ -16,6 +15,8 @@ function initialize_website_state(urls) {
                  return find_website_state(url, state) ||
                      {url_pattern: url,
                       user_offer: null,
+                      our_offer: null,
+                      offer_day_check:null,
                       last_day_check: null} }))
 }
 initialize_website_state(urls);
@@ -40,6 +41,31 @@ function find_website_state(url, optional_state) {
     return state.find(function (site) {
         return url_matches(url, site)
     })
+}
+
+function get_today_offer(url) {
+    var states = get_data('website_state');
+    var result;
+    states.each(function (state) {
+		if(url_matches(url, state)) {
+            // check whether the our_offer is check in a new day
+            var last_date = new Date(state.offer_day_check);
+            var today_date = new Date();
+            console.log('last_date: ' , last_date.toDateString());
+            console.log('today_date: ' , today_date.toDateString());
+            
+            if(last_date.toDateString() == today_date.toDateString()) {
+                result = state.our_offer;
+            } else {
+                state.offer_day_check = today_date.getTime();
+                result = Math.floor((Math.random()*40)+1);
+                state.our_offer = result;
+            }
+		}
+    });
+    set_data('website_state', states);
+    
+    return result;
 }
 
 // Check to see if it's a new day/ over 24 hours
@@ -139,7 +165,7 @@ function test_listener(details) {
 
 	// Otherwise, we have a user's offer for this
     // If the user's offer is less than ours, then we pay them and block
-    if (site.user_offer < our_offer) {
+    if (site.user_offer < get_today_offer(details.url)) {
 		// Redirect tab to countdown.html
 		// get_data('real_money')
         if (true) {

@@ -14,11 +14,15 @@ function load_visited_sites() {
     states.each(function (state) {
 		if(state.user_offer != null) {
         	var tmp = document.createElement('li'); 
-        	tmp.innerHTML = state.url_pattern + ' user_offer: ' + state.user_offer + ' last_day_check: ' + state.last_day_check;
+        	tmp.innerHTML = state.url_pattern + ' user_offer: ' + state.user_offer + ' our_offer: ' + state.our_offer + ' last_day_check: ' + state.last_day_check;
         	ul.appendChild(tmp);		
 		}
     });
-	document.getElementById('data_part').appendChild(ul);    
+    if(ul.childElementCount) {
+        document.getElementById('data_part').appendChild(ul);
+    } else {
+        document.getElementById('title_part').innerHTML = 'no website visited yet';
+    }
 }
 
 
