@@ -49,12 +49,11 @@ function get_today_offer(url) {
     states.each(function (state) {
 		if(url_matches(url, state)) {
             // check whether the our_offer is check in a new day
-            var last_date = new Date(state.offer_day_check);
             var today_date = new Date();
-            console.log('last_date: ' , last_date.toDateString());
-            console.log('today_date: ' , today_date.toDateString());
+            // console.log('last_date: ' , state.offer_day_check);
+            // console.log('today_date: ' , today_date.getTime());
             
-            if(last_date.toDateString() == today_date.toDateString()) {
+            if(today_date.getTime() - state.offer_day_check < (1000*60*60*24)) {
                 result = state.our_offer;
             } else {
                 state.offer_day_check = today_date.getTime();
