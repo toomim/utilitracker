@@ -54,11 +54,10 @@ function countdown(total_seconds) {
 }
 
 function oneSecond() {
-    var hrs = parseInt(document.getElementById('remaining_hours').innerHTML);
-	var min = parseInt(document.getElementById('remaining_minutes').innerHTML);
-	var sec = parseInt(document.getElementById('remaining_seconds').innerHTML);
+    var hrs = parseFloat(document.getElementById('remaining_hours').innerHTML);
+	var min = parseFloat(document.getElementById('remaining_minutes').innerHTML);
+	var sec = parseFloat(document.getElementById('remaining_seconds').innerHTML);
 	var total_seconds = (hrs * 60 + min) * 60 + sec;
-	console.log(total_seconds);
 	if (total_seconds <= 1) {
 		// time's up!
 		clearInterval(timer);
@@ -70,5 +69,10 @@ function oneSecond() {
 	}
 	document.getElementById('remaining_hours').innerHTML = parseInt(((total_seconds / 60) / 60) % 24);
 	document.getElementById('remaining_minutes').innerHTML = parseInt((total_seconds / 60) % 60);
-	document.getElementById('remaining_seconds').innerHTML = total_seconds % 60;
+	var seconds = total_seconds % 60;
+	if(seconds / 10 < 1) {
+    	document.getElementById('remaining_seconds').innerHTML = '0' + seconds;
+	}  else {
+    	document.getElementById('remaining_seconds').innerHTML = seconds;
+    }
 }

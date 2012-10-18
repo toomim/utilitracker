@@ -100,7 +100,7 @@ function tabs_update_listener(tab_id, change_info, tab) {
 
 	// Otherwise, we have a user's offer for this
     // If the user's offer is less than ours, then we pay them and block
-    var our_offer = 3; // Temporary until we get it from the server
+    var our_offer = 15; // Temporary until we get it from the server
     if (site.user_offer < our_offer) {
 		// Redirect tab to countdown.html
         if (get_data('real_money')) {
@@ -225,8 +225,8 @@ function store_block_data(event, user, tab_url, value) {
 		set_data('website_state', status);
 
         // Tell them they've been paid
-        if (parseFloat(value) < 3)
-            set_notification('You have been rewarded!', 'Thank you for your data.')
+        // if (parseFloat(value) < 3)
+        //    set_notification('You have been rewarded!', 'Thank you for your data.')
         // Todo: actually pay people
 
 		// console.log(status);

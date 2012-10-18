@@ -6,12 +6,10 @@ body {
 	font-size: 31px;
 }
 
-a {color: #fff;}
-p {
-	width: 500px;
-}
+a { color: #fff; }
+p { width: 600px; }
 
 #remaining_time {
     font-size: 70pt;
-	font-family: monaco, courier;
+	font-family: monaco, consolas, courier;
 }
