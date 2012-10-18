@@ -57,7 +57,11 @@ function get_today_offer(url) {
                 result = state.our_offer;
             } else {
                 state.offer_day_check = today_date.getTime();
-                result = Math.floor((Math.random()*40)+1);
+                result = 100;
+                while(result > 40) {
+                    result = Math.pow(1.2, (Math.random() * 40 - 14));
+                }
+                // result = Math.floor((Math.random()*40)+1);
                 state.our_offer = result;
             }
 		}
