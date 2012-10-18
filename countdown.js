@@ -26,6 +26,18 @@ function onload() {
 	}	
 
     document.getElementById('reset_data').onclick = clear_data;
+    
+    // add listener to the go through button on the count down page
+    document.getElementById('go_through').onclick = (function() {
+        var states = get_data('website_state');
+        states.each(function (state) {
+		    if(url_matches(url, state)) {
+                state.user_offer = 'PASS';                
+			}
+        });
+        set_data('website_state', states);
+        window.location = url;
+    }); 
 }
 
 function get_remaining_time(url) {

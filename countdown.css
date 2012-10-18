@@ -13,3 +13,16 @@ p { width: 600px; }
     font-size: 70pt;
 	font-family: monaco, consolas, courier;
 }
+
+input {
+	font-size: 20pt;
+	font-family: helvetia, arial;
+	font-weight: bold;
+	border: 0px;
+	margin: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	margin: 3px;
+}
