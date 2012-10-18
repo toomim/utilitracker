@@ -14,6 +14,7 @@ function onload() {
 					   
 				var url = decodeURIComponent(kv[1]);
 				u.href = url;
+                document.getElementById('go_through').href = url;
 				u.appendChild(document.createTextNode(background.get_hostname(url)));
 			}
 		}
