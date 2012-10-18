@@ -6,7 +6,7 @@ var urls = ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com',
             'quora.com', 'news.ycombinator.com', 'twitter.com',
             'google.com', 'friendbo.com', 'youtube.com'];
 set_data('user', 'Debug_user');
-
+var our_offer = 15; // Temporary until we get it from the server
 
 // initialize the website_state
 function initialize_website_state(urls) {
@@ -100,7 +100,7 @@ function tabs_update_listener(tab_id, change_info, tab) {
 
 	// Otherwise, we have a user's offer for this
     // If the user's offer is less than ours, then we pay them and block
-    var our_offer = 15; // Temporary until we get it from the server
+
     if (site.user_offer < our_offer) {
 		// Redirect tab to countdown.html
         if (get_data('real_money')) {
@@ -139,7 +139,6 @@ function test_listener(details) {
 
 	// Otherwise, we have a user's offer for this
     // If the user's offer is less than ours, then we pay them and block
-    var our_offer = 3; // Temporary until we get it from the server
     if (site.user_offer < our_offer) {
 		// Redirect tab to countdown.html
 		// get_data('real_money')
