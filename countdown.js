@@ -14,7 +14,6 @@ function onload() {
 					   
 				var url = decodeURIComponent(kv[1]);
 				u.href = url;
-                document.getElementById('go_through').href = url;
 				u.appendChild(document.createTextNode(background.get_hostname(url)));
 			}
 		}
@@ -28,8 +27,8 @@ function onload() {
 
     document.getElementById('reset_data').onclick = clear_data;
     
-    // add listener to the go through button on the count down page
-    document.getElementById('go_through').onclick = (function() {
+    // add listener skip the countdown page (for sneaky experts like us)
+    document.body.ondblclick = (function() {
         var states = get_data('website_state');
         states.each(function (state) {
 		    if(url_matches(url, state)) {

@@ -14,11 +14,6 @@ p { width: 600px; }
 	font-family: monaco, consolas, courier;
 }
 
-#go_through {
-    font-size: 15pt;
-    color: cyan;
-}
-
 #reset_data {
     float: right;
 }
