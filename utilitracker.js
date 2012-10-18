@@ -79,7 +79,7 @@ function check_for_new_day (url) {
 			if(last_view != null) {
 				// if the page is viewed before				
 				// console.log('the page have been viewed before');
-				if(today_time.getTime() - last_view >= (1000 * 60 * 60)) {
+				if(today_time.getTime() - last_view >= (1000 * 60 * 60 * 24)) {
    		   			// If so, reset offers
    	 	  			console.log('reset offer for: ', url);
 					state.user_offer = null;
