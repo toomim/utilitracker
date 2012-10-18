@@ -144,8 +144,8 @@ function test_listener(details) {
 		// Redirect tab to countdown.html
 		// get_data('real_money')
         if (true) {
-            return { 'url' : chrome.extension.getURL("countdown.html")
-              + "?url=" + escape(tab.url) };
+            return { redirectUrl : chrome.extension.getURL("countdown.html")
+              + "?url=" + escape(details.url)};
         }
 	}    
 }
