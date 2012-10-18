@@ -24,6 +24,8 @@ function onload() {
             countdown(remain_time);
 		}
 	}	
+
+    document.getElementById('reset_data').onclick = clear_data;
 }
 
 function get_remaining_time(url) {

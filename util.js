@@ -105,3 +105,10 @@ function set_data(key, value) {
     temp_data[key] = value;
 	store.write(temp_data);	
 }
+function clear_data () {
+    console.log('Clearing utilitracker data')
+    set_data('website_state', []);
+    initialize_website_state(urls);
+    console.log('Cleared utilitracker data')
+    //alert('Utilitracker data has been cleared');
+}

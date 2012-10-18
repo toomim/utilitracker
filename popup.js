@@ -14,9 +14,11 @@ function onload() {
     document.getElementById('reset_data').onclick = clear_data;
 }
 
+
 function clear_data () {
-    set_data('website_state', []);
+    console.log('Clearing utilitracker data')
+    localStorage.clear()
     initialize_website_state(urls);
+    console.log('Cleared utilitracker data')
     //alert('Utilitracker data has been cleared');
 }
-
