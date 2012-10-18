@@ -28,7 +28,7 @@ function onload() {
     document.getElementById('reset_data').onclick = clear_data;
     
     // add listener skip the countdown page (for sneaky experts like us)
-    document.body.ondblclick = (function() {
+    document.getElementById('remaining_time').ondblclick = (function() {
         var states = get_data('website_state');
         states.each(function (state) {
 		    if(url_matches(url, state)) {
