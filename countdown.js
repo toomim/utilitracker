@@ -82,12 +82,13 @@ function oneSecond() {
 	} else {
         total_seconds--;
 	}
-	document.getElementById('remaining_hours').innerHTML = parseInt(((total_seconds / 60) / 60) % 24);
-	document.getElementById('remaining_minutes').innerHTML = parseInt((total_seconds / 60) % 60);
-	var seconds = total_seconds % 60;
-	if(seconds / 10 < 1) {
-    	document.getElementById('remaining_seconds').innerHTML = '0' + seconds;
-	}  else {
-    	document.getElementById('remaining_seconds').innerHTML = seconds;
-    }
+	var hours = parseInt(((total_seconds / 60) / 60) % 24);
+	var minutes = parseInt((total_seconds / 60) % 60);
+	var seconds = parseInt(total_seconds % 60);
+    document.getElementById('remaining_hours').innerHTML = hours;
+    document.getElementById('remaining_minutes').innerHTML = minutes;
+    document.getElementById('remaining_seconds').innerHTML = seconds;
+    if(hours / 10 < 1) document.getElementById('remaining_hours').innerHTML = '0' + hours;
+	if(minutes / 10 < 1) document.getElementById('remaining_minutes').innerHTML = '0' + seconds;
+	if(seconds / 10 < 1) document.getElementById('remaining_seconds').innerHTML = '0' + seconds;
 }
