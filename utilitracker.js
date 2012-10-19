@@ -76,7 +76,7 @@ function check_for_new_day (url) {
 	// console.log('before checking: ', get_data('website_state'));
 	var today_time = new Date();
 	var states = get_data('website_state');
-    states.each(function (state) {
+	states.each(function (state) {
 		if(url_matches(url, state)) {
 			// console.log('matched: ', i, ' url: ', state.url_pattern);			
 			var last_view = state.last_day_check;
@@ -95,7 +95,7 @@ function check_for_new_day (url) {
 				state.last_day_check = today_time.getTime();
 			}
 		}
-    });
+	});
 
 	set_data('website_state', states);
 	// console.log('after checking: ', get_data('website_state'));
@@ -155,6 +155,8 @@ function test_listener(details) {
     
     // check whether is a new day
     check_for_new_day(details.url);
+
+    site = find_website_state(details.url);
 
     if (site.user_offer == null) {
         // If this site needs an offer, ask for it
