@@ -84,11 +84,8 @@ function oneSecond() {
 	}
 	var hours = parseInt(((total_seconds / 60) / 60) % 24);
 	var minutes = parseInt((total_seconds / 60) % 60);
-	var seconds = parseInt(total_seconds % 60);
-    document.getElementById('remaining_hours').innerHTML = hours;
-    document.getElementById('remaining_minutes').innerHTML = minutes;
-    document.getElementById('remaining_seconds').innerHTML = seconds;
-    if(hours / 10 < 1) document.getElementById('remaining_hours').innerHTML = '0' + hours;
-	if(minutes / 10 < 1) document.getElementById('remaining_minutes').innerHTML = '0' + seconds;
-	if(seconds / 10 < 1) document.getElementById('remaining_seconds').innerHTML = '0' + seconds;
+	var seconds = total_seconds % 60;
+    document.getElementById('remaining_hours').innerHTML = (hours < 10 ? '0' : '') + hours;
+    document.getElementById('remaining_minutes').innerHTML = (minutes < 10 ? '0' : '') + minutes;
+    document.getElementById('remaining_seconds').innerHTML = (seconds < 10 ? '0' : '') + seconds;
 }
