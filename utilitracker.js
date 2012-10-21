@@ -20,7 +20,6 @@ function initialize_website_state(urls) {
                       last_day_check: null} }))
 }
 initialize_website_state(urls);
-
 // remove the monitoring urls from website_state
 function remove_website_state(urls) {
     var new_website_state = get_data('website_state').filter(
@@ -100,10 +99,20 @@ function check_for_new_day (url) {
 function test_listener(details) {
     console.log('test_listener');
 	// Get the blocked state of the url
+	
     var site = find_website_state(details.url);
     // If we don't care about this site, let's go away
     if (!site) {
         return {cancel: false};
+    }
+
+	
+	//check whether the user is registered
+	// if not registered, redirect to the setup page
+    var registered_name = get_data('username');
+    if(registered_name == "default_user") {
+        return {redirectUrl: chrome.extension.getURL("set_up.html")
+            + "?url=" + escape(details.url) };
     }
     
     // check whether is a new day

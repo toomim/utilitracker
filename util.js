@@ -73,7 +73,7 @@ var store = {
         var opts = JSON.parse(stg['urg_data'] || '{}')
 
         // Now replace defaults that haven't been set yet
-	    if (! ("user" in opts))
+	    if (! ("username" in opts))
 		    opts.username = "default_user";
 		  
 	    if (! ("website_state" in opts))
