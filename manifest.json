@@ -12,6 +12,7 @@
 	},
 	"permissions": [
 		"http://*/*",
+		"https://*/*",
 		"webRequest",
 		"webRequestBlocking",
 		"tabs", 
@@ -20,13 +21,5 @@
 	],
 	"web_accessible_resources": [
 		"icon.png"
-	],
-
-	"content_scripts": [
-		{
-			"matches": ["*://*/*"],
-			"js": ["inline.js"],
-			"run_at": "document_start"
-		}
 	]
 }

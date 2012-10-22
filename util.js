@@ -112,3 +112,4 @@ function clear_data () {
     console.log('Cleared utilitracker data')
     //alert('Utilitracker data has been cleared');
 }
+

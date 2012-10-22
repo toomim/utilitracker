@@ -1,24 +1,65 @@
 console.log('Hello from inline');
-if (window.location.href.match(/milky.com/)) {
-    if (false && document) {
-        console.log(document)
-        var d = document.createElement('div');
-        document.body.appendChild(d);
-        d.style.position = 'fixed';
-        d.style['z-index'] = 3000;
-        d.style.top=0;
-        d.style.left=0;
-        d.style.width='100%';
-        d.style.height='100%';
-        d.style.color='yellow';
-        d.style.opacity='1';
-        d.style['background-color']= '#333';
-        d.innerText = 'hello';
-    }
-    console.log('Hello this is scratch');
+if (document && !document.getElementById('remaining_seconds')) {
+    var d = document.createElement('div');
+    var hours = document.createElement('span');
+    hours.setAttribute('id', "remaining_hours");
+    var minutes = document.createElement('span');
+    minutes.setAttribute('id', "remaining_minutes");
+    var seconds = document.createElement('span');
+    seconds.setAttribute('id', "remaining_seconds");
+    d.appendChild(hours);
+    d.innerHTML += ' : ';
+    d.appendChild(minutes);
+    d.innerHTML += ' : ';
+    d.appendChild(seconds);
+    document.body.appendChild(d);
+    d.setAttribute("id", "countdown_timer");
+    d.style.position = 'fixed';
+    d.style.top='100px';
+    d.style.left=(window.innerWidth - 150) + 'px';
+    d.style.width='150px';
+    d.style.height='50px';
+    d.style.color='yellow';
+    d.style.fontSize = '15pt';
+    d.style.opacity='0.5';
+    d.style['background-color']= '#333';
+        
+    // enable countdown feature
+        
+    setTimeout(function() {
+        document.getElementById('countdown_timer').style.display = 'none';
+    }, 5000);
+}
 
-    console.log('doc starts as', document.body.innerHTML)
-    document.write('hello');
-    console.log('doc is now', document.body.innerHTML)
-    setTimeout("window.location.href = 'http://milk.com';", 10000);
+// countdown functionality
+function countdown(total_seconds) {
+	if (!timer) {
+    	document.getElementById('remaining_hours').innerHTML = parseInt(((total_seconds / 60) / 60) % 24);
+    	document.getElementById('remaining_minutes').innerHTML = parseInt((total_seconds / 60) % 60);
+    	document.getElementById('remaining_seconds').innerHTML = total_seconds % 60;
+	    
+		timer = setInterval(oneSecond, 1000);
+	}
+}
+
+function oneSecond() {
+    var hrs = parseFloat(document.getElementById('remaining_hours').innerHTML);
+	var min = parseFloat(document.getElementById('remaining_minutes').innerHTML);
+	var sec = parseFloat(document.getElementById('remaining_seconds').innerHTML);
+	var total_seconds = (hrs * 60 + min) * 60 + sec;
+	if (total_seconds <= 1) {
+		// time's up!
+		clearInterval(timer);
+		timer = null;
+        total_seconds--;
+        // trying to go through
+	} else {
+        total_seconds--;
+	}
+	var hours = parseInt(((total_seconds / 60) / 60) % 24);
+	var minutes = parseInt((total_seconds / 60) % 60);
+	var seconds = total_seconds % 60;
+    document.getElementById('remaining_hours').innerHTML = (hours < 10 ? '0' : '') + hours;
+    document.getElementById('remaining_minutes').innerHTML = (minutes < 10 ? '0' : '') + minutes;
+    document.getElementById('remaining_seconds').innerHTML = (seconds < 10 ? '0' : '') + seconds;
 }
