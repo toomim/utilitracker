@@ -1,3 +1,10 @@
+// A/B test options go in here.  There are two prompts, so this is an
+// array of tuples of size 2.
+var variants = [['How much money would we have to give you for you to not have access to <a class="url"></a> for 24 hours?', ''],
+                ['How much is the next 24 hours of <a class="url"></a> worth to you?', '(Be accurate &amp; honest, because the study might buy your access!)'],
+                ['What would it take for you to choose CASH over the next 24 hours of <a class="url"></a>?', '']
+               ];
+
 // These listeners allows this javascript to be executed in the extension without
 // being blocked by Chrome for security reasons
 document.addEventListener("DOMContentLoaded", onload, false);
@@ -9,6 +16,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Called by the event listener when the page loads
 function onload() {
+    // Set up the a/b test
+    var v = get_data('variant') || 0;
+    document.getElementById('prompt1').innerHTML = variants[v][0];
+    document.getElementById('prompt2').innerHTML = variants[v][1];
+    set_data('variant', (v+1) % variants.length)
+    /*var tmp = 'variations: '
+    for (var i=0; i<variants.length; i++)
+        tmp += '<a href="#">' + i + '</a> '
+    document.getElementById('ab_test_options').innerHTML = tmp*/
 
 	// Parses the extension url to get the incoming url
 	var ws = window.location.search;
@@ -17,13 +33,14 @@ function onload() {
 		for (var i = 0; i < kvs.length; i++) {
 			var kv = kvs[i].split('=');
 			if (kv[0] == 'url') {
-			
-				var u = document.getElementById("url");
-					   
-				var url = decodeURIComponent(kv[1]);
-				u.href = url;
-				u.appendChild(document.createTextNode(get_hostname(url)));
-			}
+				var url_objs = document.getElementsByClassName("url");
+                for (var j=0; j<url_objs.length; j++) {
+				    var url = decodeURIComponent(kv[1]);
+			        var site_name = get_hostname(url);
+				    url_objs[j].href = url;
+				    url_objs[j].appendChild(document.createTextNode(site_name));
+			    }
+            }
 		}
 	}	
 	// show the original url in the iframe
@@ -66,12 +83,11 @@ function keyboard_submit(event) {
 
 // Gets the url
 function get_url() {
-	var a = document.getElementById("url");
-	return a.href;
+	return document.getElementsByClassName("url")[0].href;
 }
 
 function get_user_offer() {
-	return document.getElementsByName('valueInput')[0].value;		
+	return document.getElementsByClassName('valueInput')[0].value;		
 }
 
 // Temporary function, replace with account system code
@@ -82,7 +98,7 @@ function get_username() {
 // Redirects the tab to the page the user intended to go to.
 function unblock() {
 	console.log('unblocking: ', get_url());
-	var url = document.getElementById("url");
+	var url = document.getElementsByClassName("url")[0];
 	
 	window.location = url.href + "";
 }

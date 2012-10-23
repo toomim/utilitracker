@@ -62,6 +62,7 @@ function hash_each (h,f) {
             f(key,h[key]);
 };
 
+function rand_int (max) { return Math.floor(Math.random() * (max + 1)) }
 
 // Storage Read and Write
 

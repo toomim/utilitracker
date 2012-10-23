@@ -34,6 +34,13 @@ body {
 	font-size: 30pt;
 }
 
+#ab_test_options, #ab_test_options> a {
+	text-align: left;
+	font-size: 12px;
+	margin-top: 150px;
+	color: #888;
+}
+
 /*
 #goThroughButton {
 	height: 25pt;
