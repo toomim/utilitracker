@@ -25,10 +25,13 @@ if (document && !document.getElementById('remaining_seconds')) {
     d.style['background-color']= '#333';
         
     // enable countdown feature
-        
+    var timer;
+    countdown(seconds_left);
     setTimeout(function() {
         document.getElementById('countdown_timer').style.display = 'none';
     }, 5000);
+    
+    console.log(seconds_left);
 }
 
 // countdown functionality

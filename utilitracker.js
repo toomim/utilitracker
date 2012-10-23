@@ -143,6 +143,7 @@ function pass_listener(tab_id, change_info, tab) {
 	    var now = new Date();
         var passed = now.getTime() - site.last_day_check;
         var sec = parseInt((60*60*24*1000 - passed)/1000);
+        chrome.tabs.executeScript(tab_id, {code: "var seconds_left = " + sec + ";"});
         chrome.tabs.executeScript(tab_id, {file: "inline.js"});
         // countdown(sec);
 	}   

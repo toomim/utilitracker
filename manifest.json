@@ -20,6 +20,7 @@
 		"notifications"
 	],
 	"web_accessible_resources": [
-		"icon.png"
+		"icon.png",
+		"chrome-extension://*"
 	]
 }
