@@ -46,12 +46,12 @@ function onload() {
 	// show the original url in the iframe
 	// document.getElementById('background_url').src = get_url();
 	var url_name = get_hostname(url).split('.');
-	if(url_name[1] != "com") {
-    	document.body.style.background = "url(background/" + url_name[1]+ ".png)";	    
-	} else {
-    	document.body.style.background = "url(background/" + url_name[0] + ".png)";	
-	}
-	// Focuses on the text box
+	if(url_name[1] != "com")
+    	document.body.style.background = "url(background/" + url_name[1] + ".png)"
+	else
+    	document.body.style.background = "url(background/" + url_name[0] + ".png)"
+
+	// Focus on the text box
 	document.getElementsByName('valueInput')[0].focus();
 
 	console.log('ask_offer.js loaded');
