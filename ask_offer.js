@@ -1,8 +1,8 @@
 // A/B test options go in here.  There are two prompts, so this is an
 // array of tuples of size 2.
-var variants = [['How much money would we have to give you for you to not have access to <a class="url"></a> for 24 hours?', ''],
-                ['How much is the next 24 hours of <a class="url"></a> worth to you?', '(Be accurate &amp; honest, because the study might buy your access!)'],
-                ['What would it take for you to choose CASH over the next 24 hours of <a class="url"></a>?', '']
+var variants = [['How much money would we have to give you for you to not have access to <a class="url"></a> for 24 hours?', '<img src="gimme_money.png">'],
+                ['How much is the next 24 hours of <a class="url"></a> worth to you?', '(Be accurate &amp; honest, because the study might buy your access!)<br><img src="gimme_money.png" style="position: relative; left: 409px; top: -219px;">'],
+                ['What would it take for you to choose CASH over the next 24 hours of <a class="url"></a>?', '<img src="gimme_money.png">']
                ];
 
 // These listeners allows this javascript to be executed in the extension without
@@ -76,9 +76,8 @@ function clickHandler(event) {
 
 // Allows user to use enter key to submit
 function keyboard_submit(event) {
-	if(event.keyCode == 13) {
+	if(event.keyCode == 13)
 		submit();
-	}	
 }
 
 // Gets the url
@@ -131,9 +130,8 @@ function is_valid_value() {
 		}
 	}
 	// Checks decimal point count
-	if(point > 1){
+	if (point > 1)
 		char_result = false;
-	}
 	
 	// Display error in page
 	if (value.length == 0) {
