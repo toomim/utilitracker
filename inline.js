@@ -7,6 +7,7 @@ if (document && !document.getElementById('remaining_seconds')) {
     minutes.setAttribute('id', "remaining_minutes");
     var seconds = document.createElement('span');
     seconds.setAttribute('id', "remaining_seconds");
+    d.innerHTML += 'time to next blocking time: ';
     d.appendChild(hours);
     d.innerHTML += ' : ';
     d.appendChild(minutes);
@@ -29,9 +30,7 @@ if (document && !document.getElementById('remaining_seconds')) {
     countdown(seconds_left);
     setTimeout(function() {
         document.getElementById('countdown_timer').style.display = 'none';
-    }, 5000);
-    
-    console.log(seconds_left);
+    }, 5000);    
 }
 
 // countdown functionality
