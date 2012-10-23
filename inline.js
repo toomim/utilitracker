@@ -7,7 +7,7 @@ if (document && !document.getElementById('remaining_seconds')) {
     minutes.setAttribute('id', "remaining_minutes");
     var seconds = document.createElement('span');
     seconds.setAttribute('id', "remaining_seconds");
-    d.innerHTML += 'time to next blocking time: ';
+    d.innerHTML += 'time to next blocking time: <br />';
     d.appendChild(hours);
     d.innerHTML += ' : ';
     d.appendChild(minutes);
@@ -19,7 +19,7 @@ if (document && !document.getElementById('remaining_seconds')) {
     d.style.top='100px';
     d.style.left=(window.innerWidth - 150) + 'px';
     d.style.width='150px';
-    d.style.height='50px';
+    d.style.height='100px';
     d.style.color='yellow';
     d.style.fontSize = '15pt';
     d.style.opacity='0.5';
