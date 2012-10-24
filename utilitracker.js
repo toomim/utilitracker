@@ -127,11 +127,11 @@ function test_listener(details) {
 	// Otherwise, we have a user's offer for this
     // If the user's offer is less than ours, then we pay them and block
     if (site.user_offer < get_today_offer(details.url)) {
+        // Record the block event
+    	store_block_data("blocked", get_username(), details.url, site.user_offer);        
 		// Redirect tab to countdown.html
-        if (true) {
-            return { redirectUrl : chrome.extension.getURL("countdown.html")
-              + "?url=" + escape(details.url)};
-        }
+        return { redirectUrl : chrome.extension.getURL("countdown.html")
+            + "?url=" + escape(details.url)};
 	} 	
 }
 
@@ -172,7 +172,7 @@ function get_hostname(str) {
 	return tmp.split('/')[0];
 }
 function get_username() {
-	return get_data('user');
+	return get_data('username');
 }
 
 // Stores url, time/date of block in localStorage
@@ -231,10 +231,10 @@ function post_to_server(event, user, time_date, url, value) {
 	var params = 
 		"paid=" + value +
 		"&what=" + event +  
-		"&who=" + user + 
+		"&who=" + escape(user) + 
 		"&when=" + time_date +
 		"&url=" + url;
-	xmlHttp.open("POST", tourl, false);
+	xmlHttp.open("POST", tourl, true);
 	
 	//Send the proper header information along with the request  //x-www-form-urlencoded
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -248,6 +248,8 @@ function post_to_server(event, user, time_date, url, value) {
 				console.log(xmlHttp.responseText);
 			}
 	    }
+		console.log(xmlHttp.responseText);
 	};
+    console.log(params);
 	xmlHttp.send(params);
 }

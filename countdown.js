@@ -29,6 +29,7 @@ function onload() {
     document.getElementById('reset_data').onclick = clear_data;
     
     // add listener skip the countdown page (for sneaky experts like us)
+    /*
     document.getElementById('lock_pic').ondblclick = (function() {
         var states = get_data('website_state');
         states.each(function (state) {
@@ -39,11 +40,21 @@ function onload() {
         set_data('website_state', states);
         window.location = url;
     }); 
+    */
+    document.getElementById('emegency_go_through').onclick = (function() {
+        var states = get_data('website_state');
+        states.each(function (state) {
+		    if(url_matches(url, state)) {
+                state.user_offer = 'PASS';                
+			}
+        });
+        set_data('website_state', states);
+        window.location = url;    
+    });
 }
 
 function get_remaining_time(url) {
 		var temp_data = background.get_data('website_state');
-		console.log(temp_data);
 		for(var i = 0; i < temp_data.length; i++) {
             		if(url.indexOf(temp_data[i].url_pattern) != -1) {
             		    // found the data
