@@ -17,6 +17,7 @@ if (document && !document.getElementById('remaining_seconds')) {
     d.setAttribute("id", "countdown_timer");
     d.style.position = 'fixed';
     d.style.top='100px';
+    d.style.zIndex = 1000;
     d.style.left=(window.innerWidth - 150) + 'px';
     d.style.width='150px';
     d.style.height='100px';

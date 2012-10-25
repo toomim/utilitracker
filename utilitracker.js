@@ -7,8 +7,6 @@ var urls = ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com',
             'google.com', 'friendbo.com', 'youtube.com'];
 set_data('user', 'Debug_user');
 
-var timer;
-
 // initialize the website_state
 function initialize_website_state(urls) {
     var state = get_data('website_state')
@@ -141,11 +139,9 @@ function pass_listener(tab_id, change_info, tab) {
 	if(site.user_offer == 'PASS') {
 	    // show timer in the upper right corner for 5 seconds
 	    var now = new Date();
-        var passed = now.getTime() - site.last_day_check;
-        var sec = parseInt((60*60*24*1000 - passed)/1000);
+        var sec = parseInt((60*60*24*1000 - (now.getTime() - site.last_day_check))/1000);
         chrome.tabs.executeScript(tab_id, {code: "var seconds_left = " + sec + ";"});
         chrome.tabs.executeScript(tab_id, {file: "inline.js"});
-        // countdown(sec);
 	}   
 }
 
