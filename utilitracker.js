@@ -244,7 +244,7 @@ function post_to_server(event, user, time_date, url, value) {
 				console.log(xmlHttp.responseText);
 			}
 	    }
-		console.log(xmlHttp.responseText);
+		console.log('response text: ', xmlHttp.responseText);
 	};
     console.log(params);
 	xmlHttp.send(params);

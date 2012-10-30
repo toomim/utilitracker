@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", onload, false);
 var background = chrome.extension.getBackgroundPage();
 var timer = null;
+var url;
 function onload() {
 	// Parses the extension url to get the incoming url
 	var ws = window.location.search;
@@ -12,7 +13,7 @@ function onload() {
 			
 				var u = document.getElementById("url");
 					   
-				var url = decodeURIComponent(kv[1]);
+				url = decodeURIComponent(kv[1]);
 				u.href = url;
 				u.appendChild(document.createTextNode(background.get_hostname(url)));
 			}
@@ -90,6 +91,7 @@ function oneSecond() {
 		timer = null;
         total_seconds--;
         // trying to go through
+		window.location = url;
 	} else {
         total_seconds--;
 	}
