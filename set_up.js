@@ -31,6 +31,7 @@ function submit() {
     
     if(is_valid_value(value)) {
 	    // try to post to server
+	    
 /*	    if(true || register_to_server(value) == 1) {
 			// save username 
 	        set_data('username', value);
@@ -39,11 +40,12 @@ function submit() {
 	        window.location = this_url;		    
 	    }
 */  
-			// save username 
-			set_data('username', value);
-			// submit to remote server;
-			// TODO
-			window.location = this_url;		    
+	console.log('is valid');	
+	// save username 
+	set_data('username', value);
+	// submit to remote server;
+	// TODO
+	window.location = this_url;		    
     }    
 }
 
