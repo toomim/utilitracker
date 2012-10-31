@@ -91,7 +91,7 @@ function get_user_offer() {
 
 // Temporary function, replace with account system code
 function get_username() {
-	return "test user";
+	return get_data('username');
 }
 
 // Redirects the tab to the page the user intended to go to.

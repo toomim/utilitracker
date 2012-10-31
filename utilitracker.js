@@ -115,12 +115,13 @@ function test_listener(details) {
     check_for_new_day(details.url);
     site = find_website_state(details.url);
     if (site.user_offer == null) {
+		// Record the block event
+        store_block_data("ask offer", get_username(), details.url, null);
+
         // If this site needs an offer, ask for it
 		// Redirect tab to ask_offer.html
 		return { redirectUrl : chrome.extension.getURL("ask_offer.html")
               + "?url=" + escape(details.url) };
-        // Record the block event
-		store_block_data("ask offer", get_username(), details.url, null);
     }
 	// Otherwise, we have a user's offer for this
     // If the user's offer is less than ours, then we pay them and block
@@ -209,6 +210,9 @@ function store_block_data(eventss, user, tab_url, value) {
 	// disable since server is not up yet
 	//
 	//
+	if (value == null) {
+		value = -1;	
+	} 
 	post_to_server(eventss, user, time_date, tab_url, value);
 	//
 	//
@@ -225,11 +229,11 @@ function post_to_server(eventss, user, time_date, url, value) {
 	var xmlHttp = new XMLHttpRequest();
 	var tourl = "http://yuno.us:8989/save_event";
 	var params = 
-		"paid=" + value +
-		"&what=" + eventss +  
+		"paid=" + escape(value) +
+		"&what=" + escape(eventss) +  
 		"&who=" + escape(user) + 
-		"&when=" + time_date +
-		"&url=" + url;
+		"&when=" + escape(time_date) +
+		"&url=" + escape(url);
 	xmlHttp.open("POST", tourl, true);
 	
 	//Send the proper header information along with the request  //x-www-form-urlencoded
@@ -248,4 +252,5 @@ function post_to_server(eventss, user, time_date, url, value) {
 	};
     console.log(params);
 	xmlHttp.send(params);
+	// alert('wait for server response');
 }
