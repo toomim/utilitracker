@@ -56,7 +56,7 @@ function get_today_offer(url) {
                 state.offer_day_check = today_date.getTime();
                 result = 100;
                 while(result > 40) {
-                    result = Math.pow(1.2, (Math.random() * 40 - 14));
+                    result = Math.pow(1.25, (Math.random() * 35 - 18));
                 }
                 state.our_offer = result;
             }
@@ -172,11 +172,11 @@ function get_username() {
 }
 
 // Stores url, time/date of block in localStorage
-function store_block_data(event, user, tab_url, value) {
+function store_block_data(eventss, user, tab_url, value) {
 	// first store the data local:
 	// store the user_offer
 	
-	if(event == 'value submitted') {
+	if(eventss == 'value submitted') {
 		// the user submit the data store in the sites
 		console.log('store submit value');
 		var status = get_data('website_state');
@@ -209,7 +209,7 @@ function store_block_data(event, user, tab_url, value) {
 	// disable since server is not up yet
 	//
 	//
-	// post_to_server(event, user, time_date, tab_url, value);
+	post_to_server(eventss, user, time_date, tab_url, value);
 	//
 	//
 	//
@@ -220,13 +220,13 @@ function store_block_data(event, user, tab_url, value) {
 
 // Pushes data about site blocks to the server:
 // Type of block, user info, time, url, and surveyed value
-function post_to_server(event, user, time_date, url, value) {
+function post_to_server(eventss, user, time_date, url, value) {
 	
 	var xmlHttp = new XMLHttpRequest();
 	var tourl = "http://yuno.us:8989/save_event";
 	var params = 
 		"paid=" + value +
-		"&what=" + event +  
+		"&what=" + eventss +  
 		"&who=" + escape(user) + 
 		"&when=" + time_date +
 		"&url=" + url;
