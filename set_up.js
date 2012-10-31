@@ -30,11 +30,20 @@ function submit() {
 	var value = document.getElementById('user_name').value;
     
     if(is_valid_value(value)) {
-        // save username 
-        set_data('username', value);
-        // submit to remote server;
-        // TODO
-        window.location = this_url;
+	    // try to post to server
+/*	    if(true || register_to_server(value) == 1) {
+			// save username 
+	        set_data('username', value);
+	        // submit to remote server;
+	        // TODO
+	        window.location = this_url;		    
+	    }
+*/  
+			// save username 
+			set_data('username', value);
+			// submit to remote server;
+			// TODO
+			window.location = this_url;		    
     }    
 }
 
@@ -64,6 +73,33 @@ function is_valid_value(value) {
 		error.innerHTML = "";
 		return true;
 	}
+}
+
+function register_to_server(value) {
+	var response;
+	var xmlHttp = new XMLHttpRequest();
+	var tourl = "http://yuno.us:8989/setup_user";
+	var params = 
+		"uid=" + escape(value);
+	xmlHttp.open("POST", tourl, true);
+
+	//Send the proper header information along with the request  //x-www-form-urlencoded
+	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlHttp.setRequestHeader("Content-length", params.length);
+	xmlHttp.setRequestHeader("Connection", "close");
+
+	xmlHttp.onreadystatechange = function() {//Call a function when the state changes.
+		if(xmlHttp.readyState == 4) {
+			// alert(xmlHttp.statusText);
+			if(xmlHttp.status == 200) {
+				console.log(xmlHttp.responseText);
+				response = xmlHttp.responseText;
+			}
+		}
+		console.log('response text: ', xmlHttp.responseText);
+	};
+	xmlHttp.send(params);	
+	return response;
 }
 
 // Called by the event listener when the submit button is clicked
