@@ -31,21 +31,7 @@ function submit() {
     
     if(is_valid_value(value)) {
 	    // try to post to server
-	    
-/*	    if(true || register_to_server(value) == 1) {
-			// save username 
-	        set_data('username', value);
-	        // submit to remote server;
-	        // TODO
-	        window.location = this_url;		    
-	    }
-*/  
-	console.log('is valid');	
-	// save username 
-	set_data('username', value);
-	// submit to remote server;
-	// TODO
-	window.location = this_url;		    
+	    register_to_server(value);
     }    
 }
 
@@ -78,7 +64,7 @@ function is_valid_value(value) {
 }
 
 function register_to_server(value) {
-	var response;
+	var error = document.getElementById("errorAlert");
 	var xmlHttp = new XMLHttpRequest();
 	var tourl = "http://yuno.us:8989/setup_user";
 	var params = 
@@ -94,14 +80,22 @@ function register_to_server(value) {
 		if(xmlHttp.readyState == 4) {
 			// alert(xmlHttp.statusText);
 			if(xmlHttp.status == 200) {
-				console.log(xmlHttp.responseText);
-				response = xmlHttp.responseText;
+				if(xmlHttp.responseText == '1') {
+					console.log('user name is available');	
+					// save username 
+					set_data('username', value);
+					// TODO
+					window.location = this_url;		    
+				} else {
+					error.innerHTML = "user name alreadly been registered";
+				}
+			} else {
+				error.innerHTML = "server error, try again later. ";
 			}
 		}
 		console.log('response text: ', xmlHttp.responseText);
 	};
 	xmlHttp.send(params);	
-	return response;
 }
 
 // Called by the event listener when the submit button is clicked
