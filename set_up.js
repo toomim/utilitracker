@@ -2,7 +2,8 @@ document.addEventListener("DOMContentLoaded", onload);
 
 document.addEventListener('DOMContentLoaded', function () {
 	document.querySelector('body').addEventListener('keypress', keyboard_submit);
-	document.querySelector('#user_submit_button').addEventListener('click', clickHandler);
+	document.querySelector('#user_register_button').addEventListener('click', registerClickHandler);
+	document.querySelector('#user_login_button').addEventListener('click', loginClickHandler);
 });
 
 var this_url;
@@ -26,12 +27,12 @@ function onload() {
 
 
 
-function submit() {
+function submit(func) {
 	var value = document.getElementById('user_name').value;
     
     if(is_valid_value(value)) {
 	    // try to post to server
-	    register_to_server(value);
+	    register_to_server(value, func);
     }    
 }
 
@@ -63,10 +64,14 @@ function is_valid_value(value) {
 	}
 }
 
-function register_to_server(value) {
+function register_to_server(value, func) {
 	var error = document.getElementById("errorAlert");
 	var xmlHttp = new XMLHttpRequest();
-	var tourl = "http://yuno.us:8989/setup_user";
+	if(func == 'register') {
+		var tourl = "http://yuno.us:8989/setup_user";	
+	} else if(func == 'login') {
+		var tourl = "http://yuno.us:8989/check_user";		
+	}
 	var params = 
 		"uid=" + escape(value);
 	xmlHttp.open("POST", tourl, true);
@@ -81,13 +86,21 @@ function register_to_server(value) {
 			// alert(xmlHttp.statusText);
 			if(xmlHttp.status == 200) {
 				if(xmlHttp.responseText == '1') {
-					console.log('user name is available');	
+					if(func == 'register') {
+						console.log('user name is available');						
+					} else {
+						console.log('user name login successful');
+					}
 					// save username 
 					set_data('username', value);
 					// TODO
 					window.location = this_url;		    
 				} else {
-					error.innerHTML = "user name alreadly been registered";
+					if(func == 'register') {
+						error.innerHTML = "user name alreadly been registered";					
+					} else {
+						error.innerHTML = "invalid user name";
+					}
 				}
 			} else {
 				error.innerHTML = "server error, try again later. ";
@@ -99,8 +112,13 @@ function register_to_server(value) {
 }
 
 // Called by the event listener when the submit button is clicked
-function clickHandler(event) {
-	submit();
+function registerClickHandler(event) {
+	submit('register');
+}
+
+// Called by the event listener when the login button is clicked
+function loginClickHandler(event) {
+	submit('login');
 }
 
 // Allows user to use enter key to submit
