@@ -73,7 +73,7 @@ function register_to_server(value, func) {
 		var tourl = "http://yuno.us:8989/check_user";		
 	}
 	var params = 
-		"uid=" + escape(value);
+		"fullname=" + escape(value);
 	xmlHttp.open("POST", tourl, true);
 
 	//Send the proper header information along with the request  //x-www-form-urlencoded
