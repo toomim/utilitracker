@@ -85,7 +85,7 @@ function register_to_server(value, func) {
 		if(xmlHttp.readyState == 4) {
 			// alert(xmlHttp.statusText);
 			if(xmlHttp.status == 200) {
-				if(xmlHttp.responseText == '1') {
+				if(xmlHttp.responseText == 'succeed') {
 					if(func == 'register') {
 						console.log('user name is available');						
 					} else {
