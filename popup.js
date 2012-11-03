@@ -4,6 +4,7 @@ var background = chrome.extension.getBackgroundPage();
 function onload() {
     load_visited_sites();
     document.getElementById('reset_data').onclick = clear_data;
+	document.getElementById('check_history_from_server').href = "http://yuno.us:8989/my_history?fullname=" + escape(background.get_data('username'));
 }
 
 function load_visited_sites() {
