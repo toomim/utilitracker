@@ -1,9 +1,13 @@
 // A/B test options go in here.  There are two prompts, so this is an
 // array of tuples of size 2.
-var variants = [['How much money would we have to give you for you to not have access to <a class="url"></a> for 24 hours?', '<img src="gimme_money.png">'],
+var variants = [['<div class="title">Cash Chance!</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
+                 '<img src="lock_dim.png" class="lock">'],
+                ['How much money would we have to give you for you to not have access to <a class="url"></a> for 24 hours?', '']]/*,
+                ['<div class="title">Cash Chance!</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
+                 '<style>#tint{margin-top: 10px;margin-left: 10px;border-radius: 10px;box-shadow: 0px 0px 35px #fff;width: 99%;}</style><img src="lock_bright.png" class="lock">'],
                 ['How much is the next 24 hours of <a class="url"></a> worth to you?', '(Be accurate &amp; honest, because the study might buy your access!)<br><img src="gimme_money.png" style="position: relative; left: 409px; top: -219px;">'],
                 ['What would it take for you to choose CASH over the next 24 hours of <a class="url"></a>?', '<img src="gimme_money.png">']
-               ];
+               ];*/
 
 // These listeners allows this javascript to be executed in the extension without
 // being blocked by Chrome for security reasons
@@ -18,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function onload() {
     // Set up the a/b test
     var v = get_data('variant') || 0;
+    v = Math.min(v, variants.length - 1)
     document.getElementById('prompt1').innerHTML = variants[v][0];
     document.getElementById('prompt2').innerHTML = variants[v][1];
     set_data('variant', (v+1) % variants.length)
