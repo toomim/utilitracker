@@ -9,6 +9,11 @@ body {
 a { color: #fff; }
 p { width: 600px; }
 
+#lock_pic {
+	margin-top: -20px;
+	margin-bottom: -30px;
+}
+
 #remaining_time {
     font-size: 70pt;
 	font-family: monaco, consolas, courier;

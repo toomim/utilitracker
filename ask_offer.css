@@ -117,3 +117,15 @@ input {
 	opacity: 0.50;
 }
 
+.remaining_time {
+    font-size: 70pt;
+	font-family: monaco, consolas, courier;
+	position: absolute; top: 600px;
+}
+
+#uwseal {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	opacity: 0;
+}
