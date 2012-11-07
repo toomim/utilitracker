@@ -3,7 +3,7 @@
 var variants = [['<div class="title">Cash Chance!</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
                  '<img src="lock_dim.png" class="lock">'],
                 ['<div class="title">Cash Chance!</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Set your asking price.</div><br><br>',
-                 '<img src="lock_dim.png" class="lock">']/*,
+                 '<img src="lock_dim.png" class="lock">']]/*,
                 ['How much money would we have to give you for you to not have access to <a class="url"></a> for 24 hours?', '']],
                 ['<div class="title">Cash Chance!</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
                  '<style>#tint{margin-top: 10px;margin-left: 10px;border-radius: 10px;box-shadow: 0px 0px 35px #fff;width: 99%;}</style><img src="lock_bright.png" class="lock">'],
