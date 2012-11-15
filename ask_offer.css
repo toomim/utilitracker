@@ -9,7 +9,7 @@ body {
 #tint {
 	width: 100%;
 	height: 100%;
-	background-color: rgba(61, 61, 61, .95);
+	background-color: rgba(20, 20, 20, .93);
 	position: absolute;
 	top: 0; left: 0;
 }
@@ -90,6 +90,11 @@ a {
 	width: 75px;
 	font-size: 20pt;
 	font-weight: bold;
+}
+
+img.starburst {
+	background-image: url('starburst.png');
+	position: absolute;
 }
 
 input {
