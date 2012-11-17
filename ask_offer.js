@@ -1,14 +1,14 @@
 // A/B test options go in here.  There are two prompts, so this is an
 // array of tuples of size 2.
-var variants = [['<div class="title">Cash Chance!</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
+var variants = [['<div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
                  '<img src="lock_dim.png" class="lock">'],
-                ['<div class="title">Reward Opportunity</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Set your asking price.</div><br><br>',
+                ['<div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Set your asking price.</div><br><br>',
                  '<img src="lock_dim.png" class="lock">'],
-                ['<div class="title">Reward Opportunity</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
+                ['<div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
                  '<img src="lock_dim.png" class="lock">'],
-]/*,
+]
 
-
+/*,
                 ['How much money would we have to give you for you to not have access to <a class="url"></a> for 24 hours?', '']],
                 ['<div class="title">Cash Chance!</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
                  '<style>#tint{margin-top: 10px;margin-left: 10px;border-radius: 10px;box-shadow: 0px 0px 35px #fff;width: 99%;}</style><img src="lock_bright.png" class="lock">'],
@@ -30,9 +30,12 @@ function onload() {
     // Set up the a/b test
     var v = get_data('variant') || 0;
     v = Math.min(v, variants.length - 1)
-    document.getElementById('prompt1').innerHTML = variants[v][0];
-    document.getElementById('prompt2').innerHTML = variants[v][1];
-    set_data('variant', (v+1) % variants.length)
+    // document.getElementById('prompt1').innerHTML = variants[v][0];
+    // document.getElementById('prompt2').innerHTML = variants[v][1];
+    set_data('variant', (v+1) % variants.length);
+	document.getElementById('prompt1').innerHTML = "<img src='ask_offer_title.png' />";
+	document.getElementById('prompt2').innerHTML = variants[v][0];
+    
     /*var tmp = 'variations: '
     for (var i=0; i<variants.length; i++)
         tmp += '<a href="#">' + i + '</a> '
@@ -74,7 +77,10 @@ function submit() {
 	if(is_valid_value()) {
         store_block_data("value submitted", get_username(), get_url(),
                          document.getElementsByName("valueInput")[0].value);
-		unblock();
+	 	sliding_down();
+     	start_fireworks();
+     	setTimeout(unblock, 5000);
+		// unblock();
 	} else {
 		document.getElementsByName('valueInput')[0].value = "";
 		document.getElementsByName('valueInput')[0].focus();		
@@ -159,4 +165,31 @@ function is_valid_value() {
 	}
 }
 
+function sliding_down() {	
+	// append dollar bill
+	var info = document.getElementById('info');
+	var title_width = document.getElementById('singleClickOnGoThrough').clientWidth;
+	var title_height = document.getElementById('singleClickOnGoThrough').clientHeight;
+	var body_width = document.body.clientWidth;
+	var body_height = document.body.clientHeight;
+	var info_height = document.getElementById('info').clientHeight;
+	var bill_x = 0.5 * parseInt(body_width - title_width) + 56; 
+	var bill_y = 0.5 * parseInt(body_height - info_height) + title_height + 20;
+	
+	console.log("title_width: ", title_width, " title_height: ", title_height);
+	console.log("body_width: ", body_width, " body_height: ", body_height);
+	console.log("bill_x: ", bill_x, " bill_y: ", bill_y);
+	var bill = document.createElement('div');
+	bill.innerHTML = "<img src='ask_offer_bill.png' style='position: absolute; left: " + bill_x + "px; top: " + bill_y + "px; z-index: -20; width: 400px;' />";
+	console.log("new bill: ", bill.innerHTML);
+
+	info.appendChild(bill);
+	
+	// sliding ask down
+	var ask = document.getElementById('ask');
+	ask.style.marginTop = '5px';
+	console.log(parseInt(ask.style.marginTop));
+	setInterval(function() {ask.style.marginTop = parseInt(ask.style.marginTop) + 1 + "px";}, 20);
+	
+}
 

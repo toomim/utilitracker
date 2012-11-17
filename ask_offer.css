@@ -9,7 +9,8 @@ body {
 #tint {
 	width: 100%;
 	height: 100%;
-	background-color: rgba(20, 20, 20, .93);
+	background-color: white;
+	opacity: 0.90;
 	position: absolute;
 	top: 0; left: 0;
 }
@@ -24,26 +25,48 @@ body {
 	color: #ffffff;
 }
 
+#prompt1 {
+	margin-bottom: 0px;
+}
+
+#prompt2 {
+	margin: 0px;
+	padding-top: 20px;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+#ask {
+	margin-top: 0px;
+	background-image: url('ask_offer_background_small.png');
+	background-position-x: 11px;
+	background-repeat: no-repeat;
+	width: 512px;
+	height: 204px;
+}
+
+#answer {
+	vertical-align: top;
+}
+
 .title {
 	font-weight: bold;
 	font-size: 60px;
 	font-family: gotham;
-	position: absolute;
+	/*position: absolute;
 	left: 200px;
-	top: 20px;
+	top: 20px;*/
 	border-bottom: 6px #666 solid;
 	height: 68px;
 }
 .subtitle {
 	font-family: garamond;
-	left: 200px;
-	top: 115px;
 	/*font-style: italic;*/
-	font-size: 30px;
-	text-align: left;
-	width: 700px;
+	font-size: 20pt;
 	color: #ddd;
-	position: absolute;
+	/*position: absolute;
+	left: 200px;
+	top: 115px;*/
 }
 img.lock { opacity: .2; }
 #usernameview {
@@ -62,16 +85,6 @@ img.lock { opacity: .2; }
 	margin-top: 150px;
 	color: #888;
 }
-
-/*
-#goThroughButton {
-	height: 25pt;
-	font-size:18pt;
-	font-weight: bold;
-	border: 0px;
-	padding: 0px;
-}
-*/
 
 .utilityHightlight {
 	color: cyan;
@@ -97,9 +110,13 @@ img.starburst {
 	position: absolute;
 }
 
+#continueButton {
+	height: 30px;
+}
+
 input {
-	font-size: 20pt;
 	font-family: helvetia, arial;
+	height: 35px;
 	font-weight: bold;
 	border: 0px;
 	margin: 0px;
@@ -107,19 +124,7 @@ input {
 	padding-bottom: 0px;
 	padding-left: 2px;
 	padding-right: 2px;
-}
-
-#background_url {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	left: 0px;
-	top: 0px;
-	frameborder: 0px;
-	scrolling: no;
-	z-index: -100;
-	/* -webkit-filter: blur(1px); */
-	opacity: 0.50;
+	vertical-align: text-bottom;
 }
 
 .remaining_time {
@@ -132,5 +137,5 @@ input {
 	position: absolute;
 	left: 10px;
 	top: 10px;
-	opacity: 0;
+	opacity: 0.30;
 }
