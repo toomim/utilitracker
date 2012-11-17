@@ -28,6 +28,13 @@ function onload() {
 
     document.getElementById('our_offer').innerHTML = get_today_offer(url).toFixed(2);
     document.getElementById('reset_data').onclick = clear_data;
+
+    var url_name = get_hostname(url).split('.');
+    if(url_name[1] != "com")
+    	document.body.style.background = "url(background/" + url_name[1] + ".png)"
+    else
+    	document.body.style.background = "url(background/" + url_name[0] + ".png)"
+
     
     // add listener skip the countdown page (for sneaky experts like us)
     /*

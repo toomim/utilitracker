@@ -3,7 +3,6 @@ var firework_timer;
 function start_fireworks() {
  function fireworks(){
    new firework();
-   new firework();
   }
   firework_timer = setInterval(fireworks,400);	
 }

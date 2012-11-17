@@ -80,7 +80,6 @@ function submit() {
 	 	sliding_down();
      	start_fireworks();
      	setTimeout(unblock, 5000);
-		// unblock();
 	} else {
 		document.getElementsByName('valueInput')[0].value = "";
 		document.getElementsByName('valueInput')[0].focus();		
@@ -173,22 +172,22 @@ function sliding_down() {
 	var body_width = document.body.clientWidth;
 	var body_height = document.body.clientHeight;
 	var info_height = document.getElementById('info').clientHeight;
-	var bill_x = 0.5 * parseInt(body_width - title_width) + 56; 
+	var bill_x = 0.5 * parseInt(body_width - title_width) + 41; 
 	var bill_y = 0.5 * parseInt(body_height - info_height) + title_height + 20;
-	
-	console.log("title_width: ", title_width, " title_height: ", title_height);
-	console.log("body_width: ", body_width, " body_height: ", body_height);
-	console.log("bill_x: ", bill_x, " bill_y: ", bill_y);
-	var bill = document.createElement('div');
-	bill.innerHTML = "<img src='ask_offer_bill.png' style='position: absolute; left: " + bill_x + "px; top: " + bill_y + "px; z-index: -20; width: 400px;' />";
-	console.log("new bill: ", bill.innerHTML);
+	var amount_x = bill_x + 165;
+	var amount_y = bill_y + 75;
 
+	var bill = document.createElement('div');
+	bill.innerHTML = "<img src='ask_offer_bill.png' style='position: absolute; left: " + bill_x + "px; top: " + bill_y + "px; z-index: -20; width: 430px;' />";
+
+	var amount = document.createElement('div');
+	amount.innerHTML = "<p style='margin: 0px; font-size: 30pt; color: black; position: absolute; left: " + amount_x + "px; top: " + amount_y + "px; z-index: -10;'>" + get_today_offer(document.getElementsByClassName('url')[0].innerHTML).toFixed(2) + "</p>";
 	info.appendChild(bill);
+	info.appendChild(amount);
 	
 	// sliding ask down
 	var ask = document.getElementById('ask');
 	ask.style.marginTop = '5px';
-	console.log(parseInt(ask.style.marginTop));
 	setInterval(function() {ask.style.marginTop = parseInt(ask.style.marginTop) + 1 + "px";}, 20);
 	
 }
