@@ -18,7 +18,6 @@ body {
 	width: 470px;
 	margin-left: auto;
 	margin-right: auto;
-	margin-top: 10%;
 	padding: 20px 40px;
 	/*background-color: #444;
 	opacity: 0.8;*/
@@ -26,7 +25,7 @@ body {
 }
 
 #prompt1 {
-	margin-bottom: 0px;
+	margin: 0px;
 }
 
 #prompt2 {

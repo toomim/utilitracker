@@ -27,7 +27,7 @@ function onload() {
 	}
 
     document.getElementById('our_offer').innerHTML = get_today_offer(url).toFixed(2);
-    document.getElementById('reset_data').onclick = clear_data;
+    // document.getElementById('reset_data').onclick = clear_data;
 
     var url_name = get_hostname(url).split('.');
     if(url_name[1] != "com")
@@ -59,6 +59,12 @@ function onload() {
         set_data('website_state', states);
         window.location = url;    
     });
+    
+    // make the background from white to black
+    var shade = document.getElementById('shaded');
+    var i = 255;
+    var t = setInterval(function() {i = i - 1;shade.style.backgroundColor = "rgb("+i+","+i+","+i+")"; console.log(shade.style.backgroundColor);}, 8);
+    setTimeout(function() {clearInterval(t);shade.style.backgroundColor = 'black';}, 3000);
 }
 
 function get_remaining_time(url) {

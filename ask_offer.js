@@ -173,7 +173,8 @@ function sliding_down() {
 	var body_height = document.body.clientHeight;
 	var info_height = document.getElementById('info').clientHeight;
 	var bill_x = 0.5 * parseInt(body_width - title_width) + 41; 
-	var bill_y = 0.5 * parseInt(body_height - info_height) + title_height + 20;
+	//var bill_y = 0.5 * parseInt(body_height - info_height) + title_height + 20;
+	var bill_y = title_height + 20;
 	var amount_x = bill_x + 165;
 	var amount_y = bill_y + 75;
 
@@ -187,8 +188,12 @@ function sliding_down() {
 	
 	// sliding ask down
 	var ask = document.getElementById('ask');
+	var prompt1 = document.getElementById('prompt1');
 	ask.style.marginTop = '5px';
-	setInterval(function() {ask.style.marginTop = parseInt(ask.style.marginTop) + 1 + "px";}, 20);
+	prompt1.style.opacity = 1;
+	ask.style.opacity = 1;
+	
+	setInterval(function() {ask.style.marginTop = parseInt(ask.style.marginTop) + 1 + "px"; prompt1.style.opacity = parseFloat(prompt1.style.opacity) - 0.0045; ask.style.opacity = parseFloat(ask.style.opacity) - 0.0045;}, 20);
 	
 }
 
