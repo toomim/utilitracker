@@ -27,20 +27,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Called by the event listener when the page loads
 function onload() {
-    // Set up the a/b test
-    var v = get_data('variant') || 0;
-    v = Math.min(v, variants.length - 1)
-    // document.getElementById('prompt1').innerHTML = variants[v][0];
-    // document.getElementById('prompt2').innerHTML = variants[v][1];
-    set_data('variant', (v+1) % variants.length);
-	document.getElementById('prompt1').innerHTML = "<img src='ask_offer_title.png' />";
-	document.getElementById('prompt2').innerHTML = variants[v][0];
-    
-    /*var tmp = 'variations: '
-    for (var i=0; i<variants.length; i++)
-        tmp += '<a href="#">' + i + '</a> '
-    document.getElementById('ab_test_options').innerHTML = tmp*/
-
 	// Parses the extension url to get the incoming url
 	var ws = window.location.search;
 	if (ws !== undefined) {
@@ -49,27 +35,56 @@ function onload() {
 			var kv = kvs[i].split('=');
 			if (kv[0] == 'url') {
 				var url_objs = document.getElementsByClassName("url");
-                for (var j=0; j<url_objs.length; j++) {
-				    var url = decodeURIComponent(kv[1]);
-			        var site_name = get_hostname(url);
-				    url_objs[j].href = url;
-				    url_objs[j].appendChild(document.createTextNode(site_name));
-			    }
-            }
+				for (var j=0; j<url_objs.length; j++) {
+					var url = decodeURIComponent(kv[1]);
+					var site_name = get_hostname(url);
+					url_objs[j].href = url;
+					url_objs[j].appendChild(document.createTextNode(site_name));
+				}
+			}
 		}
 	}	
-	// show the original url in the iframe
-	// document.getElementById('background_url').src = get_url();
-	var url_name = get_hostname(url).split('.');
-	if(url_name[1] != "com")
-    	document.body.style.background = "url(background/" + url_name[1] + ".png)"
-	else
-    	document.body.style.background = "url(background/" + url_name[0] + ".png)"
 
-	// Focus on the text box
-	document.getElementsByName('valueInput')[0].focus();
+	site = find_website_state(url);
+	if(site.user_offer == null) {
+		// this is the ask_offer step
+		console.log('this is a ask offer');
+		// Set up the a/b test
+    	var v = get_data('variant') || 0;
+    	v = Math.min(v, variants.length - 1)
+    	// document.getElementById('prompt1').innerHTML = variants[v][0];
+    	// document.getElementById('prompt2').innerHTML = variants[v][1];
+    	set_data('variant', (v+1) % variants.length);
+    	document.getElementById('prompt1').innerHTML = "<img src='ask_offer_title.png' />";
+    	document.getElementById('prompt2').innerHTML = variants[v][0];
+    
+    	/*var tmp = 'variations: '
+    	for (var i=0; i<variants.length; i++)
+    		tmp += '<a href="#">' + i + '</a> '
+    	document.getElementById('ab_test_options').innerHTML = tmp*/
+    
+    	// show the original url in the iframe
+    	// document.getElementById('background_url').src = get_url();
+    	var url_name = get_hostname(url).split('.');
+    
+    	if(url_name[1] != "com")
+    		document.body.style.background = "url(background/" + url_name[1] + ".png)"
+    	else
+    		document.body.style.background = "url(background/" + url_name[0] + ".png)"
+    
+    	// Focus on the text box
+    	document.getElementsByName('valueInput')[0].focus();
+    
+    	console.log('ask_offer.js loaded');
+	} else {
+		// this is the countdown step
+		console.log('this is a countdown');	
+		var tit = document.getElementById('prompt').innerHTML = "CONGRAT! TODAY'S AWARD IS $<span id='our_offer'>00.00</span> !";
+		tit.style.opacity = 1;
+		var cdt = document.getElementById('ask').innerHTML = "<div id='remaining_time'><span id='remaining_hours'></span>:<span id='remaining_minutes'></span>:<span id='remaining_seconds'></span></div>";
+		cdt.style.marginTop = '0px';
+	}
 
-	console.log('ask_offer.js loaded');
 }
 
 // Submits the value inputted by the user to the server. 
@@ -112,6 +127,7 @@ function get_username() {
 }
 
 // Redirects the tab to the page the user intended to go to.
+// start counting down
 function unblock() {
 	console.log('unblocking: ', get_url());
 	var url = document.getElementsByClassName("url")[0];
@@ -197,3 +213,51 @@ function sliding_down() {
 	
 }
 
+function get_remaining_time(url) {
+		var temp_data = background.get_data('website_state');
+		for(var i = 0; i < temp_data.length; i++) {
+					if(url.indexOf(temp_data[i].url_pattern) != -1) {
+						// found the data
+						var now = new Date();
+						var passed = now.getTime() - temp_data[i].last_day_check;
+						console.log('passed: ' + passed);
+						console.log('remaining' + (60*60*24*1000 - passed) / 1000);
+						return parseInt((60*60*24*1000 - passed) / 1000);
+					}
+		}
+		// cannot find it;
+		return ('not clicked');
+}
+
+function countdown(total_seconds) {
+	if (!timer) {
+		document.getElementById('remaining_hours').innerHTML = parseInt(((total_seconds / 60) / 60) % 24);
+		document.getElementById('remaining_minutes').innerHTML = parseInt((total_seconds / 60) % 60);
+		document.getElementById('remaining_seconds').innerHTML = total_seconds % 60;
+
+		timer = setInterval(oneSecond, 1000);
+	}
+}
+
+function oneSecond() {
+	var hrs = parseFloat(document.getElementById('remaining_hours').innerHTML);
+	var min = parseFloat(document.getElementById('remaining_minutes').innerHTML);
+	var sec = parseFloat(document.getElementById('remaining_seconds').innerHTML);
+	var total_seconds = (hrs * 60 + min) * 60 + sec;
+	if (total_seconds <= 1) {
+		// time's up!
+		clearInterval(timer);
+		timer = null;
+		total_seconds--;
+		// trying to go through
+		window.location = url;
+	} else {
+		total_seconds--;
+	}
+	var hours = parseInt(((total_seconds / 60) / 60) % 24);
+	var minutes = parseInt((total_seconds / 60) % 60);
+	var seconds = total_seconds % 60;
+	document.getElementById('remaining_hours').innerHTML = (hours < 10 ? '0' : '') + hours;
+	document.getElementById('remaining_minutes').innerHTML = (minutes < 10 ? '0' : '') + minutes;
+	document.getElementById('remaining_seconds').innerHTML = (seconds < 10 ? '0' : '') + seconds;
+}
