@@ -38,10 +38,8 @@ function onload() {
 	site = find_website_state(url);
 	if(site.user_offer == null) {
 		// add event listener
-		document.addEventListener('DOMContentLoaded', function () {
-			document.querySelector('body').addEventListener('keypress', keyboard_submit);
-			document.querySelector('#continueButton').addEventListener('click', clickHandler);
-		});
+		document.body.addEventListener('keypress', keyboard_submit);
+		document.getElementById('continueButton').addEventListener('click', clickHandler);
 		
 		// this is the ask_offer step
 		console.log('this is a ask offer');
