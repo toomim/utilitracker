@@ -71,16 +71,10 @@ function onload() {
     
     	console.log('ask_offer.js loaded');
 	} else {
+		document.body.innerHTML = "<div id='shaded'></div><div id='info'><p>CONGRAT! TODAY'S AWARD IS $<span id='our_offer'>00.00</span> !</p><img src='ask_offer_bill.png' id='lock_pic' /><p><a class='url'></a> will be unblocked in:</p><div id='remaining_time'><span id='remaining_hours'></span>:<span id='remaining_minutes'></span>:<span id='remaining_seconds'></span></div><div id='emegency_go_through'><a href='#'>Go Through without blocking(no rewarding in this case)</a></div></div>";
 		set_url();
 		// this is the countdown step
 		console.log('this is a countdown');	
-		var tit = document.getElementById('prompt1');
-		tit.innerHTML = "CONGRAT! TODAY'S AWARD IS $<span id='our_offer'>00.00</span> !";
-		tit.style.color = "black";
-		tit.style.opacity = 1;
-		var cdt = document.getElementById('ask');
-		cdt.innerHTML = "<div id='remaining_time'><span id='remaining_hours'></span>:<span id='remaining_minutes'></span>:<span id='remaining_seconds'></span></div>";
-		cdt.style.marginTop = '0px';
 		// set the remaining time div
 		var remain_time = get_remaining_time(url);
 		if(remain_time != 'not clicked') {
