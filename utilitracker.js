@@ -129,7 +129,7 @@ function test_listener(details) {
         // Record the block event
     	store_block_data("blocked", get_username(), details.url, site.user_offer);        
 		// Redirect tab to countdown.html
-        return { redirectUrl : chrome.extension.getURL("countdown.html")
+        return { redirectUrl : chrome.extension.getURL("ask_offer.html")
             + "?url=" + escape(details.url)};
 	} 	
 }

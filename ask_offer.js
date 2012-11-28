@@ -75,6 +75,15 @@ function onload() {
 		set_url();
 		// this is the countdown step
 		console.log('this is a countdown');	
+		document.getElementById('our_offer').innerHTML = get_today_offer(url).toFixed(2);
+    	// document.getElementById('reset_data').onclick = clear_data;
+    
+    	var url_name = get_hostname(url).split('.');
+    	if(url_name[1] != "com")
+    		document.body.style.background = "url(background/" + url_name[1] + ".png)"
+    	else
+    		document.body.style.background = "url(background/" + url_name[0] + ".png)"
+		
 		// set the remaining time div
 		var remain_time = get_remaining_time(url);
 		if(remain_time != 'not clicked') {
@@ -111,7 +120,7 @@ function submit() {
         store_block_data("value submitted", get_username(), get_url(),
                          document.getElementsByName("valueInput")[0].value);
 	 	sliding_down();
-     	start_fireworks();
+     	// start_fireworks();
      	setTimeout(unblock, 5000);
 	} else {
 		document.getElementsByName('valueInput')[0].value = "";
@@ -222,13 +231,17 @@ function sliding_down() {
 	
 	// sliding ask down
 	var ask = document.getElementById('ask');
-	var prompt1 = document.getElementById('prompt1');
 	ask.style.marginTop = '5px';
 	prompt1.style.opacity = 1;
 	ask.style.opacity = 1;
 	
-	setInterval(function() {ask.style.marginTop = parseInt(ask.style.marginTop) + 1 + "px"; prompt1.style.opacity = parseFloat(prompt1.style.opacity) - 0.0045; ask.style.opacity = parseFloat(ask.style.opacity) - 0.0045;}, 20);
-	
+	setInterval(function() {ask.style.marginTop = parseInt(ask.style.marginTop) + 1 + "px"; ask.style.opacity = parseFloat(ask.style.opacity) - 0.0045;}, 20);
+	// make the background from white to black
+	var shade = document.getElementById('tint');
+	var i = 255;
+	var t = setInterval(function() {i = i - 1;shade.style.backgroundColor = "rgb("+i+","+i+","+i+")"; console.log(shade.style.backgroundColor);}, 8);
+	// setTimeout(function() {clearInterval(t);shade.style.backgroundColor = 'black';}, 3000);
+
 }
 
 function get_remaining_time(url) {
