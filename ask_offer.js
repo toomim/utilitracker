@@ -71,11 +71,12 @@ function onload() {
     
     	console.log('ask_offer.js loaded');
 	} else {
-		document.body.innerHTML = "<div id='shaded'></div><div id='info'><p>CONGRAT! TODAY'S AWARD IS $<span id='our_offer'>00.00</span> !</p><img src='ask_offer_bill.png' id='lock_pic' /><p><a class='url'></a> will be unblocked in:</p><div id='remaining_time'><span id='remaining_hours'></span>:<span id='remaining_minutes'></span>:<span id='remaining_seconds'></span></div><div id='emegency_go_through'><a href='#'>Go Through without blocking(no rewarding in this case)</a></div></div>";
+		// $<span id='our_offer'>00.00</span> !
+		document.body.innerHTML = "<div id='shaded'></div><div id='info'><p id='congratulation'>CONGRAT! TODAY'S AWARD IS </p><div id='dollar_bill'><img src='ask_offer_bill.png' id='lock_pic' /></div><p><a class='url'></a> will be unblocked in:</p><div id='remaining_time'><span id='remaining_hours'></span>:<span id='remaining_minutes'></span>:<span id='remaining_seconds'></span></div><div id='emegency_go_through'><a href='#'>Go Through without blocking(no rewarding in this case)</a></div></div>";
 		set_url();
 		// this is the countdown step
 		console.log('this is a countdown');	
-		document.getElementById('our_offer').innerHTML = get_today_offer(url).toFixed(2);
+		//document.getElementById('our_offer').innerHTML = get_today_offer(url).toFixed(2);
     	// document.getElementById('reset_data').onclick = clear_data;
     
     	var url_name = get_hostname(url).split('.');
@@ -89,7 +90,8 @@ function onload() {
 		if(remain_time != 'not clicked') {
 			countdown(remain_time);
 		}
-
+		countdown_status_bar(url);
+		set_amount_countdown();
 	}
 
 }
@@ -205,6 +207,46 @@ function is_valid_value() {
 		error.innerHTML = "";
 		return true;
 	}
+}
+
+function countdown_status_bar(url) {
+	var info = document.getElementById('info');	
+	var status_bar = document.createElement('div');
+	var dollar_bill = document.getElementById('dollar_bill');
+	var body_width = document.body.clientWidth;
+	var info_width = info.clientWidth;
+	var info_height = info.clientHeight;
+	status_bar.style.height = 190 + 'px';
+	status_bar.style.width = 430 + 'px';
+	status_bar.style.position = 'absolute';
+	status_bar.style.left = 0.5 * (body_width) - 215 + 'px';
+	status_bar.style.top = 80 + 'px';
+	status_bar.style.backgroundColor = 'black';
+	status_bar.style.opacity = 0.60;
+	status_bar.style.zIndex = 10;
+	
+	info.appendChild(status_bar);
+	var base = parseFloat(status_bar.style.left);
+	var timerr = setInterval(function(){
+		var add_on = 430 - (430.0 * get_remaining_time(url)/(60*60*24));
+		console.log("base: " + base);
+		console.log("add_on: " + add_on);
+		status_bar.style.left = base + add_on + 'px';
+		status_bar.style.width = 430 - add_on + 'px';
+	}, 1000);
+}
+
+function set_amount_countdown() {
+	var info = document.getElementById('info');	
+	var title_height = document.getElementById('congratulation').clientHeight;
+	var info_height = document.getElementById('info').clientHeight;
+	var body_height = document.body.clientHeight;
+	var body_width = document.body.clientWidth;
+	var amount_x = body_width * 0.5 - 65;
+	var amount_y = title_height + 130;
+	var amount = document.createElement('div');
+	amount.innerHTML = "<p style='margin: 0px; font-weight: bold; font-size: 50pt; color: rgb(198,255,193); position: absolute; left: " + amount_x + "px; top: " + amount_y + "px; z-index: 1000;'>" + get_today_offer(document.getElementsByClassName('url')[0].innerHTML).toFixed(1) + "</p>";
+	info.appendChild(amount);
 }
 
 function sliding_down() {	

@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", onload, false);
 var background = chrome.extension.getBackgroundPage();
 var timer = null;
 var url;
+
 function onload() {
 	// Parses the extension url to get the incoming url
 	var ws = window.location.search;

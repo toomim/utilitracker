@@ -155,6 +155,15 @@ input {
 }
 */
 
+#skip_section {
+}
+
+#skip_arrow {
+    float: right;
+    height: 50px;
+    width: 50px;
+}
+
 a { color: #fff; }
 
 #lock_pic {
