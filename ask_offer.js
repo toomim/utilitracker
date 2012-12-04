@@ -71,14 +71,24 @@ function onload() {
     
     	console.log('ask_offer.js loaded');
 	} else {
-		// $<span id='our_offer'>00.00</span> !
-		document.body.innerHTML = "<div id='shaded'></div><div id='info'><p id='congratulation'>CONGRAT! TODAY'S AWARD IS </p><div id='dollar_bill'><img src='ask_offer_bill.png' id='lock_pic' /></div><p><a class='url'></a> will be unblocked in:</p><div id='remaining_time'><span id='remaining_hours'></span>:<span id='remaining_minutes'></span>:<span id='remaining_seconds'></span></div><div id='emegency_go_through'><a href='#'>Go Through without blocking(no rewarding in this case)</a></div></div>";
-		set_url();
-		// this is the countdown step
+        // Show the countdown version
 		console.log('this is a countdown');	
+
+		// $<span id='our_offer'>00.00</span> !
+		document.body.innerHTML = "<div id='shaded'></div><img src='skip_arrow.png' id='skip_arrow'/><div id='skip_section'></div><div id='info'><p id='congratulation'>CONGRATS! TODAY'S AWARD IS </p><div id='dollar_bill'><img src='ask_offer_bill.png' id='lock_pic' /></div><p><a class='url'></a> will be unblocked in:</p><div id='remaining_time'><span id='remaining_hours'></span>:<span id='remaining_minutes'></span>:<span id='remaining_seconds'></span></div><div id='emegency_go_through'></div></div><br><a id='resetthis' href='#'>reset this site</a>";
+		set_url();
 		//document.getElementById('our_offer').innerHTML = get_today_offer(url).toFixed(2);
     	// document.getElementById('reset_data').onclick = clear_data;
     
+        $('#skip_arrow').click(function () {
+            skip_blocking();
+        });
+        
+        $('#resetthis').click(function () {
+            remove_website_state(find_website_state(url).url_pattern);
+            unblock();
+        });
+
     	var url_name = get_hostname(url).split('.');
     	if(url_name[1] != "com")
     		document.body.style.background = "url(background/" + url_name[1] + ".png)"
@@ -93,7 +103,19 @@ function onload() {
 		countdown_status_bar(url);
 		set_amount_countdown();
 	}
+}
 
+function skip_blocking() {
+    if($('#skip_section').html() == "") {
+        $('#skip_section').append("<p>Clicking confirm will bypass the blocking, but you will not be rewarded with money.</p><br /><button type='button' id='cancel_btn'>Cancel</button><button type='button' id='confirm_btn'>Confirm</button>");
+        $('#cancel_btn').click(function () {
+            unblock();
+        });
+        $('#confirm_btn').click(function () {
+            bypass_website_state(get_url());
+            unblock();
+        });
+    }
 }
 
 function set_url () {
@@ -123,7 +145,6 @@ function submit() {
                          document.getElementsByName("valueInput")[0].value);
 	 	sliding_down();
      	// start_fireworks();
-     	setTimeout(unblock, 5000);
 	} else {
 		document.getElementsByName('valueInput')[0].value = "";
 		document.getElementsByName('valueInput')[0].focus();		
@@ -249,6 +270,9 @@ function set_amount_countdown() {
 	info.appendChild(amount);
 }
 
+// Color animation library
+(function(d){d.each(["backgroundColor","borderBottomColor","borderLeftColor","borderRightColor","borderTopColor","color","outlineColor"],function(f,e){d.fx.step[e]=function(g){if(!g.colorInit){g.start=c(g.elem,e);g.end=b(g.end);g.colorInit=true}g.elem.style[e]="rgb("+[Math.max(Math.min(parseInt((g.pos*(g.end[0]-g.start[0]))+g.start[0]),255),0),Math.max(Math.min(parseInt((g.pos*(g.end[1]-g.start[1]))+g.start[1]),255),0),Math.max(Math.min(parseInt((g.pos*(g.end[2]-g.start[2]))+g.start[2]),255),0)].join(",")+")"}});function b(f){var e;if(f&&f.constructor==Array&&f.length==3){return f}if(e=/rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/.exec(f)){return[parseInt(e[1]),parseInt(e[2]),parseInt(e[3])]}if(e=/rgb\(\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*\)/.exec(f)){return[parseFloat(e[1])*2.55,parseFloat(e[2])*2.55,parseFloat(e[3])*2.55]}if(e=/#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})/.exec(f)){return[parseInt(e[1],16),parseInt(e[2],16),parseInt(e[3],16)]}if(e=/#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])/.exec(f)){return[parseInt(e[1]+e[1],16),parseInt(e[2]+e[2],16),parseInt(e[3]+e[3],16)]}if(e=/rgba\(0, 0, 0, 0\)/.exec(f)){return a.transparent}return a[d.trim(f).toLowerCase()]}function c(g,e){var f;do{f=d.curCSS(g,e);if(f!=""&&f!="transparent"||d.nodeName(g,"body")){break}e="backgroundColor"}while(g=g.parentNode);return b(f)}var a={transparent:[255,255,255]}})(jQuery);
+
 function sliding_down() {	
 	// append dollar bill
 	var info = document.getElementById('info');
@@ -271,19 +295,12 @@ function sliding_down() {
 	info.appendChild(bill);
 	info.appendChild(amount);
 	
-	// sliding ask down
-	var ask = document.getElementById('ask');
-	ask.style.marginTop = '5px';
-	prompt1.style.opacity = 1;
-	ask.style.opacity = 1;
-	
-	setInterval(function() {ask.style.marginTop = parseInt(ask.style.marginTop) + 1 + "px"; ask.style.opacity = parseFloat(ask.style.opacity) - 0.0045;}, 20);
-	// make the background from white to black
-	var shade = document.getElementById('tint');
-	var i = 255;
-	var t = setInterval(function() {i = i - 1;shade.style.backgroundColor = "rgb("+i+","+i+","+i+")"; console.log(shade.style.backgroundColor);}, 8);
-	// setTimeout(function() {clearInterval(t);shade.style.backgroundColor = 'black';}, 3000);
-
+    var duration = 1400;
+    $('#prompt1').css('opacity', 1);
+    $('#ask').css({'margin-top':'5px', opacity: 1})
+        .animate({'margin-top': '200px', opacity: 0}, {duration: duration});
+    $('#tint').animate({'background-color': '#000'},
+                       {complete: unblock, duration: duration});
 }
 
 function get_remaining_time(url) {

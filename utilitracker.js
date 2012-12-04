@@ -2,7 +2,7 @@ if (get_data('urls_status'))
     localStorage.clear()
 
 // Options
-var urls = ['www.bing.com', 'facebook.com', 'reddit.com', 'renren.com',
+var urls = ['bing.com', 'facebook.com', 'reddit.com', 'renren.com',
             'quora.com', 'news.ycombinator.com', 'twitter.com',
             'google.com', 'friendbo.com', 'youtube.com'];
 set_data('user', 'Debug_user');
@@ -20,13 +20,14 @@ function initialize_website_state(urls) {
                       last_day_check: null} }))
 }
 initialize_website_state(urls);
-// remove the monitoring urls from website_state
-function remove_website_state(urls) {
-    var new_website_state = get_data('website_state').filter(
-        // Keep this one if it doesn't match any of the urls
+
+function remove_website_state(url) {
+    var tmp = get_data('website_state').filter(
+        // Keep this one if it doesn't match any of the urls_to_remove
         function (website) {
-            return urls.indexOf(website.url_pattern) != -1; })
-    set_data('website_state', new_website_state);
+            return url != website.url_pattern})
+    set_data('website_state', tmp);
+    initialize_website_state(urls);
 }
 
 function url_matches(url, website_state) {
@@ -40,6 +41,16 @@ function find_website_state(url, optional_state) {
     return state.find(function (site) {
         return url_matches(url, site)
     })
+}
+
+function bypass_website_state(url) {
+    var state = get_data('website_state');
+    if(!state) return false;
+    var data = state.find(function (site) {
+                    return url_matches(url, site)
+               })
+    data.user_offer = 'PASS';
+    set_data('website_state', state);
 }
 
 function get_today_offer(url) {
