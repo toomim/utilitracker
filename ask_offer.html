@@ -1,40 +1,82 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
-<html>
+<!--<html>
    <head>
+      <script type="text/javascript" src="jquery.js"></script>
+      <script type="text/javascript" src="jquery-color.js"></script>
       <script type="text/javascript" src="util.js"></script>
       <script type="text/javascript" src="utilitracker.js"></script>
       <script type="text/javascript" src="ask_offer.js"></script> 
-      <script type="text/javascript" src="firework.js"></script>
-      <script type="text/javascript" src="jquery.js"></script>
       <link href="ask_offer.css" type="text/css" rel="stylesheet" />
    </head>
 
    <body>
-      <!-- 
-      <iframe id="background_url"></iframe>-->
+      <iframe id="background_url"></iframe>
       <div id="tint">
 			<img src="uwseal.png" id="uwseal" />
          <div id="info">
-            <!--<h1>Utilitracker</h1>-->
-            <!--<div id="rule"><hr /></div>-->
             <div id="errorAlert"></div>
             <div id="singleClickOnGoThrough">
-               <!--<p style="">How much do you want to access ?</p>-->
-               <!--<p style="">What would it take to buy your next 24 hours of <a id="url"></a> access?</p>-->
                <p id="prompt1">Cash Chance!</p>
             </div>
             <div id="ask">
-               <p id="prompt2">How much money would we have to give you for
+               <p id="prompt2">How much would we have to give you for
                you to not have access to <a class="url"></a> for 24 hours?</p>
             
-               <!--<div class="starburst" src="starburst.png">-->
-               <div id="answer">
-                  $<input type="text" name="valueInput" id="valueInput"></input>
-                  <img src='ask_offer_submit.png' id="continueButton" />                  
+               <div id="answer"><span id="dollar_sign">$</span><input type="text" name="valueInput" id="valueInput"></input><img src='submit.png' id="continueButton" />
                </div>
             </div>
          </div>
 	 	<div id="ab_test_options"></div>
       </div>
    </body>
+</html>-->
+
+<html>
+    <head>
+      <script type="text/javascript" src="jquery.js"></script>
+      <script type="text/javascript" src="jquery-color.js"></script>
+      <script type="text/javascript" src="util.js"></script>
+      <script type="text/javascript" src="utilitracker.js"></script>
+      <script type="text/javascript" src="ask_offer.js"></script> 
+      <link href="ask_offer.css" type="text/css" rel="stylesheet" />
+   </head>
+   
+   <body>
+        <div id="tint" />
+        <center>
+            <div id="gift_box">
+                <div id="error_msg" />
+                <div id="gift_box_top">
+                    <img src="gift_box_top.png">
+                </div>
+                <div id="gift_box_bottom">
+                    <img src="gift_box_bottom.png">
+                    <p id="prompt">Sell your <a class="url" /> access for 24 hours. <br> Name your price.</p>
+                    <div id="answer">
+                        <span id="dollar_sign">$</span>
+                        <input type="text" name="valueInput" id="valueInput">
+                        <img src='submit.png' id="submitButton" />
+                    </div>
+                </div>
+            </div>
+            <div id='block_section'>
+                <p id='congratulation'>CONGRATS! TODAY'S AWARD IS </p>
+                <div id='dollar_bill'>
+                    <img src='dollar_bill.png' />
+                    <p id='dollar_amount' />
+                    <div id="status_bar" />
+                </div>
+                <p id='unblocked'><a class='url'></a> will be unblocked in:</p>
+                <div id='remaining_time'><span id='remaining_hours'></span>:<span id='remaining_minutes'></span>:<span id='remaining_seconds'></span></div>
+                <a id='resetthis' href='#'>reset this site</a>
+            </div>
+        </center>
+        <div id="skip_section">
+            <img src="skip_arrow.png" id="skip_arrow">
+            <p>Giving up on the $ <span id="money" /> ? <br>
+            <button type='button' class='green_btn' id='confirm_btn'>Yes, I've changed my mind.<br>Unblock <span id=website></span>!
+            </button>
+        </div>
+    </body>
 </html>
+

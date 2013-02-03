@@ -1,7 +1,28 @@
+@font-face {
+    font-family: futura_light;
+    src: url("FuturaStd-Light.otf");
+}
+
+@font-face {
+    font-family: futura_book;
+    src: url("FuturaStd-Book.otf");
+}
+
+@font-face {
+    font-family: futura_bold;
+    src: url("FuturaStd-Bold.otf");
+}
+
+@font-face {
+    font-family: futura_light;
+    src: url("FuturaStd-Light.otf");
+}
+
 body {
 	/*background-image: url("background.jpg");*/
 	font-size: 20pt;
 	font-family: Helvetica, Arial;
+	color: red;
 	text-align: center;
 	padding:0; margin: 0;
 }
@@ -14,8 +35,9 @@ body {
 	position: absolute;
 	top: 0; left: 0;
 }
-#info {
-	width: 470px;
+
+#gift_box {
+	width: 500px;
 	margin-left: auto;
 	margin-right: auto;
 	padding: 20px 40px;
@@ -24,28 +46,27 @@ body {
 	color: #ffffff;
 }
 
-#prompt1 {
+#prompt {
 	margin: 0px;
-}
-
-#prompt2 {
-	margin: 0px;
+	font-family: futura_light;
+	font-size: 21pt;
 	padding-top: 20px;
 	padding-left: 20px;
 	padding-right: 20px;
 }
 
-#ask {
+#gift_box_bottom {
 	margin-top: 0px;
 	background-image: url('ask_offer_background_small.png');
-	background-position-x: 11px;
+	background-position-x: 100px;
 	background-repeat: no-repeat;
-	width: 512px;
 	height: 204px;
 }
 
 #answer {
-	vertical-align: top;
+	vertical-align: text-top;
+	font-family: futura_light;
+	font-size: 21px;
 }
 
 .title {
@@ -59,9 +80,9 @@ body {
 	height: 68px;
 }
 .subtitle {
-	font-family: garamond;
+	font-family: futura_light;
 	/*font-style: italic;*/
-	font-size: 20pt;
+	font-size: 21px;
 	color: #ddd;
 	/*position: absolute;
 	left: 200px;
@@ -100,6 +121,10 @@ a {
 
 #valueInput {
 	width: 75px;
+	height: 29px;
+	vertical-align: top;
+	margin-left: 10px;
+	margin-right: 10px;
 	font-size: 20pt;
 	font-weight: bold;
 }
@@ -114,7 +139,7 @@ img.starburst {
 }
 
 input {
-	font-family: helvetia, arial;
+	font-family: helvetica, arial;
 	height: 35px;
 	font-weight: bold;
 	border: 0px;
@@ -145,39 +170,81 @@ input {
 	z-index: -100;
 }
 
-/*
+
 #info {
 	text-align: center;
 	padding-top: 50px;
 	width: 60%;
 	margin-left: auto;
 	margin-right: auto;
+	padding-top: 80px;
 }
-*/
+
+
+.green_btn {
+	-moz-box-shadow:inset 0px 1px 0px 0px #a4e271;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #a4e271;
+	box-shadow:inset 0px 1px 0px 0px #a4e271;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89c403), color-stop(1, #77a809) );
+	background:-moz-linear-gradient( center top, #89c403 5%, #77a809 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#89c403', endColorstr='#77a809');
+	background-color:#89c403;
+	border:1px solid #74b807;
+	display:inline-block;
+	color:#ffffff;
+	font-family:futura_light, helvetica, arial;
+	font-size:14px;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #528009;
+}
+
+.green_btn:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77a809), color-stop(1, #89c403) );
+	background:-moz-linear-gradient( center top, #77a809 5%, #89c403 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77a809', endColorstr='#89c403');
+	background-color:#77a809;
+}
+
+.green_btn:active {
+	position:relative;
+	top:1px;
+}
+
+#confirm_btn {
+    margin-top: 10px;
+}
 
 #skip_section {
+    font-family: futura_book;
+    cursor: default;
+    padding: 10px;
+    clear: right;
     float: right;
     color: white;
-    font-size: 8pt;
+    background-color: #848484;
+    font-size: 12pt;
+    position: absolute;
+    right: 33px;
+    top: 25px;
 }
 
 #skip_arrow {
+    margin-top: 10px;
+    margin-right: 10px;
     float: right;
-    cursor: pointer;
-    height: 50px;
-    width: 50px;
+    width: 35px;
+    height: 24px;
 }
 
 a { color: #fff; }
 
 #lock_pic {
-	margin-top: -20px;
-	margin-bottom: -30px;
 }
 
 #remaining_time {
-	font-size: 70pt;
-	font-family: monaco, consolas, courier;
+	font-size: 35pt;
+	font-family: futura_book, monaco, consolas, courier;
 }
 
 #reset_data {
@@ -192,4 +259,27 @@ a { color: #fff; }
 #resetthis {
 	font-size: 12px;
 	color: #888;
+}
+
+#congratulation {
+    font-family: futura_light;
+    font-size: 21px;
+}
+
+#unblocked {
+    font-family: futura_light;
+    font-size: 21px;
+}
+
+#dollar_amount {
+    font-family: futura_bold;
+    margin: 0px;
+    font-weight: bold;
+    font-size: 50pt;
+    color: rgb(65, 135, 75);
+    position: absolute;
+}
+
+#dollar_sign {
+    vertical-align: 8px;
 }
