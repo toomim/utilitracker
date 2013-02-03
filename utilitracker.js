@@ -66,15 +66,21 @@ function get_today_offer(url) {
             } else {
                 state.offer_day_check = today_date.getTime();
                 result = 100;
-                while(result > 40) {
+                while(result > 40 && result > .1)
                     result = Math.pow(1.25, (Math.random() * 35 - 18));
-                }
+
+                if (result > 10)
+                    result = Math.floor(result)
+                else
+                    result = Math.floor(result * 10) / 10
+
                 state.our_offer = result;
             }
 		}
     });
     set_data('website_state', states);
     
+
     return result;
 }
 

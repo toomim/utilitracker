@@ -23,21 +23,37 @@ document.addEventListener("DOMContentLoaded", onload, false);
 
 function show_block_stuff(instantly) {
 	// set the remaining time div
-	var remain_time = get_remaining_time(url);
+	var remain_time = get_remaining_time(get_url());
 	if(remain_time != 'not clicked') {
 		countdown(remain_time);
 	}
-	countdown_status_bar(url);
-	set_amount_countdown();
 
-    var duration = 3000;
+    // Start the remaining time counting down
+	var timerr = setInterval(function(){
+        $('#status_bar').css('width',
+                             430 - (430.0 * get_remaining_time(get_url())/(60*60*24)))
+	}, 1000);
+
+
+    var duration = instantly ? 0 : 3000;
     $('#singleClickOnGoThrough').css({'margin-top':'0px', opacity: 1})
         .animate({'margin-top': '-50px', opacity: 0}, {duration: duration});
     $('#ask').css({'margin-top':'5px', opacity: 1})
         .animate({'margin-top': '200px', opacity: 0}, {duration: duration});
     $('#tint').animate({'background-color': '#222'},
-                       {complete: unblock, duration: duration});
+                       {/*complete: unblock,*/ duration: duration});
 
+    if (instantly || true) {
+        console.log('Showing page 2', $('#block_section')[0])
+        $('#block_section').show();
+        $('#skip_section').show();
+        $('#gift_box').hide();
+        console.log('Showed page 2')
+    } else {
+        $('#block_section').fadeIn();
+        $('#skip_section').fadeIn();
+        $('#gift_box').fadeOut();
+    }        
 
 /*
 	// append dollar bill
@@ -77,14 +93,14 @@ function onload() {
 
     // Add Event Listeners
 	document.body.addEventListener('keypress', keyboard_submit);
-	document.getElementById('continueButton').addEventListener('click', clickHandler);
+	$('#submitButton').click(clickHandler);
 
     // Set up the escape arrow event listeners
-    $('#skip_section').hide();
+    $('#skip_prompt').hide();
     $('#skip_arrow').mouseover(function () {
-        $('#skip_section').show();
-        $('#skip_section').mouseleave(function () {
-            $('#skip_section').hide();
+        $('#skip_prompt').show();
+        $('#skip_prompt').mouseleave(function () {
+            $('#skip_prompt').hide();
         });
         $('#confirm_btn').click(function () {
             bypass_website_state(url);
@@ -104,6 +120,9 @@ function onload() {
     set_data('variant', (v+1) % variants.length);
     $('#prompt2').html(variants[v][0]);
 
+    // Set the dollar amount in the dollar bill
+    $('#dollar_amount').html('' + get_today_offer(get_url()))
+
 	// set the background page according to the url
     var url_name = get_hostname(url).split('.');
     if(url_name[1] != "com")
@@ -115,7 +134,7 @@ function onload() {
     set_urls();
 
     // Focus on the text box
-    $('valueInput').focus()
+    $('#valueInput').focus()
 }
 
 function get_url () {
@@ -142,12 +161,11 @@ function set_urls () {
 function submit() {
 	if(is_valid_value()) {
         store_block_data("value submitted", get_username(), get_url(),
-                         document.getElementsByName("valueInput")[0].value);
+                         $("#valueInput")[0].value);
 
 	 	show_block_stuff()
 	} else {
-		document.getElementsByName('valueInput')[0].value = "";
-		document.getElementsByName('valueInput')[0].focus();		
+		$('#valueInput').val('').focus()
 	}
 }
 
@@ -164,7 +182,7 @@ function keyboard_submit(event) {
 
 // Gets the url
 function get_user_offer() {
-	return $('valueInput')[0].value
+	return $('#valueInput')[0].value
 }
 
 // Temporary function, replace with account system code
@@ -189,9 +207,8 @@ function unblock() {
 // returns true if value is valid. 
 
 function is_valid_value() {
-	var value = document.getElementsByName('valueInput')[0].value;
-	var error = document.getElementById("errorAlert");
-	
+	var value = $('#valueInput')[0].value;
+	var error = $("#errorAlert");
 	
 	// Make sure value contains only numbers and up to one decimal point
 	var valid_characters = "0123456789.";	
@@ -199,7 +216,7 @@ function is_valid_value() {
 	var point = 0;
 	
 	// Check each character for validity, decimal points
-	for (i = 0; i < value.length && char_result == true; i++) {
+	for (var i = 0; i < value.length && char_result == true; i++) {
 		var temp = value.charAt(i);
 		if (valid_characters.indexOf(temp) == -1) {
 			char_result = false;
@@ -226,52 +243,6 @@ function is_valid_value() {
 	}
 }
 
-function countdown_status_bar(url) {
-	var info = document.getElementById('info');	
-	var status_bar = document.createElement('div');
-	var dollar_bill = document.getElementById('dollar_bill');
-	var body_width = document.body.clientWidth;
-	var info_width = info.clientWidth;
-	var info_height = info.clientHeight;
-	status_bar.style.height = 185 + 'px';
-	status_bar.style.width = 430 + 'px';
-	status_bar.style.position = 'absolute';
-	status_bar.style.left = 0.5 * (body_width) - 215 + 'px';
-	status_bar.style.top = 149 + 'px';
-	status_bar.style.backgroundColor = 'black';
-	status_bar.style.opacity = 0.60;
-	status_bar.style.zIndex = 10;
-	
-	info.appendChild(status_bar);
-	var base = parseFloat(status_bar.style.left);
-	var timerr = setInterval(function(){
-		var add_on = 430 - (430.0 * get_remaining_time(url)/(60*60*24));
-		console.log("base: " + base);
-		console.log("add_on: " + add_on);
-		status_bar.style.left = base + add_on + 'px';
-		status_bar.style.width = 430 - add_on + 'px';
-	}, 1000);
-}
-
-function set_amount_countdown() {
-	var info = document.getElementById('info');	
-	var title_height = document.getElementById('congratulation').clientHeight;
-	var info_height = document.getElementById('info').clientHeight;
-	var body_height = document.body.clientHeight;
-	var body_width = document.body.clientWidth;
-	var amount_x = body_width * 0.5 - 57;
-	var amount_y = title_height + 180;
-	var amount = document.createElement('div');
-	var todays_offer = get_today_offer(document.getElementsByClassName('url')[0].innerHTML);
-	if (todays_offer >= 10) {
-	    todays_offer = todays_offer.toFixed(0);
-	} else {
-	    todays_offer = todays_offer.toFixed(1);
-	}
-	amount.innerHTML = "<p id='dollar_amount' style='left: " + amount_x + "px; top: " + amount_y + "px;'>" + todays_offer + "</p>";
-	info.appendChild(amount);
-}
-
 function get_remaining_time(url) {
 	var temp_data = get_data('website_state');
 	for(var i = 0; i < temp_data.length; i++) {
@@ -279,8 +250,8 @@ function get_remaining_time(url) {
 			// found the data
 			var now = new Date();
 			var passed = now.getTime() - temp_data[i].last_day_check;
-			console.log('passed: ' + passed);
-			console.log('remaining' + (60*60*24*1000 - passed) / 1000);
+			//console.log('passed: ' + passed);
+			//console.log('remaining' + (60*60*24*1000 - passed) / 1000);
 			return parseInt((60*60*24*1000 - passed) / 1000);
 		}
 	}
@@ -309,7 +280,7 @@ function oneSecond() {
 		timer = null;
 		total_seconds--;
 		// trying to go through
-		window.location = url;
+		//window.location = url;
 	} else {
 		total_seconds--;
 	}

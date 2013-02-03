@@ -42,16 +42,15 @@
    </head>
    
    <body>
-        <div id="tint" />
+        <div id="tint"></div>
         <center>
             <div id="gift_box">
-                <div id="error_msg" />
+                <div id="error_msg"></div>
                 <div id="gift_box_top">
-                    <img src="gift_box_top.png">
+                    <img src="gift_box_top.png" />
                 </div>
                 <div id="gift_box_bottom">
-                    <img src="gift_box_bottom.png">
-                    <p id="prompt">Sell your <a class="url" /> access for 24 hours. <br> Name your price.</p>
+                    <p id="prompt">Sell your <a class="url"></a> access for 24 hours. <br> Name your price.</p>
                     <div id="answer">
                         <span id="dollar_sign">$</span>
                         <input type="text" name="valueInput" id="valueInput">
@@ -62,20 +61,21 @@
             <div id='block_section'>
                 <p id='congratulation'>CONGRATS! TODAY'S AWARD IS </p>
                 <div id='dollar_bill'>
-                    <img src='dollar_bill.png' />
-                    <p id='dollar_amount' />
-                    <div id="status_bar" />
+                    <!--<img src='dollar_bill.png' />-->
+                    <p id='dollar_amount'></p>
+                    <div id="status_bar"></div>
                 </div>
-                <p id='unblocked'><a class='url'></a> will be unblocked in:</p>
+                <p id='unblocked_url'><a class='url'></a> will be unblocked in:</p>
                 <div id='remaining_time'><span id='remaining_hours'></span>:<span id='remaining_minutes'></span>:<span id='remaining_seconds'></span></div>
                 <a id='resetthis' href='#'>reset this site</a>
             </div>
         </center>
         <div id="skip_section">
             <img src="skip_arrow.png" id="skip_arrow">
-            <p>Giving up on the $ <span id="money" /> ? <br>
-            <button type='button' class='green_btn' id='confirm_btn'>Yes, I've changed my mind.<br>Unblock <span id=website></span>!
-            </button>
+            <div id="skip_prompt">
+                <p>Giving up on the $ <span id="money" /> ? <br>
+                <button type='button' class='green_btn' id='confirm_btn'>Yes, I've changed my mind.<br>Unblock <span id=website></span>!</button>
+            </div>
         </div>
     </body>
 </html>

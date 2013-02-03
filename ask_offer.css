@@ -1,28 +1,27 @@
 @font-face {
     font-family: futura_light;
-    src: url("FuturaStd-Light.otf");
+    src: url("Fonts/FuturaStd-Light.otf");
 }
 
 @font-face {
     font-family: futura_book;
-    src: url("FuturaStd-Book.otf");
+    src: url("Fonts/FuturaStd-Book.otf");
 }
 
 @font-face {
     font-family: futura_bold;
-    src: url("FuturaStd-Bold.otf");
+    src: url("Fonts/FuturaStd-Bold.otf");
 }
 
 @font-face {
     font-family: futura_light;
-    src: url("FuturaStd-Light.otf");
+    src: url("Fonts/FuturaStd-Light.otf");
 }
 
 body {
-	/*background-image: url("background.jpg");*/
 	font-size: 20pt;
 	font-family: Helvetica, Arial;
-	color: red;
+	color: #fff;
 	text-align: center;
 	padding:0; margin: 0;
 }
@@ -34,6 +33,7 @@ body {
 	opacity: 0.90;
 	position: absolute;
 	top: 0; left: 0;
+	z-index: -10;
 }
 
 #gift_box {
@@ -41,8 +41,6 @@ body {
 	margin-left: auto;
 	margin-right: auto;
 	padding: 20px 40px;
-	/*background-color: #444;
-	opacity: 0.8;*/
 	color: #ffffff;
 }
 
@@ -57,57 +55,28 @@ body {
 
 #gift_box_bottom {
 	margin-top: 0px;
-	background-image: url('ask_offer_background_small.png');
-	background-position-x: 100px;
+	background-image: url('gift_box_bottom.png');
 	background-repeat: no-repeat;
 	height: 204px;
 }
 
 #answer {
+    margin-top: 40px;
 	vertical-align: text-top;
 	font-family: futura_light;
 	font-size: 21px;
 }
 
-.title {
-	font-weight: bold;
-	font-size: 60px;
-	font-family: gotham;
-	/*position: absolute;
-	left: 200px;
-	top: 20px;*/
-	border-bottom: 6px #666 solid;
-	height: 68px;
-}
-.subtitle {
+
+#prompt {
 	font-family: futura_light;
-	/*font-style: italic;*/
 	font-size: 21px;
 	color: #ddd;
-	/*position: absolute;
-	left: 200px;
-	top: 115px;*/
-}
-img.lock { opacity: .2; }
-#usernameview {
-	font-weight: bold;
-	font-size: larger;
 }
 
-#errorAlert {
+#error_msg {
 	color: red;
 	font-size: 30pt;
-}
-
-#ab_test_options, #ab_test_options> a {
-	text-align: left;
-	font-size: 12px;
-	margin-top: 150px;
-	color: #888;
-}
-
-.utilityHightlight {
-	color: cyan;
 }
 
 h1 {
@@ -121,7 +90,7 @@ a {
 
 #valueInput {
 	width: 75px;
-	height: 29px;
+	height: 30px;
 	vertical-align: top;
 	margin-left: 10px;
 	margin-right: 10px;
@@ -129,12 +98,7 @@ a {
 	font-weight: bold;
 }
 
-img.starburst {
-	background-image: url('starburst.png');
-	position: absolute;
-}
-
-#continueButton {
+#submitButton {
 	height: 30px;
 }
 
@@ -157,29 +121,6 @@ input {
 	top: 10px;
 	opacity: 0.30;
 }
-
-#shaded {
-	padding: 0px;
-	margin: 0px;
-	z-index: 10;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background-color: rgb(0,0,0);
-	opacity: 0.80;
-	z-index: -100;
-}
-
-
-#info {
-	text-align: center;
-	padding-top: 50px;
-	width: 60%;
-	margin-left: auto;
-	margin-right: auto;
-	padding-top: 80px;
-}
-
 
 .green_btn {
 	-moz-box-shadow:inset 0px 1px 0px 0px #a4e271;
@@ -216,6 +157,10 @@ input {
 }
 
 #skip_section {
+    display: none;
+}
+
+#skip_prompt {
     font-family: futura_book;
     cursor: default;
     padding: 10px;
@@ -226,20 +171,18 @@ input {
     font-size: 12pt;
     position: absolute;
     right: 33px;
-    top: 25px;
+    top: 30px;
 }
 
 #skip_arrow {
+    position: absolute;
+    right: 10px;
+    top: 15px;
     margin-top: 10px;
     margin-right: 10px;
     float: right;
     width: 35px;
     height: 24px;
-}
-
-a { color: #fff; }
-
-#lock_pic {
 }
 
 #remaining_time {
@@ -251,35 +194,44 @@ a { color: #fff; }
 	float: right;
 }
 
-#emegency_go_through a {
-	color: cyan;
-	font-size: 15pt;
-}
-
 #resetthis {
 	font-size: 12px;
 	color: #888;
 }
 
 #congratulation {
+    margin-top: 150px;
     font-family: futura_light;
     font-size: 21px;
 }
 
-#unblocked {
+#unblocked_url {
     font-family: futura_light;
     font-size: 21px;
 }
 
+#dollar_bill {
+	height: 187px;
+	width: 431px;
+	position: relative;
+	background-image: url(dollar_bill.png);
+}
 #dollar_amount {
     font-family: futura_bold;
     margin: 0px;
     font-weight: bold;
     font-size: 50pt;
     color: rgb(65, 135, 75);
-    position: absolute;
+	position: relative;
+	top: 60px;
 }
-
+#dollar_bill img {
+	position: absolute;
+}
 #dollar_sign {
     vertical-align: 8px;
+}
+
+#block_section {
+    display: none;
 }
