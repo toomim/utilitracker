@@ -21,7 +21,7 @@
 	],
 	"web_accessible_resources": [
 		"icon.png",
-		"ask_offer.html",
+		"block.html",
 		"countdown.html",
 		"chrome-extension://*"
 	]

@@ -44,11 +44,9 @@ function show_block_stuff(instantly) {
                        {/*complete: unblock,*/ duration: duration});
 
     if (instantly || true) {
-        console.log('Showing page 2', $('#block_section')[0])
         $('#block_section').show();
         $('#skip_section').show();
         $('#gift_box').hide();
-        console.log('Showed page 2')
     } else {
         $('#block_section').fadeIn();
         $('#skip_section').fadeIn();
@@ -75,16 +73,19 @@ function show_block_stuff(instantly) {
 	bill.innerHTML = "<img src='ask_offer_bill.png' style='position: absolute; left: " + bill_x + "px; top: " + bill_y + "px; z-index: -20; width: 430px;' />";
 
 	var amount = document.createElement('div');
-	amount.innerHTML = "<p style='margin: 0px; font-size: 30pt; color: black; position: absolute; left: " + amount_x + "px; top: " + amount_y + "px; z-index: -10;'>" + get_today_offer(document.getElementsByClassName('url')[0].innerHTML).toFixed(2) + "</p>";
+	amount.innerHTML = "<p style='margin: 0px; font-size: 30pt; color: black; position: absolute; left: " + amount_x + "px; top: " + amount_y + "px; z-index: -10;'>" + get_todays_offer(document.getElementsByClassName('url')[0].innerHTML).toFixed(2) + "</p>";
 	info.appendChild(bill);
 	info.appendChild(amount);
 */
 
 }
 
+var todays_offer;
+
 // Called by the event listener when the page loads
 function onload() {
     var url = get_url();
+    todays_offer = get_todays_offer(get_url())
 	
     // Choose which stage of animation we're displaying
 	site = find_website_state(url);
@@ -121,7 +122,7 @@ function onload() {
     $('#prompt2').html(variants[v][0]);
 
     // Set the dollar amount in the dollar bill
-    $('#dollar_amount').html('' + get_today_offer(get_url()))
+    $('#dollar_amount').html('' + get_todays_offer(get_url()))
 
 	// set the background page according to the url
     var url_name = get_hostname(url).split('.');
@@ -135,6 +136,9 @@ function onload() {
 
     // Focus on the text box
     $('#valueInput').focus()
+
+    //setTimeout(100, function () { console.log('6', $('#block_section').css('display')) })
+
 }
 
 function get_url () {

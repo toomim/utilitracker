@@ -53,7 +53,7 @@ function bypass_website_state(url) {
     set_data('website_state', state);
 }
 
-function get_today_offer(url) {
+function get_todays_offer(url) {
     var states = get_data('website_state');
     var result;
     states.each(function (state) {
@@ -136,17 +136,17 @@ function test_listener(details) {
         store_block_data("ask offer", get_username(), details.url, null);
 
         // If this site needs an offer, ask for it
-		// Redirect tab to ask_offer.html
-		return { redirectUrl : chrome.extension.getURL("ask_offer.html")
+		// Redirect tab to block.html
+		return { redirectUrl : chrome.extension.getURL("block.html")
               + "?url=" + escape(details.url) };
     }
 	// Otherwise, we have a user's offer for this
     // If the user's offer is less than ours, then we pay them and block
-    if (site.user_offer < get_today_offer(details.url)) {
+    if (site.user_offer < get_todays_offer(details.url)) {
         // Record the block event
     	store_block_data("blocked", get_username(), details.url, site.user_offer);        
 		// Redirect tab to countdown.html
-        return { redirectUrl : chrome.extension.getURL("ask_offer.html")
+        return { redirectUrl : chrome.extension.getURL("block.html")
             + "?url=" + escape(details.url)};
 	} 	
 }
