@@ -40,15 +40,9 @@ function show_block_stuff(instantly) {
     // fades in underneath it intead of being pushed below it
     $('#gift_box').make_absolute()
 
-    if (instantly) {
-        $('#block_section').show()
-        $('#skip_section').show()
-        $('#gift_box').hide()
-    } else {
-        $('#block_section').fadeIn(duration);
-        $('#skip_section').fadeIn(duration);
-        $('#gift_box').fadeOut(duration);
-    }        
+    $('#block_section').fadeIn(duration);
+    $('#skip_section').fadeIn(duration);
+    $('#gift_box').fadeOut(duration);
 
     var site_state = find_website_state(url)
     if (site_state.user_offer > get_todays_offer(url))
