@@ -28,22 +28,26 @@ function show_block_stuff(instantly) {
     update_countdown()
 	var timer = setInterval(update_countdown, 1000)
 
+    // Now we'll animate stuff
     var duration = instantly ? 0 : 3000;
-    $('#singleClickOnGoThrough').css({'margin-top':'0px', opacity: 1})
-        .animate({'margin-top': '-50px', opacity: 0}, {duration: duration});
-    $('#ask').css({'margin-top':'5px', opacity: 1})
-        .animate({'margin-top': '200px', opacity: 0}, {duration: duration});
-    $('#tint').animate({'background-color': '#222'},
-                       {/*complete: unblock,*/ duration: duration});
 
     // This takes gift box out of the DOM order, so that the block section
     // fades in underneath it intead of being pushed below it
     $('#gift_box').make_absolute()
 
+    // Animate things
     $('#block_section').fadeIn(duration);
     $('#skip_section').fadeIn(duration);
-    $('#gift_box').fadeOut(duration);
+    //$('#gift_box').fadeOut(duration);
 
+    $('#gift_box_top').animate({'margin-top': '-50px', opacity: 0}, {duration: duration});
+    $('#gift_box_bottom').animate({'margin-top': '200px', opacity: 0}, {duration: duration});
+    $('#tint').animate({'background-color': '#222'}, {duration: duration});
+
+    // Hide the old junk
+    setTimeout(function () {$('#gift_box').hide()}, duration);
+
+    // And ... the big moment ... DOES HE WIN THE FISH?
     var site_state = find_website_state(url)
     if (site_state.user_offer > get_todays_offer(url))
         setTimeout(unblock, 1000)
