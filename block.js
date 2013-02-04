@@ -117,7 +117,7 @@ function get_url () {
 
 function set_urls () {
     var url = get_url()
-	$('.url').attr('href', url).append(get_hostname(url));
+    $('.url').attr('href', url).append(get_hostname(url));
 }
 
 
