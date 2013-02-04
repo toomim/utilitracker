@@ -8,9 +8,6 @@ var variants = [['<div class="subtitle">Sell your <a class="url"></a> access for
                  '<img src="lock_dim.png" class="lock">'],
 ]
 
-var timer = null;
-var url = get_url()
-
 /*,
                 ['How much money would we have to give you for you to not have access to <a class="url"></a> for 24 hours?', '']],
                 ['<div class="title">Cash Chance!</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
@@ -19,6 +16,17 @@ var url = get_url()
                 ['What would it take for you to choose CASH over the next 24 hours of <a class="url"></a>?', '<img src="gimme_money.png">']
                ];*/
 
+
+function get_url () {
+	// Parses the extension url to get the incoming url
+	if (!location.search) return
+	var url = location.search.substring(1).split('&')
+        .map (function (keyval) {return keyval.split('=');})
+        .find (function (keyval) {return keyval[0] == 'url';})[1];
+    return decodeURIComponent(url);
+}
+var url = get_url(); // The original url that the user wanted to go to
+
 // These listeners allows this javascript to be executed in the extension without
 // being blocked by Chrome for security reasons
 document.addEventListener("DOMContentLoaded", onload, false);
@@ -26,7 +34,7 @@ document.addEventListener("DOMContentLoaded", onload, false);
 function show_block_stuff(instantly) {
     // Initialize the countdown, and then start it counting down
     update_countdown()
-	var timer = setInterval(update_countdown, 1000)
+	countdown_timer = setInterval(update_countdown, 1000)
 
     // Now we'll animate stuff
     var duration = instantly ? 0 : 3000;
@@ -49,10 +57,9 @@ function show_block_stuff(instantly) {
 
     // And ... the big moment ... DOES HE WIN THE FISH?
     var site_state = find_website_state(url)
-    if (site_state.user_offer > get_todays_offer(url))
+    if (site_state.user_offer > todays_offer)
         setTimeout(unblock, 1000)
 }
-
 var todays_offer;
 
 // Called by the event listener when the page loads
@@ -65,7 +72,8 @@ function onload() {
         show_block_stuff(true)
 
     // Add Event Listeners
-	document.body.addEventListener('keypress', keyboard_submit);
+	document.body.addEventListener('keypress',
+                                   function (event) {if(event.keyCode == 13) submit()})
 	$('#submitButton').click(submit);
 
     // Set up the escape arrow event listeners
@@ -104,7 +112,7 @@ function onload() {
     	document.body.style.background = "url(background/" + url_name[0] + ".png)"
     
     // Set the url for all class="url" objects
-    set_urls();
+    $('.url').attr('href', url).append(get_hostname(url));
 
     // Focus on the text box
     $('#valueInput').focus()
@@ -113,17 +121,10 @@ function onload() {
 
 }
 
-function get_url () {
-	// Parses the extension url to get the incoming url
-	if (!location.search) return
-	var url = location.search.substring(1).split('&')
-        .map (function (keyval) {return keyval.split('=');})
-        .find (function (keyval) {return keyval[0] == 'url';})[1];
-    return decodeURIComponent(url);
-}
-
-function set_urls () {
-    $('.url').attr('href', url).append(get_hostname(url));
+// Redirects the tab to the page the user intended to go to.
+function unblock() {
+	console.log('unblocking: ', url);
+	window.location = url;
 }
 
 
@@ -135,33 +136,10 @@ function submit() {
     }
 
     // Otherwise, let's roll
-    store_block_data("value submitted", get_username(), url,
+    store_block_data("value submitted", get_data('username'), url,
                      $("#valueInput").val());
 	show_block_stuff()
 }
-
-// Allows user to use enter key to submit
-function keyboard_submit(event) {
-	if(event.keyCode == 13)
-		submit();
-}
-
-// Gets the url
-function get_user_offer() {
-	return $('#valueInput').val()
-}
-
-// Temporary function, replace with account system code
-function get_username() {
-	return get_data('username');
-}
-
-// Redirects the tab to the page the user intended to go to.
-function unblock() {
-	console.log('unblocking: ', url);
-	window.location = url;
-}
-
 
 
 // Checks to see if the value entered in the text box is valid.
@@ -215,6 +193,7 @@ function time_left() {
 	return parseInt((60*60*24*1000 - passed) / 1000);
 }
 
+var countdown_timer;
 function update_countdown () {
     var seconds = time_left();
 
