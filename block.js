@@ -22,18 +22,9 @@ var timer = null;
 document.addEventListener("DOMContentLoaded", onload, false);
 
 function show_block_stuff(instantly) {
-	// set the remaining time div
-	var remain_time = get_remaining_time(get_url());
-	if(remain_time != 'not clicked') {
-		countdown(remain_time);
-	}
-
-    // Start the remaining time counting down
-	var timerr = setInterval(function(){
-        $('#status_bar').css('width',
-                             430 - (430.0 * get_remaining_time(get_url())/(60*60*24)))
-	}, 1000);
-
+    // Initialize the countdown, and then start it counting down
+    update_countdown()
+	var timer = setInterval(update_countdown, 1000)
 
     var duration = instantly ? 0 : 3000;
     $('#singleClickOnGoThrough').css({'margin-top':'0px', opacity: 1})
@@ -52,32 +43,6 @@ function show_block_stuff(instantly) {
         $('#skip_section').fadeIn();
         $('#gift_box').fadeOut();
     }        
-
-/*
-	// append dollar bill
-	var info = document.getElementById('info');
-	var title_width = document.getElementById('singleClickOnGoThrough').clientWidth;
-	var title_height = document.getElementById('singleClickOnGoThrough').clientHeight;
-	var body_width = document.body.clientWidth;
-	var body_height = document.body.clientHeight;
-	var info_height = document.getElementById('info').clientHeight;
-	//var bill_x = 0.5 * parseInt(body_width - title_width) + 100; 
-	var bill_x = 363;
-	//var bill_y = 0.5 * parseInt(body_height - info_height) + title_height + 20;
-	//var bill_y = title_height + 40;
-	var bill_y = 149;
-	var amount_x = bill_x + 165;
-	var amount_y = bill_y + 75;
-
-	var bill = document.createElement('div');
-	bill.innerHTML = "<img src='ask_offer_bill.png' style='position: absolute; left: " + bill_x + "px; top: " + bill_y + "px; z-index: -20; width: 430px;' />";
-
-	var amount = document.createElement('div');
-	amount.innerHTML = "<p style='margin: 0px; font-size: 30pt; color: black; position: absolute; left: " + amount_x + "px; top: " + amount_y + "px; z-index: -10;'>" + get_todays_offer(document.getElementsByClassName('url')[0].innerHTML).toFixed(2) + "</p>";
-	info.appendChild(bill);
-	info.appendChild(amount);
-*/
-
 }
 
 var todays_offer;
@@ -94,7 +59,7 @@ function onload() {
 
     // Add Event Listeners
 	document.body.addEventListener('keypress', keyboard_submit);
-	$('#submitButton').click(clickHandler);
+	$('#submitButton').click(submit);
 
     // Set up the escape arrow event listeners
     $('#skip_prompt').hide();
@@ -152,30 +117,21 @@ function get_url () {
 
 function set_urls () {
     var url = get_url()
-    var site_name = get_hostname(url);
-
-	$('.url').each(function () {
-        this.href = url;
-        this.appendChild(document.createTextNode(site_name));
-    });
+	$('.url').attr('href', url).append(get_hostname(url));
 }
 
 
 // Submits the value inputted by the user to the server. 
 function submit() {
-	if(is_valid_value()) {
-        store_block_data("value submitted", get_username(), get_url(),
-                         $("#valueInput")[0].value);
-
-	 	show_block_stuff()
-	} else {
+	if(!is_valid_value()) {
 		$('#valueInput').val('').focus()
-	}
-}
+        return
+    }
 
-// Called by the event listener when the submit button is clicked
-function clickHandler(event) {
-	submit();
+    // Otherwise, let's roll
+    store_block_data("value submitted", get_username(), get_url(),
+                     $("#valueInput").val());
+	show_block_stuff()
 }
 
 // Allows user to use enter key to submit
@@ -186,7 +142,7 @@ function keyboard_submit(event) {
 
 // Gets the url
 function get_user_offer() {
-	return $('#valueInput')[0].value
+	return $('#valueInput').val()
 }
 
 // Temporary function, replace with account system code
@@ -195,12 +151,9 @@ function get_username() {
 }
 
 // Redirects the tab to the page the user intended to go to.
-// start counting down
 function unblock() {
 	console.log('unblocking: ', get_url());
-	var url = document.getElementsByClassName("url")[0];
-	
-	window.location = url.href + "";
+	window.location = get_url();
 }
 
 
@@ -247,51 +200,28 @@ function is_valid_value() {
 	}
 }
 
-function get_remaining_time(url) {
-	var temp_data = get_data('website_state');
-	for(var i = 0; i < temp_data.length; i++) {
-		if(url.indexOf(temp_data[i].url_pattern) != -1) {
-			// found the data
-			var now = new Date();
-			var passed = now.getTime() - temp_data[i].last_day_check;
-			//console.log('passed: ' + passed);
-			//console.log('remaining' + (60*60*24*1000 - passed) / 1000);
-			return parseInt((60*60*24*1000 - passed) / 1000);
-		}
-	}
-	// cannot find it;
-	return ('not clicked');
+
+function time_left() {
+    var site = find_website_state(get_url()); if (!site) return null;
+
+	var now = new Date();
+	var passed = now.getTime() - site.last_day_check;
+	return parseInt((60*60*24*1000 - passed) / 1000);
 }
 
-function countdown(total_seconds) {
-	if (!timer) {
-        $('#remaining_hours').html(parseInt(((total_seconds / 60) / 60) % 24))
-		$('#remaining_minutes').html(parseInt((total_seconds / 60) % 60));
-		$('#remaining_seconds').html(total_seconds % 60);
+function update_countdown () {
+    var seconds = time_left();
 
-		timer = setInterval(oneSecond, 1000);
-	}
+    // Update the clock
+    $('#remaining_hours').html(parseInt(((seconds / 60) / 60) % 24))
+	$('#remaining_minutes').html(parseInt((seconds / 60) % 60));
+	$('#remaining_seconds').html(seconds % 60);
+
+    // Update the dollar bill cover
+    $('#status_bar').css('width', 430 - (430.0 * seconds/(60*60*24)))
+
+    // Time's up?
+	if (seconds <= 1)
+        unblock()
 }
 
-function oneSecond() {
-	var hrs = parseFloat($('#remaining_hours').html());
-	var min = parseFloat($('#remaining_minutes').html());
-	var sec = parseFloat($('#remaining_seconds').html());
-	var total_seconds = (hrs * 60 + min) * 60 + sec;
-	if (total_seconds <= 1) {
-		// time's up!
-		clearInterval(timer);
-		timer = null;
-		total_seconds--;
-		// trying to go through
-		//window.location = url;
-	} else {
-		total_seconds--;
-	}
-	var hours = parseInt(((total_seconds / 60) / 60) % 24);
-	var minutes = parseInt((total_seconds / 60) % 60);
-	var seconds = total_seconds % 60;
-	$('#remaining_hours').html((hours < 10 ? '0' : '') + hours);
-	$('#remaining_minutes').html((minutes < 10 ? '0' : '') + minutes);
-	$('#remaining_seconds').html((seconds < 10 ? '0' : '') + seconds);
-}

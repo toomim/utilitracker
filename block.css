@@ -156,7 +156,7 @@ input {
     margin-top: 10px;
 }
 
-#skip_section {
+#skip_section, #block_section {
     display: none;
 }
 
@@ -230,8 +230,4 @@ input {
 }
 #dollar_sign {
     vertical-align: 8px;
-}
-
-#block_section {
-    display: none;
 }

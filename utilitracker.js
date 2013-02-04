@@ -113,8 +113,9 @@ function check_for_new_day (url) {
 // "Main" function - checks for blocked sites whenever a tab is updated.
 // Redirects to our block page. 
 
-function test_listener(details) {
-    console.log('test_listener');
+function request_listener(details) {
+    //console.log('request_listener');
+
 	// Get the blocked state of the url
     var site = find_website_state(details.url);
     // If we don't care about this site, let's go away
@@ -152,7 +153,7 @@ function test_listener(details) {
 }
 
 function pass_listener(tab_id, change_info, tab) {
-    console.log('pass_listener');
+    //console.log('pass_listener');
     var site = find_website_state(tab.url);
 	if(site.user_offer == 'PASS') {
 	    // show timer in the upper right corner for 5 seconds
@@ -168,7 +169,7 @@ chrome.tabs.onUpdated.addListener(pass_listener);
 
 // add listener before request
 chrome.webRequest.onBeforeRequest.addListener(
-    test_listener, 
+    request_listener, 
     {urls: ['<all_urls>']}, 
     ['blocking']);
 
