@@ -7,7 +7,9 @@ var variants = [['<div class="subtitle">Sell your <a class="url"></a> access for
                 ['<div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
                  '<img src="lock_dim.png" class="lock">'],
 ]
+
 var timer = null;
+var url = get_url()
 
 /*,
                 ['How much money would we have to give you for you to not have access to <a class="url"></a> for 24 hours?', '']],
@@ -34,23 +36,30 @@ function show_block_stuff(instantly) {
     $('#tint').animate({'background-color': '#222'},
                        {/*complete: unblock,*/ duration: duration});
 
-    if (instantly || true) {
-        $('#block_section').show();
-        $('#skip_section').show();
-        $('#gift_box').hide();
+    // This takes gift box out of the DOM order, so that the block section
+    // fades in underneath it intead of being pushed below it
+    $('#gift_box').make_absolute()
+
+    if (instantly) {
+        $('#block_section').show()
+        $('#skip_section').show()
+        $('#gift_box').hide()
     } else {
-        $('#block_section').fadeIn();
-        $('#skip_section').fadeIn();
-        $('#gift_box').fadeOut();
+        $('#block_section').fadeIn(duration);
+        $('#skip_section').fadeIn(duration);
+        $('#gift_box').fadeOut(duration);
     }        
+
+    var site_state = find_website_state(url)
+    if (site_state.user_offer > get_todays_offer(url))
+        setTimeout(unblock, 1000)
 }
 
 var todays_offer;
 
 // Called by the event listener when the page loads
 function onload() {
-    var url = get_url();
-    todays_offer = get_todays_offer(get_url())
+    todays_offer = get_todays_offer(url)
 	
     // Choose which stage of animation we're displaying
 	site = find_website_state(url);
@@ -87,7 +96,7 @@ function onload() {
     $('#prompt2').html(variants[v][0]);
 
     // Set the dollar amount in the dollar bill
-    $('#dollar_amount').html('' + get_todays_offer(get_url()))
+    $('#dollar_amount').html('' + get_todays_offer(url))
 
 	// set the background page according to the url
     var url_name = get_hostname(url).split('.');
@@ -116,7 +125,6 @@ function get_url () {
 }
 
 function set_urls () {
-    var url = get_url()
     $('.url').attr('href', url).append(get_hostname(url));
 }
 
@@ -129,7 +137,7 @@ function submit() {
     }
 
     // Otherwise, let's roll
-    store_block_data("value submitted", get_username(), get_url(),
+    store_block_data("value submitted", get_username(), url,
                      $("#valueInput").val());
 	show_block_stuff()
 }
@@ -152,8 +160,8 @@ function get_username() {
 
 // Redirects the tab to the page the user intended to go to.
 function unblock() {
-	console.log('unblocking: ', get_url());
-	window.location = get_url();
+	console.log('unblocking: ', url);
+	window.location = url;
 }
 
 
@@ -202,7 +210,7 @@ function is_valid_value() {
 
 
 function time_left() {
-    var site = find_website_state(get_url()); if (!site) return null;
+    var site = find_website_state(url); if (!site) return null;
 
 	var now = new Date();
 	var passed = now.getTime() - site.last_day_check;

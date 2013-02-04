@@ -55,6 +55,19 @@ Array.prototype.find = function (predicate) {
     return false;
 };
 
+if (window.$)
+    $.fn.make_absolute = function(rebase) {
+        return this.each(function() {
+            var el = $(this);
+            var pos = el.offset();
+            el.css({ position: "absolute",
+                     marginLeft: 0, marginTop: 0,
+                     top: pos.top, left: pos.left });
+            if (rebase)
+                el.remove().appendTo("body");
+        });
+    }
+
 function hash_each (h,f) {
     //var h = this;
     for(var key in h)
