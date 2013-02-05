@@ -166,15 +166,16 @@ input {
 #skip_prompt {
     font-family: futura_book;
     cursor: default;
-    padding: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
     clear: right;
     float: right;
     color: white;
     background-color: #848484;
     font-size: 12pt;
     position: absolute;
-    right: 33px;
-    top: 30px;
+    right: 43px;
+    top: 39px;
 }
 
 #skip_arrow {
