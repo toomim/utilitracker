@@ -131,6 +131,11 @@ function unblock() {
 // Submits the value inputted by the user to the server. 
 function submit() {
 	if(!is_valid_value()) {
+		// should return some error code
+		$('#error_msg').html('invalid input, try again')
+		setTimeout(function() {
+			$('#error_msg').html('')
+		}, 1000)
 		$('#valueInput').val('').focus()
         return
     }
@@ -198,9 +203,9 @@ function update_countdown () {
     var seconds = time_left();
 
     // Update the clock
-    $('#remaining_hours').html(parseInt(((seconds / 60) / 60) % 24))
-	$('#remaining_minutes').html(parseInt((seconds / 60) % 60));
-	$('#remaining_seconds').html(seconds % 60);
+    $('#remaining_hours').html(pad2(parseInt(((seconds / 60) / 60) % 24)))
+	$('#remaining_minutes').html(pad2(parseInt((seconds / 60) % 60)));
+	$('#remaining_seconds').html(pad2(seconds % 60));
 
     // Update the dollar bill cover
     $('#status_bar').css('width', 430 - (430.0 * seconds/(60*60*24)))
@@ -210,3 +215,6 @@ function update_countdown () {
         unblock()
 }
 
+function pad2(number) {
+	 return (number < 10 ? '0' : '') + number
+}

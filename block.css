@@ -55,8 +55,11 @@ body {
 
 #gift_box_bottom {
 	margin-top: 0px;
+	margin-left: auto;
+	margin-right: auto;
 	background-image: url('gift_box_bottom.png');
 	background-repeat: no-repeat;
+	background-position:10px;
 	height: 204px;
 }
 
