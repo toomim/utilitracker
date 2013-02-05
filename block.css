@@ -192,6 +192,7 @@ input {
 #remaining_time {
 	font-size: 35pt;
 	font-family: futura_book, monaco, consolas, courier;
+	clear: both;
 }
 
 #reset_data {
@@ -212,6 +213,7 @@ input {
 #unblocked_url {
     font-family: futura_light;
     font-size: 21px;
+    clear: both;
 }
 
 #dollar_bill {
@@ -229,9 +231,16 @@ input {
 	position: relative;
 	top: 60px;
 }
-#dollar_bill img {
-	position: absolute;
-}
+
 #dollar_sign {
     vertical-align: 8px;
+}
+
+#status_bar {
+	height: 100%;
+	float: right;
+	background-color: rgb(34, 34, 34);
+	opacity: 0.90;
+	position: relative;
+	top: -80px;
 }

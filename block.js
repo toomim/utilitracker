@@ -59,6 +59,9 @@ function show_block_stuff(instantly) {
     var site_state = find_website_state(url)
     if (site_state.user_offer > todays_offer)
         setTimeout(unblock, 1000)
+        
+    // And animate the status bar to make it look real
+    status_bar_init(1000);
 }
 var todays_offer;
 
@@ -208,7 +211,7 @@ function update_countdown () {
 	$('#remaining_seconds').html(pad2(seconds % 60));
 
     // Update the dollar bill cover
-    $('#status_bar').css('width', 430 - (430.0 * seconds/(60*60*24)))
+    $('#status_bar').css('width', (430.0 * seconds/(60*60*24)))
 
     // Time's up?
 	if (seconds <= 1)
@@ -217,4 +220,14 @@ function update_countdown () {
 
 function pad2(number) {
 	 return (number < 10 ? '0' : '') + number
+}
+
+// function that make the status bar grow from zero at beginning
+// make it look real
+function status_bar_init(duration) {
+	var seconds = time_left();
+
+	$('#status_bar').css('width', 0);
+	$('#status_bar').animate({'width' : 430.0 * seconds/(60*60*24)}, duration);
+	
 }
