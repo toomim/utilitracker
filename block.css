@@ -243,4 +243,5 @@ input {
 	opacity: 0.90;
 	position: relative;
 	top: -80px;
+	border-radius: 8px;
 }
