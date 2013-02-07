@@ -118,7 +118,8 @@ function onload() {
     $('.url').attr('href', url).append(get_hostname(url));
 
     // Focus on the text box
-    $('#valueInput').focus()
+    if ($(window).height() > 700 && $(window).width() > 700)
+        $('#valueInput').focus()
 
     //setTimeout(100, function () { console.log('6', $('#block_section').css('display')) })
 

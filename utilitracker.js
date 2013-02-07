@@ -164,14 +164,21 @@ function pass_listener(tab_id, change_info, tab) {
 	}   
 }
 
-chrome.tabs.onUpdated.addListener(pass_listener);
+if (chrome.tabs) {
+    // Add these listeners only if chrome.tabs is defined... I was
+    // having problems with this whole thing being loaded for each
+    // request of a page.  It would fail from within the actual website,
+    // cause chrome.tabs is not defined.  We should do something about
+    // that at a higher level.
 
+    chrome.tabs.onUpdated.addListener(pass_listener);
 
-// add listener before request
-chrome.webRequest.onBeforeRequest.addListener(
-    request_listener, 
-    {urls: ['<all_urls>']}, 
-    ['blocking']);
+    // add listener before request
+    chrome.webRequest.onBeforeRequest.addListener(
+        request_listener, 
+        {urls: ['<all_urls>']}, 
+        ['blocking']);
+}
 
 
 // Extracts hostname from the URL
