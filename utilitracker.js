@@ -149,7 +149,7 @@ function request_listener(details) {
 		// Redirect tab to countdown.html
         return { redirectUrl : chrome.extension.getURL("block.html")
             + "?url=" + escape(details.url)};
-	} 	
+	}
 }
 
 function pass_listener(tab_id, change_info, tab) {

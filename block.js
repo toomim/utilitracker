@@ -1,21 +1,9 @@
-// A/B test options go in here.  There are two prompts, so this is an
-// array of tuples of size 2.
-var variants = [['<div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
-                 '<img src="lock_dim.png" class="lock">'],
-                ['<div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Set your asking price.</div><br><br>',
-                 '<img src="lock_dim.png" class="lock">'],
-                ['<div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
-                 '<img src="lock_dim.png" class="lock">'],
+// A/B test options go in here.
+var variants = [
+    {title: 'RANDOM CASH OFFER',
+     body: 'Yours if you accept 24 hours of blocked <a class="url"></a> access.'
+           + '<p>How much would it need to be?'}
 ]
-
-/*,
-                ['How much money would we have to give you for you to not have access to <a class="url"></a> for 24 hours?', '']],
-                ['<div class="title">Cash Chance!</div><div class="subtitle">Sell your <a class="url"></a> access for 24 hours.<br>Name your price.</div><br><br>',
-                 '<style>#tint{margin-top: 10px;margin-left: 10px;border-radius: 10px;box-shadow: 0px 0px 35px #fff;width: 99%;}</style><img src="lock_bright.png" class="lock">'],
-                ['How much is the next 24 hours of <a class="url"></a> worth to you?', '(Be accurate &amp; honest, because the study might buy your access!)<br><img src="gimme_money.png" style="position: relative; left: 409px; top: -219px;">'],
-                ['What would it take for you to choose CASH over the next 24 hours of <a class="url"></a>?', '<img src="gimme_money.png">']
-               ];*/
-
 
 function get_url () {
 	// Parses the extension url to get the incoming url
@@ -61,7 +49,7 @@ function show_block_stuff(instantly) {
         setTimeout(unblock, 1000)
         
     // And animate the status bar to make it look real
-    status_bar_init(1000);
+    setTimeout(status_bar_init(1000), 1000);
 }
 var todays_offer;
 
@@ -118,7 +106,7 @@ function onload() {
     $('.url').attr('href', url).append(get_hostname(url));
 
     // Focus on the text box
-    if ($(window).height() > 700 && $(window).width() > 700)
+    if ($(window).height() > 400 && $(window).width() > 500)
         $('#valueInput').focus()
 
     //setTimeout(100, function () { console.log('6', $('#block_section').css('display')) })
