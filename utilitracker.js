@@ -3,9 +3,11 @@ if (get_data('urls_status'))
 
 // Options
 var urls = ['bing.com', 'facebook.com', 'reddit.com', 'renren.com',
-            'quora.com', 'news.ycombinator.com', 'twitter.com',
+            'quora.com', 'ycombinator.com', 'twitter.com',
             'google.com', 'friendbo.com', 'youtube.com'];
 set_data('user', 'Debug_user');
+var blacklisted_urls = {};
+urls.each(function (u) {blacklisted_urls[u] = true;});
 
 // initialize the website_state
 function initialize_website_state(urls) {
@@ -66,7 +68,7 @@ function get_todays_offer(url) {
             } else {
                 state.offer_day_check = today_date.getTime();
                 result = 100;
-                while(result > 40 && result > .1)
+                while(result > 40 || result < .1)
                     result = Math.pow(1.25, (Math.random() * 35 - 18));
 
                 if (result > 10)
@@ -113,15 +115,52 @@ function check_for_new_day (url) {
 // "Main" function - checks for blocked sites whenever a tab is updated.
 // Redirects to our block page. 
 
+function whitelisted (url) {
+    var whitelist = ['facebook.com/ajax/',
+                     'channel.facebook.com/ping',
+                     'channel.facebook.com/p',
+                     'facebook.com/connect/',
+                     'facebook.com/plugins/likebox.php?',
+                     'www.facebook.com/dialog/oauth?',
+                     'plus.google.com/u/0/_/n/guc',
+                     'google.com/images/',
+                     'google.com/complete/search?',
+                     'twitter.com/scribe/',
+                     'talkgadget.google.com/u/0/talkgadget',
+                     'mail.google.com/mail/u/0/channel',
+                     'mail.google.com/',
+                     'graph.facebook.com/me/home',
+                     'api-read.facebook.com/restserver',
+                     'apis.google.com',
+                     'google.com/textinputassistant',
+                     'google.com/images',
+                     'google.com/uds/',
+                     'google.com/cse/',
+                     'google.com/jsapi/',
+                     'facebook.com/fr/u',
+                     'google.com/extern_chrome'
+                    ];
+    for (var i=0; i<whitelist.length; i++)
+        if (url.indexOf(whitelist[i]) != -1)
+            return true;
+    return false;
+}
+
 function request_listener(details) {
     //console.log('request_listener');
 
-	// Get the blocked state of the url
-    var site = find_website_state(details.url);
     // If we don't care about this site, let's go away
-    if (!site) {
+    var domain = get_domain(details.url);
+    if (!domain || !blacklisted_urls[domain] || whitelisted(details.url)) {
+        //if (domain && blacklisted_urls[domain])
+        //    console.log('Ignoring whitelisted url ' + details.url);
         return {cancel: false};
     }
+    console.log('Processing blacklisted url ' + details.url);
+
+	// Get the blocked state of the url
+    var site = find_website_state(details.url);
+
 	//check whether the user is registered
 	// if not registered, redirect to the setup page
     var registered_name = get_data('username');
@@ -193,6 +232,11 @@ function get_hostname(str) {
     // Now grab everything up to the first /
 	return tmp.split('/')[0];
 }
+function get_domain(str) {
+    var domain = get_hostname(str).split('.');
+    if (!domain || domain.length<2) return null;
+    return domain[domain.length-2] + '.' + domain[domain.length-1];
+}
 function get_username() {
 	return get_data('username');
 }
@@ -204,7 +248,7 @@ function store_block_data(eventss, user, tab_url, value) {
 	
 	if(eventss == 'value submitted') {
 		// the user submit the data store in the sites
-		console.log('store submit value');
+		//console.log('store submit value');
 		var status = get_data('website_state');
 		for(var i = 0; i < status.length; i++) {
 			var ob = status[i];
@@ -263,19 +307,19 @@ function post_to_server(eventss, user, time_date, url, value) {
 	
 	//Send the proper header information along with the request  //x-www-form-urlencoded
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xmlHttp.setRequestHeader("Content-length", params.length);
-	xmlHttp.setRequestHeader("Connection", "close");
+	//xmlHttp.setRequestHeader("Content-length", params.length);
+	//xmlHttp.setRequestHeader("Connection", "close");
 
 	xmlHttp.onreadystatechange = function() {//Call a function when the state changes.
 	    if(xmlHttp.readyState == 4) {
 	        // alert(xmlHttp.statusText);
 			if(xmlHttp.status == 200) {
-				console.log(xmlHttp.responseText);
+				//console.log(xmlHttp.responseText);
 			}
 	    }
-		console.log('response text: ', xmlHttp.responseText);
+		//console.log('response text: ', xmlHttp.responseText);
 	};
-    console.log(params);
+    //console.log(params);
 	xmlHttp.send(params);
 	// alert('wait for server response');
 }

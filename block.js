@@ -2,7 +2,16 @@
 var variants = [
     {title: 'RANDOM CASH OFFER',
      body: 'Yours if you accept 24 hours of blocked <a class="url"></a> access.'
-           + '<p>How much would it need to be?'}
+           + '<br>How much would it need to be?'}, 
+    {title: 'CASH CHANCE',
+     body: 'Sell your <a class="url"></a> access for 24 hours.'
+     	   + '<br>name your price.'},
+    {title: 'REWARD OPPORTUNITY',
+     body: 'Yours if you accept 24 hours of blocked <a class="url"></a> access.'
+     	   + '<br>How much would it need to be?'},
+    {title: 'REWARD CHANCE',
+     body: 'Sell your <a class="url"></a> access for 24 hours.'
+     	   + '<br>name your price.'},
 ]
 
 function get_url () {
@@ -31,25 +40,53 @@ function show_block_stuff(instantly) {
     // fades in underneath it intead of being pushed below it
     $('#gift_box').make_absolute()
 
-    // Animate things
-    $('#block_section').fadeIn(duration);
-    $('#skip_section').fadeIn(duration);
     //$('#gift_box').fadeOut(duration);
+    
+    // easeOutCirc from jQueryUI source code
+    $.extend($.easing,
+    {
+        		easeOutCirc: function (x, t, b, c, d) {
+                    return c * Math.sqrt(1 - (t=t/d-1)*t) + b;
+                }
+    });
 
-    $('#gift_box_top').animate({'margin-top': '-50px', opacity: 0}, {duration: duration});
-    $('#gift_box_bottom').animate({'margin-top': '200px', opacity: 0}, {duration: duration});
-    $('#tint').animate({'background-color': '#222'}, {duration: duration});
-
-    // Hide the old junk
-    setTimeout(function () {$('#gift_box').hide()}, duration);
-
+    $('#block_section').show();
+    $('#status_bar').hide();
+    
     // And ... the big moment ... DOES HE WIN THE FISH?
     var site_state = find_website_state(url)
-    if (site_state.user_offer > todays_offer)
-        setTimeout(unblock, 1000)
-        
-    // And animate the status bar to make it look real
-    setTimeout(status_bar_init(1000), 1000);
+    if (site_state.user_offer > todays_offer) {
+        exceeded_offer();
+    } else {
+        $('#gift_box_top').animate(
+            {'margin-top': '-50px', opacity: 0},
+            {
+                duration: duration,
+                easing: 'easeOutCirc',
+                complete: function() {
+                    $('#tint').animate(
+                        {'background-color': '#222'},
+                        {
+                            duration: duration
+                        }
+                    );
+                    $('#skip_section').fadeIn(duration);
+                    $('#status_bar').show();
+                    // And animate the status bar to make it look real
+                    setTimeout(status_bar_init(1000), 1000);
+                }
+            }
+        );
+        $('#gift_box_bottom').animate(
+            {'margin-top': '200px', opacity: 0},
+            {
+                duration: duration,
+                easing: 'easeOutCirc'
+            }
+        );
+    }
+    // Hide the old junk
+    setTimeout(function () {$('#gift_box').hide()}, duration);
 }
 var todays_offer;
 
@@ -90,7 +127,8 @@ function onload() {
     var v = get_data('variant') || 0;
     v = Math.min(v, variants.length - 1)
     set_data('variant', (v+1) % variants.length);
-    $('#prompt2').html(variants[v][0]);
+    $('#gift_box_top_msg').html(variants[v].title);
+    $('#prompt').html(variants[v].body);
 
     // Set the dollar amount in the dollar bill
     $('#dollar_amount').html('' + get_todays_offer(url))
@@ -106,17 +144,37 @@ function onload() {
     $('.url').attr('href', url).append(get_hostname(url));
 
     // Focus on the text box
-    if ($(window).height() > 400 && $(window).width() > 500)
+    if ($(window).height() > 800 && $(window).width() > 700)
         $('#valueInput').focus()
 
     //setTimeout(100, function () { console.log('6', $('#block_section').css('display')) })
 
 }
 
+// Called when the user's offer exceeds our offer to show the "exceeds offer" page
+function exceeded_offer() {
+    $('#congratulation').hide();
+    $('#status_bar').hide();
+    $('#unblocked_url').hide();
+    $('#remaining_time').hide();
+    $('#resetthis').hide();
+    $('#skip_section').hide();
+    $('#gift_box').animate(
+        {'margin-left': '500px', opacity: 0},
+        {
+            duration: 2500,
+            complete: unblock
+        }
+    );
+    $('#exceed_offer').show();
+    $('#enjoy_visit').show();
+    $('.url').css("color", "#888");
+}
+
 // Redirects the tab to the page the user intended to go to.
 function unblock() {
 	console.log('unblocking: ', url);
-	window.location = url;
+	window.location.replace(url);
 }
 
 

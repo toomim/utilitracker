@@ -54,6 +54,19 @@ body {
 	padding-right: 20px;
 }
 
+#gift_box_top {
+	background-image: url('gift_box_top2.png');
+	background-repeat: no-repeat;
+	height: 138px;
+	width: 516px;
+}
+
+#gift_box_top_msg {
+	font-family: futura_light;
+	position: relative;
+	top: 100px;
+}
+
 #gift_box_bottom {
 	margin-top: 0px;
 	margin-left: auto;
@@ -161,7 +174,7 @@ input {
     margin-top: 10px;
 }
 
-#skip_section, #block_section {
+#skip_section, #block_section, #exceed_offer, #enjoy_visit {
     display: none;
 }
 
@@ -206,13 +219,17 @@ input {
 	color: #888;
 }
 
-#congratulation {
+#congratulation, #exceed_offer {
     margin-top: 150px;
     font-family: futura_light;
     font-size: 21px;
 }
 
-#unblocked_url {
+#exceed_offer, #enjoy_visit {
+    color: #888;
+}
+
+#unblocked_url, #enjoy_visit {
     font-family: futura_light;
     font-size: 21px;
     clear: both;
