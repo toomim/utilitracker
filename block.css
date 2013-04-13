@@ -14,8 +14,8 @@
 }
 
 @font-face {
-    font-family: futura_light;
-    src: url("Fonts/FuturaStd-Light.otf");
+    font-family: futura_heavy;
+    src: url("Fonts/FuturaStd-Heavy.otf");
 }
 
 body {
@@ -62,9 +62,13 @@ body {
 }
 
 #gift_box_top_msg {
-	font-family: futura_light;
+	font-family: futura_heavy;
 	position: relative;
-	top: 100px;
+	top: 105px;
+	font-size: 23px;
+	letter-spacing: 2px;
+	left: 8px;
+	color: rgb(233,233,235);
 }
 
 #gift_box_bottom {
@@ -76,6 +80,17 @@ body {
 	background-position:10px;
 	height: 204px;
 	width: 514px;
+}
+
+#gift_outline {
+	background-image: url('Gift_outline1.png');
+	background-repeat: no-repeat;
+	height: 357px;
+	width: 527px;
+	position: relative;
+	left: 9px;
+	bottom: 5px;
+    display: none;
 }
 
 #answer {
@@ -174,7 +189,22 @@ input {
     margin-top: 10px;
 }
 
-#skip_section, #block_section, #exceed_offer, #enjoy_visit {
+#bottom_bar {
+	background-color: black;
+	margin-left: 0px;
+	margin-right: 0px;
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	border-top: 1px solid;
+	font-size: 12pt;
+}
+
+#bottom_bar p {
+	margin: 0px;
+}
+
+#skip_section, #block_section, #exceed_offer, #enjoy_visit, #bottom_bar {
     display: none;
 }
 
@@ -219,8 +249,14 @@ input {
 	color: #888;
 }
 
-#congratulation, #exceed_offer {
+#congratulation {
     margin-top: 150px;
+    font-family: futura_light;
+    font-size: 21px;
+}
+
+#exceed_offer {
+    margin-top: 20px;
     font-family: futura_light;
     font-size: 21px;
 }
@@ -251,6 +287,19 @@ input {
 	top: 60px;
 }
 
+#dollar_amount_outline {
+    font-size: 96px;
+    letter-spacing: 4px;
+    font-family: futura_bold;
+    font-weight: 3;
+    color: #ececec;
+    -webkit-text-stroke-width: 4px;
+    -webkit-text-stroke-color: #ccc;
+    margin: 0px;
+	position: relative;
+	top: 180px;
+}
+
 #dollar_sign {
     vertical-align: 8px;
 }
@@ -265,4 +314,14 @@ input {
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 5px;
 	margin-right: 3px;
+}
+
+.ghost_amount {
+    font-size: 96px;
+    letter-spacing: 4px;
+    font-family: futura_bold;
+    font-weight: 3;
+    color: #ececec;
+    -webkit-text-stroke-width: 4px;
+    -webkit-text-stroke-color: #ccc;
 }

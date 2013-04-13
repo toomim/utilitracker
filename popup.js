@@ -29,7 +29,8 @@ function load_visited_sites() {
 
 function clear_data () {
     console.log('Clearing utilitracker data')
-    localStorage.clear()
+    //localStorage.clear()
+    urls.each(function (url) {remove_website_state(url);});
     initialize_website_state(urls);
     console.log('Cleared utilitracker data')
     //alert('Utilitracker data has been cleared');

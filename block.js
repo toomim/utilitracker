@@ -3,15 +3,21 @@ var variants = [
     {title: 'RANDOM CASH OFFER',
      body: 'Yours if you accept 24 hours of blocked <a class="url"></a> access.'
            + '<br>How much would it need to be?'}, 
-    {title: 'CASH CHANCE',
+ /*   {title: 'CASH CHANCE',
      body: 'Sell your <a class="url"></a> access for 24 hours.'
-     	   + '<br>name your price.'},
+     	   + '<br>Name your price.'},
+    {title: 'REWARD CHANCE',
+     body: 'Sell your <a class="url"></a> access for 24 hours.'
+     	   + '<br>Name your price.'},*/
     {title: 'REWARD OPPORTUNITY',
      body: 'Yours if you accept 24 hours of blocked <a class="url"></a> access.'
      	   + '<br>How much would it need to be?'},
-    {title: 'REWARD CHANCE',
-     body: 'Sell your <a class="url"></a> access for 24 hours.'
-     	   + '<br>name your price.'},
+    {title: 'CASH CHANCE',
+     body: 'How much money would you need to be awarded to allow yourself to be blocked from <a class="url"></a> for 24 hours?'},
+    {title: 'RANDOM CASH OFFER',
+     body: "We will pay you to be blocked for 24 hours from <a class=\"url\"></a>, if your bid is low enough."},
+    {title: 'RANDOM CASH OFFER',
+     body: "We could pay you to be blocked for 24 hours from <a class=\"url\"></a>, how much is it worth to you?"},
 ]
 
 function get_url () {
@@ -34,7 +40,7 @@ function show_block_stuff(instantly) {
 	countdown_timer = setInterval(update_countdown, 1000)
 
     // Now we'll animate stuff
-    var duration = instantly ? 0 : 3000;
+    var duration = instantly ? 0 : 2000;
 
     // This takes gift box out of the DOM order, so that the block section
     // fades in underneath it intead of being pushed below it
@@ -59,7 +65,7 @@ function show_block_stuff(instantly) {
         exceeded_offer();
     } else {
         $('#gift_box_top').animate(
-            {'margin-top': '-50px', opacity: 0},
+            {'margin-top': '-200px'},
             {
                 duration: duration,
                 easing: 'easeOutCirc',
@@ -73,17 +79,24 @@ function show_block_stuff(instantly) {
                     $('#skip_section').fadeIn(duration);
                     $('#status_bar').show();
                     // And animate the status bar to make it look real
-                    setTimeout(status_bar_init(1000), 1000);
+                    setTimeout(status_bar_init(1000), duration);
                 }
             }
         );
         $('#gift_box_bottom').animate(
-            {'margin-top': '200px', opacity: 0},
+            {'margin-top': '600px'},
             {
                 duration: duration,
                 easing: 'easeOutCirc'
             }
         );
+		// show the bottom bar
+		var mssss;
+		$.getJSON("http://yuno.us:8989/my_history?fullname=" + escape(get_data('username')), function(data) {
+			mssss = data.totalearned;
+		});
+	   	$('#bottom_bar').show();
+	   	$('#bottom_bar').html("You will receive the money after the timer goes off. <a href='http://yuno.us:8989/my_history?fullname=" + escape(get_data('username')) + "'>Click for more details.</a>");
     }
     // Hide the old junk
     setTimeout(function () {$('#gift_box').hide()}, duration);
@@ -132,6 +145,8 @@ function onload() {
 
     // Set the dollar amount in the dollar bill
     $('#dollar_amount').html('' + get_todays_offer(url))
+    
+    $('#dollar_amount_outline').html('$' + get_todays_offer(url))
 
 	// set the background page according to the url
     var url_name = get_hostname(url).split('.');
@@ -144,7 +159,8 @@ function onload() {
     $('.url').attr('href', url).append(get_hostname(url));
 
     // Focus on the text box
-    if ($(window).height() > 800 && $(window).width() > 700)
+    var is_in_iframe = !(window.self === window.top);
+    if (!is_in_iframe) //$(window).height() > 800 && $(window).width() > 700
         $('#valueInput').focus()
 
     //setTimeout(100, function () { console.log('6', $('#block_section').css('display')) })
@@ -159,13 +175,15 @@ function exceeded_offer() {
     $('#remaining_time').hide();
     $('#resetthis').hide();
     $('#skip_section').hide();
+    $('#dollar_bill').hide();
     $('#gift_box').animate(
-        {'margin-left': '500px', opacity: 0},
+        {opacity: 0},
         {
-            duration: 2500,
-            complete: unblock
+            duration: 2000,
         }
     );
+    setTimeout(unblock, 3000);
+    $('#gift_outline').show();
     $('#exceed_offer').show();
     $('#enjoy_visit').show();
     $('.url').css("color", "#888");

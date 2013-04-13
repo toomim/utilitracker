@@ -2,9 +2,10 @@ if (get_data('urls_status'))
     localStorage.clear()
 
 // Options
-var urls = ['bing.com', 'facebook.com', 'reddit.com', 'renren.com',
+var urls = ['facebook.com', 'google.com'
+            /* 'bing.com', 'reddit.com', 'renren.com',
             'quora.com', 'ycombinator.com', 'twitter.com',
-            'google.com', 'friendbo.com', 'youtube.com'];
+            'friendbo.com', 'youtube.com' */];
 set_data('user', 'Debug_user');
 var blacklisted_urls = {};
 urls.each(function (u) {blacklisted_urls[u] = true;});
@@ -120,6 +121,8 @@ function whitelisted (url) {
                      'channel.facebook.com/ping',
                      'channel.facebook.com/p',
                      'facebook.com/connect/',
+                     'accounts.google.com',
+                     'google.com/calendar/hello',
                      'facebook.com/plugins/likebox.php?',
                      'www.facebook.com/dialog/oauth?',
                      'plus.google.com/u/0/_/n/guc',
@@ -246,6 +249,7 @@ function store_block_data(eventss, user, tab_url, value) {
 	// first store the data local:
 	// store the user_offer
 	
+	var earned = 0;
 	if(eventss == 'value submitted') {
 		// the user submit the data store in the sites
 		//console.log('store submit value');
@@ -254,11 +258,13 @@ function store_block_data(eventss, user, tab_url, value) {
 			var ob = status[i];
 			if(tab_url.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
 				status[i].user_offer = value;
+				if(status[i].our_offer >= value) {
+					earned = status[i].our_offer;
+				}
 			}
 		}
 		set_data('website_state', status);
 	}
-
 	
 	// Get the time of block
 	var time = new Date();
@@ -282,7 +288,7 @@ function store_block_data(eventss, user, tab_url, value) {
 	if (value == null) {
 		value = -1;	
 	} 
-	post_to_server(eventss, user, time_date, tab_url, value);
+	post_to_server(eventss, user, time_date, tab_url, value, earned);
 	//
 	//
 	//
@@ -293,12 +299,13 @@ function store_block_data(eventss, user, tab_url, value) {
 
 // Pushes data about site blocks to the server:
 // Type of block, user info, time, url, and surveyed value
-function post_to_server(eventss, user, time_date, url, value) {
+function post_to_server(eventss, user, time_date, url, value, earned) {
 	
 	var xmlHttp = new XMLHttpRequest();
 	var tourl = "http://yuno.us:8989/save_event";
 	var params = 
 		"paid=" + escape(value) +
+		"&earned=" + escape(earned) +
 		"&what=" + escape(eventss) +  
 		"&who=" + escape(user) + 
 		"&when=" + escape(time_date) +
