@@ -16,8 +16,12 @@ function load_visited_sites() {
     states.each(function (state) {
 		if(state.user_offer != null) {
         	var tmp = document.createElement('li'); 
-        	tmp.innerHTML = state.url_pattern;
-        	ul.appendChild(tmp);		
+			if(state.user_offer <= state.our_offer) {
+	        	tmp.innerHTML = state.url_pattern;
+			} else {
+				tmp.innerHTML = state.url_pattern + " (pass)"
+			}
+        	ul.appendChild(tmp);			
 		}
     });
     if(ul.childElementCount) {
@@ -54,7 +58,7 @@ function get_user_total(fullname) {
 			// alert(xmlHttp.statusText);
 			if(xmlHttp.status == 200) {
 			var response_json = JSON.parse(xmlHttp.responseText);
-			$('#total_earned').html("total earned: " + response_json.totalearned);;
+			$('#total_earned').html("Total earned: " + response_json.totalearned);;
 			} else {
 				console.log("server error, try again later");
 			}
