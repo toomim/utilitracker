@@ -3,6 +3,7 @@ var background = chrome.extension.getBackgroundPage();
 
 function onload() {
     load_visited_sites();
+    get_user_total(background.get_data('username'));
     document.getElementById('reset_data').onclick = clear_data;
 	document.getElementById('check_history_from_server').href = "http://yuno.us:8989/my_history?fullname=" + escape(background.get_data('username'));
 }
@@ -15,14 +16,14 @@ function load_visited_sites() {
     states.each(function (state) {
 		if(state.user_offer != null) {
         	var tmp = document.createElement('li'); 
-        	tmp.innerHTML = state.url_pattern + ' user_offer: ' + state.user_offer + ' our_offer: ' + state.our_offer + ' last_day_check: ' + state.last_day_check;
+        	tmp.innerHTML = state.url_pattern;
         	ul.appendChild(tmp);		
 		}
     });
     if(ul.childElementCount) {
         document.getElementById('data_part').appendChild(ul);
     } else {
-        document.getElementById('title_part').innerHTML = 'no website visited yet';
+        document.getElementById('title_part').innerHTML = 'no website blocked';
     }
 }
 
@@ -35,3 +36,31 @@ function clear_data () {
     console.log('Cleared utilitracker data')
     //alert('Utilitracker data has been cleared');
 }
+
+function get_user_total(fullname) {
+	var xmlHttp = new XMLHttpRequest();
+	tourl = "http://yuno.us:8989/calculate_user";
+	var params = 
+		"fullname=" + escape(fullname);
+	xmlHttp.open("POST", tourl, true);
+
+	//Send the proper header information along with the request  //x-www-form-urlencoded
+	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlHttp.setRequestHeader("Content-length", params.length);
+	xmlHttp.setRequestHeader("Connection", "close");
+
+	xmlHttp.onreadystatechange = function() {//Call a function when the state changes.
+		if(xmlHttp.readyState == 4) {
+			// alert(xmlHttp.statusText);
+			if(xmlHttp.status == 200) {
+			var response_json = JSON.parse(xmlHttp.responseText);
+			$('#total_earned').html("total earned: " + response_json.totalearned);;
+			} else {
+				console.log("server error, try again later");
+			}
+		}
+		console.log('response text: ', xmlHttp.responseText);
+	};
+	xmlHttp.send(params);	
+}
+

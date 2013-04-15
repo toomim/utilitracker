@@ -1,16 +1,22 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Test Popup Page</title>
-	 <script src="util.js" type="text/javascript"></script>
-	 <script src="utilitracker.js" type="text/javascript"></script>
-    <script type="text/javascript" src="popup.js"></script>
+	<head>
+		<title>Test Popup Page</title>
+		<link href="popup.css" type="text/css" rel="stylesheet" />
+		<script src="util.js" type="text/javascript"></script>
+		<script src="utilitracker.js" type="text/javascript"></script>
+		<script type="text/javascript" src="popup.js"></script>
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript" src="jquery-color.js"></script>
   </head>
   <body>
-  	<h2 id='title_part'>Visited sites:</h2>
+  	<div id='title_part'>Blocked sites:</div>
   	<div id="data_part"></div>
+  	<hr />
+  	<div id="total_earned"></div>
+  	<hr />
   	<div><a id="check_history_from_server">check your history</a></div>
-	<input id="reset_data" value="reset website state" type="submit">
+	<input id="reset_data" value="reset website state" type="submit" />
 	<!--<input id="reset_site" value="rest this site" type="submit">-->
   </body>
 </html>
