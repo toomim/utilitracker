@@ -6,7 +6,6 @@ var initial_urls = ['facebook.com', 'google.com'
             /* 'bing.com', 'reddit.com', 'renren.com',
             'quora.com', 'ycombinator.com', 'twitter.com',
             'friendbo.com', 'youtube.com' */];
-set_data('user', 'Debug_user');
 var blacklisted_urls = {};
 get_data('block_urls').each(function (u) {blacklisted_urls[u] = true;});
 
@@ -33,9 +32,10 @@ function remove_website_state(url) {
         function (website) {
             return url != website.url_pattern})
     set_data('website_state', tmp);
-    initialize_website_state(urls);
+    initialize_website_state(get_data('block_urls'));
 }
 
+// can get blocked websites for today
 function fetch_study_status() {
 	// open new http request
 	var xmlHttp = new XMLHttpRequest();
@@ -60,6 +60,7 @@ function fetch_study_status() {
 						block_urls[i] = response_json.blocked[i].url;
 					}
 					set_data('block_urls', block_urls);
+				    initialize_website_state(block_urls);
 				}
 
 			} else {
@@ -193,12 +194,12 @@ function request_listener(details) {
     // If we don't care about this site, let's go away
     var domain = get_domain(details.url);
     if (!domain || !blacklisted_urls[domain] || whitelisted(details.url)) {
-        //if (domain && blacklisted_urls[domain])
-        console.log("domain: " + domain);
-        console.log('Ignoring whitelisted url ' + details.url);
+        // if (domain && blacklisted_urls[domain])
+        // console.log("domain: " + domain);
+        // console.log('Ignoring whitelisted url ' + details.url);
         return {cancel: false};
     }
-    console.log('Processing blacklisted url ' + details.url);
+    // console.log('Processing blacklisted url ' + details.url);
 
 	// Get the blocked state of the url
     var site = find_website_state(details.url);
