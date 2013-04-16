@@ -42,6 +42,9 @@ function clear_data () {
 }
 
 function get_user_total(fullname) {
+	// set the total data at first place
+	$('#total_earned').html("Total earned: " + get_data('totalearned').toFixed(2));
+	// open new http request
 	var xmlHttp = new XMLHttpRequest();
 	tourl = "http://yuno.us:8989/calculate_user";
 	var params = 
@@ -53,12 +56,15 @@ function get_user_total(fullname) {
 	xmlHttp.setRequestHeader("Content-length", params.length);
 	xmlHttp.setRequestHeader("Connection", "close");
 
-	xmlHttp.onreadystatechange = function() {//Call a function when the state changes.
+	xmlHttp.onreadystatechange = function() {
+		//Call a function when the state changes.
 		if(xmlHttp.readyState == 4) {
-			// alert(xmlHttp.statusText);
 			if(xmlHttp.status == 200) {
 			var response_json = JSON.parse(xmlHttp.responseText);
-			$('#total_earned').html("Total earned: " + response_json.totalearned);;
+			if(response_json.status == "succeed") {
+				set_data('totalearned', response_json.totalearned);
+				$('#total_earned').html("Total earned: " + response_json.totalearned.toFixed(2));		
+			}
 			} else {
 				console.log("server error, try again later");
 			}

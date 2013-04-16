@@ -89,6 +89,9 @@ var store = {
         // Now replace defaults that haven't been set yet
 	    if (! ("username" in opts))
 		    opts.username = "default_user";
+		
+		if (! ("totalearned" in opts))
+			opts.totalearned = 0  
 		  
 	    if (! ("website_state" in opts))
 		    opts.website_state = null;
