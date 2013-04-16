@@ -98,6 +98,9 @@ var store = {
 		  
 	    if (! ("real_money" in opts))
 	        opts.real_money = false;
+		
+		if (! ("block_urls" in opts))
+			opts.block_urls = ['facebook.com', 'google.com'];  
 		  
         return opts;
     },

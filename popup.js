@@ -60,11 +60,11 @@ function get_user_total(fullname) {
 		//Call a function when the state changes.
 		if(xmlHttp.readyState == 4) {
 			if(xmlHttp.status == 200) {
-			var response_json = JSON.parse(xmlHttp.responseText);
-			if(response_json.status == "succeed") {
-				set_data('totalearned', response_json.totalearned);
-				$('#total_earned').html("Total earned: " + response_json.totalearned.toFixed(2));		
-			}
+				var response_json = JSON.parse(xmlHttp.responseText);
+				if(response_json.status == "succeed") {
+					set_data('totalearned', response_json.totalearned);
+					$('#total_earned').html("Total earned: " + response_json.totalearned.toFixed(2));		
+				}
 			} else {
 				console.log("server error, try again later");
 			}

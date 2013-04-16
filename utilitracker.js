@@ -2,13 +2,13 @@ if (get_data('urls_status'))
     localStorage.clear()
 
 // Options
-var urls = ['facebook.com', 'google.com'
+var initial_urls = ['facebook.com', 'google.com'
             /* 'bing.com', 'reddit.com', 'renren.com',
             'quora.com', 'ycombinator.com', 'twitter.com',
             'friendbo.com', 'youtube.com' */];
 set_data('user', 'Debug_user');
 var blacklisted_urls = {};
-urls.each(function (u) {blacklisted_urls[u] = true;});
+get_data('block_urls').each(function (u) {blacklisted_urls[u] = true;});
 
 // initialize the website_state
 function initialize_website_state(urls) {
@@ -20,9 +20,12 @@ function initialize_website_state(urls) {
                       user_offer: null,
                       our_offer: null,
                       offer_day_check:null,
-                      last_day_check: null} }))
+                      last_day_check: null} }));
+	blacklisted_urls = {};
+    get_data('block_urls').each(function (u) {blacklisted_urls[u] = true;});
+
 }
-initialize_website_state(urls);
+initialize_website_state(get_data('block_urls'));
 
 function remove_website_state(url) {
     var tmp = get_data('website_state').filter(
@@ -31,6 +34,41 @@ function remove_website_state(url) {
             return url != website.url_pattern})
     set_data('website_state', tmp);
     initialize_website_state(urls);
+}
+
+function fetch_study_status() {
+	// open new http request
+	var xmlHttp = new XMLHttpRequest();
+	tourl = "http://yuno.us:8989/fetch_study_status";
+	var params = "fullname=" + escape(get_data('username'));
+	xmlHttp.open("POST", tourl, true);
+
+	//Send the proper header information along with the request  //x-www-form-urlencoded
+	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlHttp.setRequestHeader("Content-length", params.length);
+	xmlHttp.setRequestHeader("Connection", "close");
+
+	xmlHttp.onreadystatechange = function() {
+		//Call a function when the state changes.
+		if(xmlHttp.readyState == 4) {
+			if(xmlHttp.status == 200) {
+				var response_json = JSON.parse(xmlHttp.responseText);
+				if(response_json.status == "succeed") {
+					// get the data successfully
+					var block_urls = new Array();
+					for (var i = 0; i < response_json.blocked.length; i++) {
+						block_urls[i] = response_json.blocked[i].url;
+					}
+					set_data('block_urls', block_urls);
+				}
+
+			} else {
+				console.log("server error, try again later");
+			}
+		}
+		// console.log('response text: ', xmlHttp.responseText);
+	};
+	xmlHttp.send(params);		
 }
 
 function url_matches(url, website_state) {
@@ -156,7 +194,8 @@ function request_listener(details) {
     var domain = get_domain(details.url);
     if (!domain || !blacklisted_urls[domain] || whitelisted(details.url)) {
         //if (domain && blacklisted_urls[domain])
-        //    console.log('Ignoring whitelisted url ' + details.url);
+        console.log("domain: " + domain);
+        console.log('Ignoring whitelisted url ' + details.url);
         return {cancel: false};
     }
     console.log('Processing blacklisted url ' + details.url);
