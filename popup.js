@@ -6,6 +6,7 @@ function onload() {
     get_user_total(background.get_data('username'));
     document.getElementById('reset_data').onclick = clear_data;
 	document.getElementById('check_history_from_server').href = "http://yuno.us:8989/my_history?fullname=" + escape(background.get_data('username'));
+	$('#reset_data').hide();
 }
 
 function load_visited_sites() {
@@ -63,7 +64,10 @@ function get_user_total(fullname) {
 				var response_json = JSON.parse(xmlHttp.responseText);
 				if(response_json.status == "succeed") {
 					set_data('totalearned', response_json.totalearned);
-					$('#total_earned').html("Total earned: " + response_json.totalearned.toFixed(2));		
+					$('#total_earned').html("Total earned: " + response_json.totalearned.toFixed(2));	
+					if(response_json.usertype == "debug_user") {
+							$('#reset_data').show();
+					}	
 				}
 			} else {
 				console.log("server error, try again later");

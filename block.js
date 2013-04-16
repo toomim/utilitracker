@@ -132,10 +132,11 @@ function onload() {
         $('#website').html(find_website_state(url).url_pattern); });
 
     // Set up the reset this debugging button
-    $('#resetthis').click(function () {
+
+/*    $('#resetthis').click(function () {
         remove_website_state(find_website_state(url).url_pattern);
         unblock(); });
-
+*/
 	// set up the a/b test
     var v = get_data('variant') || 0;
     v = Math.min(v, variants.length - 1)
@@ -173,7 +174,7 @@ function exceeded_offer() {
     $('#status_bar').hide();
     $('#unblocked_url').hide();
     $('#remaining_time').hide();
-    $('#resetthis').hide();
+    // $('#resetthis').hide();
     $('#skip_section').hide();
     $('#dollar_bill').hide();
     $('#gift_box').animate(
