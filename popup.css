@@ -1,5 +1,31 @@
+@font-face {
+    font-family: futura_book;
+    src: url("Fonts/FuturaStd-Book.otf");
+}
+
+@font-face {
+    font-family: futura_heavy;
+    src: url("Fonts/FuturaStd-Heavy.otf");
+}
+
 body {
 	font-size: 12pt;
-	font-family: Helvetica, Arial;
-	width: 200px;
+	font-family: futura_book;
+	width: 300px;
+}
+
+#total_earned_data {
+    text-align: right;
+}
+
+#title_part, #total_earned_title {
+    font-family: futura_heavy;
+}
+
+#blocked_site {
+    color: #9D1309;
+}
+
+#passed_site {
+    color: #629632;
 }

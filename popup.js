@@ -11,24 +11,42 @@ function onload() {
 
 function load_visited_sites() {
 	var status = background.get_data("website_state");
-	var ul = document.createElement('ul');
+	var sites_list = document.createElement('ul');
 	
 	var states = get_data('website_state');
     states.each(function (state) {
 		if(state.user_offer != null) {
-        	var tmp = document.createElement('li'); 
+        	var site_name = document.createElement('li');
 			if(state.user_offer <= state.our_offer) {
-	        	tmp.innerHTML = state.url_pattern;
+	        	site_name.innerHTML = state.url_pattern + " - <span id='blocked_site'>BLOCKED</span>";
+
+	        	var site_earning = document.createElement('li');
+	        	site_earning.innerHTML = "Earned $" + state.our_offer;
+	        	
+	        	var site_block_time = document.createElement('li');
+	        	var now = new Date();
+	            var passed = now.getTime() - state.last_day_check;
+	            var hours_left = parseInt((60*60*24*1000 - passed) / (1000*60*60));
+	            if (hours_left < 1) {
+	                site_block_time.innerHTML = "Blocked for <1 more hours";
+	            } else {
+	            	site_block_time.innerHTML = "Blocked for " + hours_left + " more hours";
+	            }
+	            
+	        	var site_info = document.createElement('ul');
+	        	site_info.appendChild(site_earning);
+	        	site_info.appendChild(site_block_time);
+	        	site_name.appendChild(site_info);
 			} else {
-				tmp.innerHTML = state.url_pattern + " (pass)"
+				site_name.innerHTML = state.url_pattern + " - <span id='passed_site'>PASSED</span>";
 			}
-        	ul.appendChild(tmp);			
+        	sites_list.appendChild(site_name);			
 		}
     });
-    if(ul.childElementCount) {
-        document.getElementById('data_part').appendChild(ul);
+    if(sites_list.childElementCount) {
+        document.getElementById('data_part').appendChild(sites_list);
     } else {
-        document.getElementById('title_part').innerHTML = 'no website blocked';
+        document.getElementById('title_part').innerHTML = 'No websites blocked!';
     }
 }
 
@@ -44,7 +62,7 @@ function clear_data () {
 
 function get_user_total(fullname) {
 	// set the total data at first place
-	$('#total_earned').html("Total earned: " + get_data('totalearned').toFixed(2));
+	$('#total_earned_data').html("$" + get_data('totalearned').toFixed(2));
 	// open new http request
 	var xmlHttp = new XMLHttpRequest();
 	tourl = "http://yuno.us:8989/calculate_user";
@@ -64,7 +82,7 @@ function get_user_total(fullname) {
 				var response_json = JSON.parse(xmlHttp.responseText);
 				if(response_json.status == "succeed") {
 					set_data('totalearned', response_json.totalearned);
-					$('#total_earned').html("Total earned: " + response_json.totalearned.toFixed(2));	
+					$('#total_earned_data').html("$" + response_json.totalearned.toFixed(2));	
 					if(response_json.usertype == "debug_user") {
 							$('#reset_data').show();
 					}	
