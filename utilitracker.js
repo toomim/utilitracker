@@ -93,6 +93,9 @@ function bypass_website_state(url) {
                })
     data.user_offer = 'PASS';
     set_data('website_state', state);
+    // Record the block event
+	store_block_data("bypass", get_username(), url, null);
+ 
 }
 
 function get_todays_offer(url) {
@@ -141,10 +144,14 @@ function check_for_new_day (url) {
    	 	  			console.log('reset offer for: ', url);
 					state.user_offer = null;
 					state.last_day_check = today_time.getTime();
+					// check server to get blocked data for next day cycle
+					fetch_study_status();
        		 	}
 			} else {
 				// the page is not viewed before.
 				state.last_day_check = today_time.getTime();
+				// check server to get blocked data for next day cycle
+				fetch_study_status();
 			}
 		}
 	});
