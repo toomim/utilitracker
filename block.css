@@ -83,13 +83,13 @@ body {
 }
 
 #gift_outline {
-	background-image: url('Gift_outline1.png');
+	background-image: url('gift_outline_white.png');
 	background-repeat: no-repeat;
 	height: 357px;
 	width: 527px;
 	position: relative;
 	left: 9px;
-	bottom: 5px;
+	top: 60px;
     display: none;
 }
 
@@ -256,9 +256,15 @@ input {
 }
 
 #exceed_offer {
-    margin-top: 20px;
     font-family: futura_light;
     font-size: 21px;
+    position: relative;
+    top: 120px;
+}
+
+#enjoy_visit {
+    position: relative;
+    top: 110px;
 }
 
 #exceed_offer, #enjoy_visit {
@@ -277,6 +283,7 @@ input {
 	position: relative;
 	background-image: url(dollar_bill.png);
 }
+
 #dollar_amount {
     font-family: futura_bold;
     margin: 0px;
@@ -297,7 +304,7 @@ input {
     -webkit-text-stroke-color: #ccc;
     margin: 0px;
 	position: relative;
-	top: 180px;
+	top: 120px;
 }
 
 #dollar_sign {
@@ -324,4 +331,8 @@ input {
     color: #ececec;
     -webkit-text-stroke-width: 4px;
     -webkit-text-stroke-color: #ccc;
+}
+
+.dev_mode {
+	display: none;
 }

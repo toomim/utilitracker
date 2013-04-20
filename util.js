@@ -54,6 +54,8 @@ Array.prototype.find = function (predicate) {
         if (predicate(this[i])) return this[i];
     return false;
 };
+Array.prototype.contains = function (x) {
+    return this.indexOf(x) != -1;}
 
 if (window.$)
     $.fn.make_absolute = function(rebase) {

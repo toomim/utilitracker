@@ -1,12 +1,13 @@
 document.addEventListener("DOMContentLoaded", onload);
 var background = chrome.extension.getBackgroundPage();
+var BLOCK_HOURS = 3;
 
 function onload() {
     load_visited_sites();
     get_user_total(background.get_data('username'));
     document.getElementById('reset_data').onclick = clear_data;
 	document.getElementById('check_history_from_server').href = "http://yuno.us:8989/my_history?fullname=" + escape(background.get_data('username'));
-	$('#reset_data').hide();
+    if (dev_mode()) $('.dev_mode').show();
 }
 
 function load_visited_sites() {
@@ -26,7 +27,7 @@ function load_visited_sites() {
 	        	var site_block_time = document.createElement('li');
 	        	var now = new Date();
 	            var passed = now.getTime() - state.last_day_check;
-	            var hours_left = parseInt((60*60*24*1000 - passed) / (1000*60*60));
+	            var hours_left = parseInt((60*60*BLOCK_HOURS*1000 - passed) / (1000*60*60));
 	            if (hours_left < 1) {
 	                site_block_time.innerHTML = "Blocked for <1 more hours";
 	            } else {
@@ -83,9 +84,8 @@ function get_user_total(fullname) {
 				if(response_json.status == "succeed") {
 					set_data('totalearned', response_json.totalearned);
 					$('#total_earned_data').html("$" + response_json.totalearned.toFixed(2));	
-					if(response_json.usertype == "debug_user") {
-							$('#reset_data').show();
-					}	
+					set_data('is_developer',
+                             response_json.usertype == "debug_user")
 				}
 			} else {
 				console.log("server error, try again later");

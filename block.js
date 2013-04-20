@@ -1,7 +1,9 @@
+var BLOCK_HOURS = 3;
+
 // A/B test options go in here.
 var variants = [
     {title: 'RANDOM CASH OFFER',
-     body: 'Yours if you accept 24 hours of blocked <a class="url"></a> access.'
+     body: 'Yours if you accept ' + BLOCK_HOURS + ' hours of blocked <a class="url"></a> access.'
            + '<br>How much would it need to be?'}, 
  /*   {title: 'CASH CHANCE',
      body: 'Sell your <a class="url"></a> access for 24 hours.'
@@ -10,14 +12,17 @@ var variants = [
      body: 'Sell your <a class="url"></a> access for 24 hours.'
      	   + '<br>Name your price.'},*/
     {title: 'REWARD OPPORTUNITY',
-     body: 'Yours if you accept 24 hours of blocked <a class="url"></a> access.'
+     body: 'Yours if you accept ' + BLOCK_HOURS + ' hours of blocked <a class="url"></a> access.'
      	   + '<br>How much would it need to be?'},
     {title: 'CASH CHANCE',
-     body: 'How much money would you need to be awarded to allow yourself to be blocked from <a class="url"></a> for 24 hours?'},
+     body: 'How much money would you need to be awarded to allow yourself to be blocked from <a class="url"></a> for ' + BLOCK_HOURS + ' hours?'},
     {title: 'RANDOM CASH OFFER',
-     body: "We will pay you to be blocked for 24 hours from <a class=\"url\"></a>, if your bid is low enough."},
+     body: "We will pay you to be blocked for " + BLOCK_HOURS + " hours from <a class=\"url\"></a>, if your bid is low enough."},
     {title: 'RANDOM CASH OFFER',
-     body: "We could pay you to be blocked for 24 hours from <a class=\"url\"></a>, how much is it worth to you?"},
+     body: "We could pay you to be blocked for " + BLOCK_HOURS + " hours from <a class=\"url\"></a>, how much is it worth to you?"},
+
+    {title: '',
+     body: 'How much would we have to pay you for you to accept ' + BLOCK_HOURS + ' hours of blocked <a class=\"url\"></a> access?'}
 ]
 
 function get_url () {
@@ -166,6 +171,7 @@ function onload() {
 
     //setTimeout(100, function () { console.log('6', $('#block_section').css('display')) })
 
+    if (dev_mode()) $('.dev_mode').show()
 }
 
 // Called when the user's offer exceeds our offer to show the "exceeds offer" page
@@ -212,7 +218,11 @@ function submit() {
     // Otherwise, let's roll
     store_block_data("value submitted", get_data('username'), url,
                      $("#valueInput").val());
-	show_block_stuff()
+    
+    // Sets last_check_date after submit button is pressed
+    // (Makes it so the countdown will only start after user submits a value)
+    update_last_check(url);
+	show_block_stuff();
 }
 
 
@@ -264,7 +274,7 @@ function time_left() {
 
 	var now = new Date();
 	var passed = now.getTime() - site.last_day_check;
-	return parseInt((60*60*24*1000 - passed) / 1000);
+	return parseInt((60*60*BLOCK_HOURS*1000 - passed) / 1000);
 }
 
 var countdown_timer;
@@ -277,7 +287,7 @@ function update_countdown () {
 	$('#remaining_seconds').html(pad2(seconds % 60));
 
     // Update the dollar bill cover
-    $('#status_bar').css('width', (430.0 * seconds/(60*60*24)))
+    $('#status_bar').css('width', (430.0 * seconds/(60*60*BLOCK_HOURS)))
 
     // Time's up?
 	if (seconds <= 1)
@@ -294,6 +304,6 @@ function status_bar_init(duration) {
 	var seconds = time_left();
 
 	$('#status_bar').css('width', 0);
-	$('#status_bar').animate({'width' : 430.0 * seconds/(60*60*24)}, duration);
+	$('#status_bar').animate({'width' : 430.0 * seconds/(60*60*BLOCK_HOURS)}, duration);
 	
 }

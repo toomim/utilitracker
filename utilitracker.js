@@ -2,12 +2,18 @@ if (get_data('urls_status'))
     localStorage.clear()
 
 // Options
+var BLOCK_HOURS = 3;
 var initial_urls = ['facebook.com', 'google.com'
             /* 'bing.com', 'reddit.com', 'renren.com',
             'quora.com', 'ycombinator.com', 'twitter.com',
             'friendbo.com', 'youtube.com' */];
 var blacklisted_urls = {};
 get_data('block_urls').each(function (u) {blacklisted_urls[u] = true;});
+
+var developers = ['Michael Toomim', 'derek', 'guan', 'siye liu', 'chet']
+function dev_mode() {
+    return get_data('is_developer')
+    return developers.contains(get_data('username')) }
 
 // initialize the website_state
 function initialize_website_state(urls) {
@@ -98,6 +104,17 @@ function bypass_website_state(url) {
  
 }
 
+function update_last_check(url) {
+    var state = get_data('website_state');
+    if(!state) return false;
+    var data = state.find(function (site) {
+                    return url_matches(url, site)
+               })
+    var today_time = new Date();
+    data.last_day_check = today_time.getTime();
+    set_data('website_state', state);
+}
+
 function get_todays_offer(url) {
     var states = get_data('website_state');
     var result;
@@ -106,7 +123,7 @@ function get_todays_offer(url) {
             // check whether the our_offer is check in a new day
             var today_date = new Date();
             
-            if(today_date.getTime() - state.offer_day_check < (1000*60*60*24)) {
+            if(today_date.getTime() - state.offer_day_check < (1000*60*60*BLOCK_HOURS)) {
                 result = state.our_offer;
             } else {
                 state.offer_day_check = today_date.getTime();
@@ -139,7 +156,7 @@ function check_for_new_day (url) {
 			var last_view = state.last_day_check;
 			if(last_view != null) {
 				// if the page is viewed before				
-				if(today_time.getTime() - last_view >= (1000 * 60 * 60 * 24)) {
+				if(today_time.getTime() - last_view >= (1000 * 60 * 60 * BLOCK_HOURS)) {
    		   			// If so, reset offers
    	 	  			console.log('reset offer for: ', url);
 					state.user_offer = null;
@@ -247,7 +264,7 @@ function pass_listener(tab_id, change_info, tab) {
 	if(site.user_offer == 'PASS') {
 	    // show timer in the upper right corner for 5 seconds
 	    var now = new Date();
-        var sec = parseInt((60*60*24*1000 - (now.getTime() - site.last_day_check))/1000);
+        var sec = parseInt((60*60*BLOCK_HOURS*1000 - (now.getTime() - site.last_day_check))/1000);
         chrome.tabs.executeScript(tab_id, {code: "var seconds_left = " + sec + ";"});
         chrome.tabs.executeScript(tab_id, {file: "inline.js"});
 	}   

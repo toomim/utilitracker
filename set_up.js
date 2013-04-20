@@ -86,25 +86,18 @@ function register_to_server(value, func) {
 			// alert(xmlHttp.statusText);
 			if(xmlHttp.status == 200) {
 				if(xmlHttp.responseText == 'succeed') {
-					if(func == 'register') {
-						console.log('user name is available');						
-					} else {
-						console.log('user name login successful');
-					}
+					if(func == 'register') console.log('user name is available');
+					else console.log('user name login successful');
 					// save username 
 					set_data('username', value);
 					// TODO
 					window.location = this_url;		    
 				} else {
-					if(func == 'register') {
-						error.innerHTML = "user name alreadly been registered";					
-					} else {
-						error.innerHTML = "invalid user name";
-					}
+					if(func == 'register')
+						error.innerHTML = "user name alreadly been registered";
+					else error.innerHTML = "invalid user name";
 				}
-			} else {
-				error.innerHTML = "server error, try again later. ";
-			}
+			} else error.innerHTML = "server error, try again later. ";
 		}
 		console.log('response text: ', xmlHttp.responseText);
 	};

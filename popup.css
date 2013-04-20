@@ -29,3 +29,6 @@ body {
 #passed_site {
     color: #629632;
 }
+.dev_mode {
+	display: none;
+}
