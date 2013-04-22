@@ -143,7 +143,7 @@ function get_todays_offer(url) {
     set_data('website_state', states);
     
 
-    return result;
+    return result.toFixed(2);
 }
 
 // Check to see if it's a new day/ over 24 hours
@@ -259,6 +259,10 @@ function request_listener(details) {
 }
 
 function pass_listener(tab_id, change_info, tab) {
+    // This is disabled for now.  Remove this return statement when we
+    // are ready to put it back in.
+    return;
+
     //console.log('pass_listener');
     var site = find_website_state(tab.url);
 	if(site.user_offer == 'PASS') {

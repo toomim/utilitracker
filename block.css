@@ -281,6 +281,7 @@ input {
 	height: 187px;
 	width: 431px;
 	position: relative;
+	text-align: center;
 	background-image: url(dollar_bill.png);
 }
 
@@ -290,8 +291,9 @@ input {
     font-weight: bold;
     font-size: 50pt;
     color: rgb(65, 135, 75);
-	position: relative;
+	position: absolute;
 	top: 60px;
+	width: 431px;
 }
 
 #dollar_amount_outline {
@@ -316,11 +318,11 @@ input {
 	float: right;
 	background-color: rgb(34, 34, 34);
 	opacity: 0.90;
-	position: relative;
-	top: -78px;
+	position: absolute;
+	top: 2px;
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 5px;
-	margin-right: 3px;
+	right: 3px;
 }
 
 .ghost_amount {

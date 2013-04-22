@@ -1,5 +1,3 @@
-var BLOCK_HOURS = 3;
-
 // A/B test options go in here.
 var variants = [
     {title: 'RANDOM CASH OFFER',
@@ -14,14 +12,14 @@ var variants = [
     {title: 'REWARD OPPORTUNITY',
      body: 'Yours if you accept ' + BLOCK_HOURS + ' hours of blocked <a class="url"></a> access.'
      	   + '<br>How much would it need to be?'},
+    {title: 'FACEBOOK CASH',
+     body: 'How much money would you need us to give you in exchange for blocking your <a class="url"></a> access for ' + BLOCK_HOURS + ' hours?'},
     {title: 'CASH CHANCE',
-     body: 'How much money would you need to be awarded to allow yourself to be blocked from <a class="url"></a> for ' + BLOCK_HOURS + ' hours?'},
-    {title: 'RANDOM CASH OFFER',
      body: "We will pay you to be blocked for " + BLOCK_HOURS + " hours from <a class=\"url\"></a>, if your bid is low enough."},
     {title: 'RANDOM CASH OFFER',
      body: "We could pay you to be blocked for " + BLOCK_HOURS + " hours from <a class=\"url\"></a>, how much is it worth to you?"},
 
-    {title: '',
+    {title: 'FACEBOOK CASH',
      body: 'How much would we have to pay you for you to accept ' + BLOCK_HOURS + ' hours of blocked <a class=\"url\"></a> access?'}
 ]
 
@@ -162,7 +160,7 @@ function onload() {
     	document.body.style.background = "url(background/" + url_name[0] + ".png)"
     
     // Set the url for all class="url" objects
-    $('.url').attr('href', url).append(get_hostname(url));
+    $('.url').attr('href', url).append(find_website_state(url).url_pattern);
 
     // Focus on the text box
     var is_in_iframe = !(window.self === window.top);

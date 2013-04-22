@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", onload);
 var background = chrome.extension.getBackgroundPage();
-var BLOCK_HOURS = 3;
 
 function onload() {
     load_visited_sites();
