@@ -122,13 +122,14 @@ a {
 }
 
 #valueInput {
-	width: 75px;
+	width: 100px;
 	height: 30px;
 	vertical-align: top;
 	margin-left: 10px;
 	margin-right: 10px;
 	font-size: 20pt;
 	font-weight: bold;
+	text-align: right;
 }
 
 #submitButton {

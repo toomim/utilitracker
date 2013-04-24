@@ -186,7 +186,7 @@ function whitelisted (url) {
                      'facebook.com/connect/',
                      'accounts.google.com',
                      'google.com/calendar/hello',
-                     'facebook.com/plugins/likebox.php?',
+                     'facebook.com/plugins/',
                      'www.facebook.com/dialog/oauth?',
                      'plus.google.com/u/0/_/n/guc',
                      'google.com/images/',

@@ -1,14 +1,14 @@
 // A/B test options go in here.
 var variants = [
-    {title: 'RANDOM CASH OFFER',
+ /*   {title: 'RANDOM CASH OFFER',
      body: 'Yours if you accept ' + BLOCK_HOURS + ' hours of blocked <a class="url"></a> access.'
            + '<br>How much would it need to be?'}, 
- /*   {title: 'CASH CHANCE',
+    {title: 'CASH CHANCE',
      body: 'Sell your <a class="url"></a> access for 24 hours.'
      	   + '<br>Name your price.'},
     {title: 'REWARD CHANCE',
      body: 'Sell your <a class="url"></a> access for 24 hours.'
-     	   + '<br>Name your price.'},*/
+     	   + '<br>Name your price.'},
     {title: 'REWARD OPPORTUNITY',
      body: 'Yours if you accept ' + BLOCK_HOURS + ' hours of blocked <a class="url"></a> access.'
      	   + '<br>How much would it need to be?'},
@@ -18,8 +18,8 @@ var variants = [
      body: "We will pay you to be blocked for " + BLOCK_HOURS + " hours from <a class=\"url\"></a>, if your bid is low enough."},
     {title: 'RANDOM CASH OFFER',
      body: "We could pay you to be blocked for " + BLOCK_HOURS + " hours from <a class=\"url\"></a>, how much is it worth to you?"},
-
-    {title: 'FACEBOOK CASH',
+*/
+    {title: 'REWARD',
      body: 'How much would we have to pay you for you to accept ' + BLOCK_HOURS + ' hours of blocked <a class=\"url\"></a> access?'}
 ]
 
@@ -116,8 +116,6 @@ function onload() {
         show_block_stuff(true)
 
     // Add Event Listeners
-	document.body.addEventListener('keypress',
-                                   function (event) {if(event.keyCode == 13) submit()})
 	$('#submitButton').click(submit);
 
     // Set up the escape arrow event listeners
@@ -133,7 +131,38 @@ function onload() {
         });
         $('#money').html(parseFloat(find_website_state(url).our_offer).toFixed(2));
         $('#website').html(find_website_state(url).url_pattern); });
-
+        
+    // Set up atm-style input box (taken from http://stackoverflow.com/questions/11746114/atm-style-decimal-places)
+    $('#valueInput').val("0.00");
+    
+    var input = ""; //holds current input as a string
+    
+    $("#valueInput").keydown(function(e) {     
+        // handle backspace key
+        if(e.keyCode == 8 && input.length > 0) {
+            input = input.slice(0,input.length-1); //remove last digit
+            $(this).val(formatNumber(input));
+        }
+        // handle enter key
+        else if(e.keyCode == 13) {
+            submit();
+        }
+        // skip to cents if "." key is pressed
+        /*else if(e.keyCode == 110 || e.keyCode == 190) {
+            if(parseFloat($(this).val()) < 1.00) {
+                $(this).val((parseFloat(formatNumber(input))*100).toFixed(2));
+            }
+        }*/
+        else {
+            var key = getKeyValue(e.keyCode);
+            if(key) {
+                input += key; //add actual digit to the input string
+                $(this).val(formatNumber(input)); //format input string and set the input box value to it
+            }
+        }
+        return false;
+    });
+    
     // Set up the reset this debugging button
 
 /*    $('#resetthis').click(function () {
@@ -170,6 +199,27 @@ function onload() {
     //setTimeout(100, function () { console.log('6', $('#block_section').css('display')) })
 
     if (dev_mode()) $('.dev_mode').show()
+}
+
+// Helper function to get values from keycodes for the atm-style input box
+// (taken from http://stackoverflow.com/questions/11746114/atm-style-decimal-places)
+function getKeyValue(keyCode) {
+    if(keyCode > 57) { //also check for numpad keys
+        keyCode -= 48;
+    }
+    if(keyCode >= 48 && keyCode <= 57) {
+        return String.fromCharCode(keyCode);
+    }
+}
+
+// Helper function to format the value for the atm-style input box
+// (taken from http://stackoverflow.com/questions/11746114/atm-style-decimal-places)
+function formatNumber(input) {
+    if(isNaN(parseFloat(input))) {
+        return "0.00"; //if the input is invalid just set the value to 0.00
+    }
+    var num = parseFloat(input);
+    return (num / 100).toFixed(2); //move the decimal up two places return a X.00 format
 }
 
 // Called when the user's offer exceeds our offer to show the "exceeds offer" page
