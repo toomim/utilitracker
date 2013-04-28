@@ -318,12 +318,18 @@ input {
 	height: 183px;
 	float: right;
 	background-color: rgb(34, 34, 34);
-	opacity: 0.90;
+	opacity: 0.75;
 	position: absolute;
 	top: 2px;
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 5px;
 	right: 3px;
+}
+
+#more_details {
+    font-family: futura_light;
+    font-size: 15px;
+    margin-top: 10px;
 }
 
 .ghost_amount {

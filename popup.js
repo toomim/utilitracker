@@ -4,6 +4,10 @@ var background = chrome.extension.getBackgroundPage();
 function onload() {
     load_visited_sites();
     get_user_total(background.get_data('username'));
+    
+    // update the badge on the icon
+	// background.update_badge();    
+
     document.getElementById('reset_data').onclick = clear_data;
 	document.getElementById('check_history_from_server').href = "http://yuno.us:8989/my_history?fullname=" + escape(background.get_data('username'));
     if (dev_mode()) $('.dev_mode').show();
@@ -21,7 +25,7 @@ function load_visited_sites() {
 	        	site_name.innerHTML = state.url_pattern + " - <span id='blocked_site'>BLOCKED</span>";
 
 	        	var site_earning = document.createElement('li');
-	        	site_earning.innerHTML = "Earned $" + state.our_offer;
+	        	site_earning.innerHTML = "Earned $" + state.our_offer.toFixed(2);
 	        	
 	        	var site_block_time = document.createElement('li');
 	        	var now = new Date();
@@ -47,7 +51,7 @@ function load_visited_sites() {
         document.getElementById('data_part').appendChild(sites_list);
     } else {
         document.getElementById('title_part').innerHTML = 'No websites blocked!';
-    }
+    }    
 }
 
 

@@ -93,13 +93,12 @@ function show_block_stuff(instantly) {
                 easing: 'easeOutCirc'
             }
         );
-		// show the bottom bar
+		// more details link
 		var mssss;
 		$.getJSON("http://yuno.us:8989/my_history?fullname=" + escape(get_data('username')), function(data) {
 			mssss = data.totalearned;
 		});
-	   	$('#bottom_bar').show();
-	   	$('#bottom_bar').html("You will receive the money after the timer goes off. <a href='http://yuno.us:8989/my_history?fullname=" + escape(get_data('username')) + "'>Click for more details.</a>");
+	   	$('#more_details').html("<a href='http://yuno.us:8989/my_history?fullname=" + escape(get_data('username')) + "'>Transaction History</a>");
     }
     // Hide the old junk
     setTimeout(function () {$('#gift_box').hide()}, duration);
@@ -116,6 +115,8 @@ function onload() {
         show_block_stuff(true)
 
     // Add Event Listeners
+    document.body.addEventListener('keypress',
+                                   function (event) {if(event.keyCode == 13) submit()})
 	$('#submitButton').click(submit);
 
     // Set up the escape arrow event listeners
@@ -129,11 +130,11 @@ function onload() {
             bypass_website_state(url);
             unblock();
         });
-        $('#money').html(parseFloat(find_website_state(url).our_offer).toFixed(2));
+        $('#money').html(todays_offer.toFixed(2));
         $('#website').html(find_website_state(url).url_pattern); });
         
     // Set up atm-style input box (taken from http://stackoverflow.com/questions/11746114/atm-style-decimal-places)
-    $('#valueInput').val("0.00");
+    /*$('#valueInput').val("  .    ");
     
     var input = ""; //holds current input as a string
     
@@ -147,12 +148,6 @@ function onload() {
         else if(e.keyCode == 13) {
             submit();
         }
-        // skip to cents if "." key is pressed
-        /*else if(e.keyCode == 110 || e.keyCode == 190) {
-            if(parseFloat($(this).val()) < 1.00) {
-                $(this).val((parseFloat(formatNumber(input))*100).toFixed(2));
-            }
-        }*/
         else {
             var key = getKeyValue(e.keyCode);
             if(key) {
@@ -161,14 +156,14 @@ function onload() {
             }
         }
         return false;
-    });
+    });*/
     
     // Set up the reset this debugging button
 
-/*    $('#resetthis').click(function () {
+    $('#resetthis') && $('#resetthis').click(function () {
         remove_website_state(find_website_state(url).url_pattern);
         unblock(); });
-*/
+
 	// set up the a/b test
     var v = get_data('variant') || 0;
     v = Math.min(v, variants.length - 1)
@@ -177,9 +172,14 @@ function onload() {
     $('#prompt').html(variants[v].body);
 
     // Set the dollar amount in the dollar bill
-    $('#dollar_amount').html('' + get_todays_offer(url))
+    var displayed_offer = todays_offer;
+    if(displayed_offer % 1 != 0) {
+        displayed_offer = displayed_offer.toFixed(2);
+    }
     
-    $('#dollar_amount_outline').html('$' + get_todays_offer(url))
+    $('#dollar_amount').html('' + displayed_offer)
+    
+    $('#dollar_amount_outline').html('$' + displayed_offer)
 
 	// set the background page according to the url
     var url_name = get_hostname(url).split('.');
@@ -201,6 +201,7 @@ function onload() {
     if (dev_mode()) $('.dev_mode').show()
 }
 
+/*
 // Helper function to get values from keycodes for the atm-style input box
 // (taken from http://stackoverflow.com/questions/11746114/atm-style-decimal-places)
 function getKeyValue(keyCode) {
@@ -221,6 +222,7 @@ function formatNumber(input) {
     var num = parseFloat(input);
     return (num / 100).toFixed(2); //move the decimal up two places return a X.00 format
 }
+*/
 
 // Called when the user's offer exceeds our offer to show the "exceeds offer" page
 function exceeded_offer() {

@@ -2,7 +2,7 @@ if (get_data('urls_status'))
     localStorage.clear()
 
 // Options
-var BLOCK_HOURS = 3;
+var BLOCK_HOURS = 1;
 var initial_urls = ['facebook.com', 'google.com'
             /* 'bing.com', 'reddit.com', 'renren.com',
             'quora.com', 'ycombinator.com', 'twitter.com',
@@ -14,6 +14,20 @@ var developers = ['Michael Toomim', 'derek', 'guan', 'siye liu', 'chet']
 function dev_mode() {
     return get_data('is_developer')
     return developers.contains(get_data('username')) }
+
+
+// update_badge();
+
+function update_badge() {
+    // update the badge in the icon 
+    var user_total_amount = get_data('totalearned'); 
+    	
+    console.log("total earned: " + user_total_amount);
+    if(user_total_amount) {
+    	chrome.browserAction.setBadgeText({text:'$' + parseInt(user_total_amount)});
+    }   
+}
+
 
 // initialize the website_state
 function initialize_website_state(urls) {
@@ -90,7 +104,12 @@ function find_website_state(url, optional_state) {
         return url_matches(url, site)
     })
 }
-
+function set_website_state(url, new_state) {
+    set_data('website_state',
+             get_data('website_state').map(
+                 function (curr_state) {
+                     return url_matches(url, curr_state) ? new_state : curr_state }))
+}
 function bypass_website_state(url) {
     var state = get_data('website_state');
     if(!state) return false;
@@ -115,35 +134,34 @@ function update_last_check(url) {
     set_data('website_state', state);
 }
 
-function get_todays_offer(url) {
-    var states = get_data('website_state');
-    var result;
-    states.each(function (state) {
-		if(url_matches(url, state)) {
-            // check whether the our_offer is check in a new day
-            var today_date = new Date();
-            
-            if(today_date.getTime() - state.offer_day_check < (1000*60*60*BLOCK_HOURS)) {
-                result = state.our_offer;
-            } else {
-                state.offer_day_check = today_date.getTime();
-                result = 100;
-                while(result > 40 || result < .1)
-                    result = Math.pow(1.25, (Math.random() * 35 - 18));
-
-                if (result > 10)
-                    result = Math.floor(result)
-                else
-                    result = Math.floor(result * 10) / 10
-
-                state.our_offer = result;
-            }
-		}
-    });
-    set_data('website_state', states);
+function random_offer_amount() {
+    var result = 100;
+    while(result > 40 || result < .1)
+        result = Math.pow(1.25, (Math.random() * 35 - 18));
     
+    // Round off the decimals
+    if (result > 10)
+        result = Math.floor(result)
+    else
+        result = Math.floor(result * 10) / 10
 
-    return result.toFixed(2);
+    return result
+}
+
+function get_todays_offer(url) {
+    var state = find_website_state(url)
+    var now = new Date().getTime();
+
+    // Is it time for a new offer?
+    if(!state.our_offer
+       || now - state.offer_day_check > (1000*60*60*BLOCK_HOURS)) {
+        // Then let's make a new offer
+        state.offer_day_check = now
+        state.our_offer = random_offer_amount()
+        set_website_state(url, state)
+    }
+
+    return state.our_offer
 }
 
 // Check to see if it's a new day/ over 24 hours
@@ -184,6 +202,7 @@ function whitelisted (url) {
                      'channel.facebook.com/ping',
                      'channel.facebook.com/p',
                      'facebook.com/connect/',
+                     'graph.facebook.com/oauth/authorize',
                      'accounts.google.com',
                      'google.com/calendar/hello',
                      'facebook.com/plugins/',
@@ -251,7 +270,8 @@ function request_listener(details) {
     // If the user's offer is less than ours, then we pay them and block
     if (site.user_offer < get_todays_offer(details.url)) {
         // Record the block event
-    	store_block_data("blocked", get_username(), details.url, site.user_offer);        
+    	store_block_data("blocked", get_username(), details.url, site.user_offer);    
+    	
 		// Redirect tab to countdown.html
         return { redirectUrl : chrome.extension.getURL("block.html")
             + "?url=" + escape(details.url)};
