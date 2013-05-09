@@ -199,6 +199,40 @@ function onload() {
     //setTimeout(100, function () { console.log('6', $('#block_section').css('display')) })
 
     if (dev_mode()) $('.dev_mode').show()
+    
+    // Constantly check whether an offer has been submitted in another tab with the same url
+	// If it has, refresh the page
+	if (site.user_offer == null) {
+	    check_offer = setInterval(checkForUserOffer, 1000);
+	}
+	
+	// Constantly check whether a block page has been skipped in another tab
+	// If it has, refresh the page
+	if (site.user_offer != "PASS") {
+	    check_skip = setInterval(checkForSkip, 1000);
+	}
+}
+var submit_clicked;
+
+// Checks if an offer for the current website has been submitted in another tab and reloads the page
+// if this is the case
+function checkForUserOffer() {
+    var site = find_website_state(url);
+    if (site.user_offer != null) {
+        if (!submit_clicked) {
+            setTimeout(function() {document.location.reload()}, 3000);
+        }
+        clearInterval(check_offer);
+    }
+}
+
+// Checks if a block page has been skipped in another tab and reloads the page if this is the case
+function checkForSkip() {
+    var site = find_website_state(url);
+    if (site.user_offer == "PASS") {
+        setTimeout(function() {window.location.replace(url)}, 3000);
+        clearInterval(check_skip);
+    }
 }
 
 /*
@@ -273,6 +307,7 @@ function submit() {
     // (Makes it so the countdown will only start after user submits a value)
     update_last_check(url);
 	show_block_stuff();
+	submit_clicked = true;
 }
 
 

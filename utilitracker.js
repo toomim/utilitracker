@@ -2,7 +2,7 @@ if (get_data('urls_status'))
     localStorage.clear()
 
 // Options
-var BLOCK_HOURS = 1;
+var BLOCK_HOURS = 3;
 var initial_urls = ['facebook.com', 'google.com'
             /* 'bing.com', 'reddit.com', 'renren.com',
             'quora.com', 'ycombinator.com', 'twitter.com',
@@ -26,6 +26,34 @@ function update_badge() {
     if(user_total_amount) {
     	chrome.browserAction.setBadgeText({text:'$' + parseInt(user_total_amount)});
     }   
+}
+
+// set the notications
+function set_notification(title, body) {
+
+    var notification = webkitNotifications.createNotification(
+        'icon.png',
+        title,  // notification title
+        body  // notification body text
+    );
+    notification.show();
+    
+    notification.ondisplay = function() {
+        // notifications auto disappear after 5 seconds
+        setTimeout(function () {notification.cancel();}, 5000);
+    };
+        
+    /*
+    var window_id;
+    chrome.windows.create({'url':'notification.html', 'type':'popup', 'height':200, 'width':300}, function(window) {
+        window_id = window.id;
+        chrome.windows.update(window_id, {'drawAttention':true, 'focused':true});
+
+        setTimeout(function() {
+            chrome.windows.remove(window.id, function() {})
+        }, 3000);
+    });    
+    */
 }
 
 
@@ -210,6 +238,8 @@ function whitelisted (url) {
                      'plus.google.com/u/0/_/n/guc',
                      'google.com/images/',
                      'google.com/complete/search?',
+                     //'output=embed', // For an embedded google map
+                     'maps.google.com',
                      'twitter.com/scribe/',
                      'talkgadget.google.com/u/0/talkgadget',
                      'mail.google.com/mail/u/0/channel',
@@ -257,6 +287,12 @@ function request_listener(details) {
     // check whether is a new day
     check_for_new_day(details.url);
     site = find_website_state(details.url);
+
+    // what if we don't havs state for this particular url?
+    if(!site) {
+        set_notification("block something else", details.url);
+    }
+    
     if (site.user_offer == null) {
 		// Record the block event
         store_block_data("ask offer", get_username(), details.url, null);
