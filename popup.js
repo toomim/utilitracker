@@ -31,11 +31,8 @@ function load_visited_sites() {
 	        	var now = new Date();
 	            var passed = now.getTime() - state.last_day_check;
 	            var hours_left = parseInt((60*60*BLOCK_HOURS*1000 - passed) / (1000*60*60));
-	            if (hours_left < 1) {
-	                site_block_time.innerHTML = "Blocked for <1 more hours";
-	            } else {
-	            	site_block_time.innerHTML = "Blocked for " + hours_left + " more hours";
-	            }
+
+	            site_block_time.innerHTML = "Blocked for <" + (hours_left + 1) + " more hours";
 	            
 	        	var site_info = document.createElement('ul');
 	        	site_info.appendChild(site_earning);

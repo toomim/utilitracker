@@ -144,10 +144,14 @@ function bypass_website_state(url) {
     var data = state.find(function (site) {
                     return url_matches(url, site)
                })
+    if (data.user_offer == 'PASS') {
+        return;
+    }
     data.user_offer = 'PASS';
     set_data('website_state', state);
     // Record the block event
-	store_block_data("bypass", get_username(), url, null);
+    	
+	store_block_data("bypass", get_username(), url, data.our_offer);
  
 }
 
@@ -388,6 +392,8 @@ function store_block_data(eventss, user, tab_url, value) {
 			}
 		}
 		set_data('website_state', status);
+	} else if(eventss == 'bypass') {
+		earned = (-1.0) * value;
 	}
 	
 	// Get the time of block
@@ -410,8 +416,9 @@ function store_block_data(eventss, user, tab_url, value) {
 	//
 	//
 	if (value == null) {
-		value = -1;	
+		value = 0;	
 	} 
+
 	post_to_server(eventss, user, time_date, tab_url, value, earned);
 	//
 	//
