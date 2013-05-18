@@ -57,7 +57,7 @@ function set_notification(title, body) {
 }
 
 
-// initialize the website_state
+/* Ensures the website_state has values for any that's missing. */
 function initialize_website_state(urls) {
     var state = get_data('website_state')
     set_data('website_state',
@@ -144,7 +144,10 @@ function bypass_website_state(url) {
     var data = state.find(function (site) {
                     return url_matches(url, site)
                })
+
     if (data.user_offer == 'PASS') {
+        // This prevents the user from skipping the same page multiple
+        // times, losing money for each duplicitous skip
         return;
     }
     data.user_offer = 'PASS';
@@ -155,7 +158,7 @@ function bypass_website_state(url) {
  
 }
 
-function update_last_check(url) {
+function update_last_day_check2(url) {
     var state = get_data('website_state');
     if(!state) return false;
     var data = state.find(function (site) {
@@ -164,6 +167,12 @@ function update_last_check(url) {
     var today_time = new Date();
     data.last_day_check = today_time.getTime();
     set_data('website_state', state);
+}
+
+function update_last_day_check(url) {
+    var site = find_website_state(url);
+    site.last_day_check = (new Date()).getTime();
+    set_website_state(url, site);
 }
 
 function random_offer_amount() {
@@ -266,48 +275,35 @@ function whitelisted (url) {
 }
 
 function request_listener(details) {
-    //console.log('request_listener');
+	// Check for registration
+    var registered_name = get_data('username');
+    if(registered_name == "default_user")
+        return {redirectUrl: chrome.extension.getURL("set_up.html")
+            + "?url=" + escape(details.url) };
 
     // If we don't care about this site, let's go away
     var domain = get_domain(details.url);
-    if (!domain || !blacklisted_urls[domain] || whitelisted(details.url)) {
-        // if (domain && blacklisted_urls[domain])
-        // console.log("domain: " + domain);
-        // console.log('Ignoring whitelisted url ' + details.url);
+    if (!domain || !blacklisted_urls[domain] || whitelisted(details.url))
         return {cancel: false};
-    }
-    // console.log('Processing blacklisted url ' + details.url);
 
-	// Get the blocked state of the url
-    var site = find_website_state(details.url);
-
-	//check whether the user is registered
-	// if not registered, redirect to the setup page
-    var registered_name = get_data('username');
-    if(registered_name == "default_user") {
-        return {redirectUrl: chrome.extension.getURL("set_up.html")
-            + "?url=" + escape(details.url) };
-    }
-    // check whether is a new day
+    // Initialize variables
     check_for_new_day(details.url);
     site = find_website_state(details.url);
+    if(!site) set_notification("Utility Error 3857! Tell the Utility Researchers!",
+                               details.url);
 
-    // what if we don't havs state for this particular url?
-    if(!site) {
-        set_notification("block something else", details.url);
-    }
-    
+
+    // Has the user seen the gift box page yet?
     if (site.user_offer == null) {
-		// Record the block event
+        // Then this site needs an offer, so ask for it.
+        // (1) Record the event and (2) redirect tab to block.html.
         store_block_data("ask offer", get_username(), details.url, null);
-
-        // If this site needs an offer, ask for it
-		// Redirect tab to block.html
 		return { redirectUrl : chrome.extension.getURL("block.html")
               + "?url=" + escape(details.url) };
     }
-	// Otherwise, we have a user's offer for this
-    // If the user's offer is less than ours, then we pay them and block
+
+	// Otherwise, we have a user's offer for this.
+    // If it's low enough, we are blocking them.
     if (site.user_offer < get_todays_offer(details.url)) {
         // Record the block event
     	store_block_data("blocked", get_username(), details.url, site.user_offer);    
@@ -316,6 +312,7 @@ function request_listener(details) {
         return { redirectUrl : chrome.extension.getURL("block.html")
             + "?url=" + escape(details.url)};
 	}
+    // Otherwise, they go through!
 }
 
 function pass_listener(tab_id, change_info, tab) {
@@ -419,7 +416,10 @@ function store_block_data(eventss, user, tab_url, value) {
 		value = 0;	
 	} 
 
-	post_to_server(eventss, user, time_date, tab_url, value, earned);
+    var url = tab_url
+    if (!dev_mode()) url = get_hostname(url)
+
+	post_to_server(eventss, user, time_date, url, value, earned);
 	//
 	//
 	//

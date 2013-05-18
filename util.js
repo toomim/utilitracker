@@ -81,6 +81,31 @@ function rand_int (max) { return Math.floor(Math.random() * (max + 1)) }
 
 // Storage Read and Write
 
+Storage.prototype.set = function(key, value) {
+    this.setItem(key, JSON.stringify(value));
+}
+Storage.prototype.get = function(key) {
+    var value = this.getItem(key);
+    return value && JSON.parse(value);
+}
+
+
+// Initialize localStorage
+var stg = localStorage;
+var defaults = {username : 'default_user',
+                totalearned : 0,
+                website_state : null,
+                real_money : false,
+                block_urls : ['facebook.com', 'google.com']};
+
+//localStorage.set('username', 'default_user')
+
+if (!localStorage.get('username'))
+    for (var k in defaults)
+        if (defaults.hasOwnProperty(k))
+            localStorage.set(k, defaults[k])
+
+
 var store = {
     read : function() {
         var stg = localStorage;
@@ -113,6 +138,7 @@ var store = {
         stg['urg_data'] = JSON.stringify(opts);
     }
 };
+
 
 // retrieve data from localStorage
 function get_data(key) {

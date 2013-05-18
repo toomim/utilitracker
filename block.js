@@ -305,7 +305,7 @@ function submit() {
     
     // Sets last_check_date after submit button is pressed
     // (Makes it so the countdown will only start after user submits a value)
-    update_last_check(url);
+    update_last_day_check(url);
 	show_block_stuff();
 	submit_clicked = true;
 }
