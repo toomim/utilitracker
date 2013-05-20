@@ -1,5 +1,6 @@
 // A/B test options go in here.
-var variants = [
+function block_text_variants () {
+    return [
  /*   {title: 'RANDOM CASH OFFER',
      body: 'Yours if you accept ' + store.hours_per_block + ' hours of blocked <a class="url"></a> access.'
            + '<br>How much would it need to be?'}, 
@@ -21,8 +22,9 @@ var variants = [
 */
     {title: 'REWARD',
      body: 'How much would we have to pay you for you to accept ' + store.hours_per_block + ' hours of blocked <a class=\"url\"></a> access?'}
-]
-
+    ]
+}
+var variants = block_text_variants();
 function get_url () {
 	// Parses the extension url to get the incoming url
 	if (!location.search) return
@@ -166,6 +168,7 @@ function onload() {
         unblock(); });
 
 	// set up the a/b test
+    variants = block_text_variants();
     var v = get_data('variant') || 0;
     v = Math.min(v, variants.length - 1)
     set_data('variant', (v+1) % variants.length);
