@@ -16,12 +16,15 @@ function block_milliseconds() { return 60*60*store.hours_per_block*1000 }
 function block_seconds() { return 60*60*store.hours_per_block }
 function block_hours() { return store.hours_per_block }
 // update_badge();
-function time_left(site) {
+function milliseconds_left(site) {
     var site = site || find_website(url); if (!site) return null;
 
 	var now = new Date();
 	var passed = now.getTime() - site.block_start_time;
-	return parseInt((block_milliseconds() - passed) / 1000);
+    return block_milliseconds() - passed;
+}
+function time_left(site) {
+	return parseInt(milliseconds_left(site) / 1000);
 }
 function update_badge() {
     // update the badge in the icon 
@@ -111,24 +114,11 @@ function fetch_study_status() {
                     if ((!store.enabled_today && json.enabled_today)
                         || new Date().getTime()
                            > store.cycle_start_time + store.hours_per_cycle*60*60*1000) {
-                        // New cycle! Reset it all.
+                        // New cycle!
                         store.cycle_start_time = new Date().getTime();
-                        store.websites.each(function (site) {
-                            site.our_offer = null;
-                            site.user_offer = null;
-                            site.block_start_time = null; });
                     }
 
                     store.enabled_today = json.enabled_today;
-
-                    // Clear everything if studies were disabled
-                    if (!store.enabled_today) {
-                        store.cycle_start_time = null;
-                        store.websites.each(function (site) {
-                            site.our_offer = null;
-                            site.user_offer = null;
-                            site.block_start_time = null; });
-                    }
 
                     save_store();
                 }
@@ -312,7 +302,7 @@ function request_listener(details) {
     var site = find_website(details.url);
     if(!site) set_notification("Utility Error 3857! Tell the Utility Researchers!",
                                details.url);
-    var within_block = (site.block_start_time && (time_left(site) > 0))
+    var within_block = site.block_start_time && milliseconds_left(site) > 0
 
     if (
         !within_cycle           // If we're out of cycle
