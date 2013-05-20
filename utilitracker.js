@@ -16,7 +16,13 @@ function block_milliseconds() { return 60*60*store.hours_per_block*1000 }
 function block_seconds() { return 60*60*store.hours_per_block }
 function block_hours() { return store.hours_per_block }
 // update_badge();
+function time_left(site) {
+    var site = site || find_website(url); if (!site) return null;
 
+	var now = new Date();
+	var passed = now.getTime() - site.block_start_time;
+	return parseInt((block_milliseconds() - passed) / 1000);
+}
 function update_badge() {
     // update the badge in the icon 
     var user_total_amount = get_data('totalearned'); 
@@ -84,21 +90,10 @@ function remove_websites(url) {
 
 // can get blocked websites for today
 function fetch_study_status() {
-	// open new http request
-	var xmlHttp = new XMLHttpRequest();
-	tourl = "http://yuno.us:8989/fetch_study_status";
-	var params = "fullname=" + escape(get_data('username'));
-	xmlHttp.open("POST", tourl, true);
-
-	//Send the proper header information along with the request  //x-www-form-urlencoded
-	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	//xmlHttp.setRequestHeader("Content-length", params.length);
-	//xmlHttp.setRequestHeader("Connection", "close");
-
-	xmlHttp.onreadystatechange = function() {
-		//Call a function when the state changes.
-		if(xmlHttp.readyState == 4) {
-			if(xmlHttp.status == 200) {
+    var url = "http://yuno.us:8989/fetch_study_status",
+        params = "fullname=" + escape(store.username);
+    ajax_post(url, params,
+              function (xmlHttp) {
 				var json = JSON.parse(xmlHttp.responseText);
 				if(json.status == "succeed") {
 					// Update our stored data
@@ -110,23 +105,44 @@ function fetch_study_status() {
                     store.hours_per_block = json.hours_per_block
                     store.hours_per_cycle = json.hours_per_cycle;
 
-                    if (!store.enabled_today && json.enabled_today)
-                        // Start a new cycle!
+                    // And start a new cycle!  If:
+                    //   - We just turned on the study
+                    //   - Or the old cycle expired
+                    if ((!store.enabled_today && json.enabled_today)
+                        || new Date().getTime()
+                           > store.cycle_start_time + store.hours_per_cycle*60*60*1000) {
+                        // New cycle! Reset it all.
                         store.cycle_start_time = new Date().getTime();
+                        store.websites.each(function (site) {
+                            site.our_offer = null;
+                            site.user_offer = null;
+                            site.block_start_time = null; });
+                    }
 
                     store.enabled_today = json.enabled_today;
-                    save_store();
-				}
 
-			} else {
-				console.log("server error, try again later");
-			}
-		}
-		// console.log('response text: ', xmlHttp.responseText);
-	};
-	xmlHttp.send(params);		
+                    // Clear everything if studies were disabled
+                    if (!store.enabled_today) {
+                        store.cycle_start_time = null;
+                        store.websites.each(function (site) {
+                            site.our_offer = null;
+                            site.user_offer = null;
+                            site.block_start_time = null; });
+                    }
+
+                    save_store();
+                }
+              });
 }
 
+function curr_cycle () {
+    var now = new Date().getTime()
+    console.log('This cycle started ' + (now - store.cycle_start_time) / (1000 * 60.0)
+                + ' minutes ago' + ' and ends in '
+                + ((store.cycle_start_time + store.hours_per_cycle*1000*60*60 - now)
+                   / (1000 * 60.0))
+                + ' minutes');
+}
 function url_matches(url, websites) {
     url = get_hostname(url) || url
     return url.indexOf(websites.url_pattern) != -1
@@ -296,12 +312,14 @@ function request_listener(details) {
     var site = find_website(details.url);
     if(!site) set_notification("Utility Error 3857! Tell the Utility Researchers!",
                                details.url);
+    var within_block = (site.block_start_time && (time_left(site) > 0))
 
-    // If we're out of cycle, go through
-    if (!within_cycle) return {cancel: false};
-
-    // If the user has explicitly passed out, go through
-    if (site.user_offer == 'PASS') return {cancel: false};
+    if (
+        !within_cycle           // If we're out of cycle
+        || (site.block_start_time && !within_block) // Or out of a block
+        || (site.user_offer == 'PASS')  // Or the user explicitly passed out
+       )
+        return {cancel: false};        // Then go through
 
     // Has the user seen the gift box page yet?
     if (site.user_offer == null) {
@@ -312,9 +330,11 @@ function request_listener(details) {
               + "?url=" + escape(details.url) };
     }
 
-    console.log('3')
-
 	// Otherwise, we have a user's offer for this.
+
+    // If the block has expired, get outa here
+    if (site.block_start_time + store.hours_per_cycle*60*60*1000 < now)
+        return 
 	if (site.user_offer <= site.our_offer) {
         store_block_data("blocked", get_username(), details.url, site.user_offer);    
             
@@ -322,8 +342,6 @@ function request_listener(details) {
         return { redirectUrl : chrome.extension.getURL("block.html")
                  + "?url=" + escape(details.url)};
     }
-
-    console.log('4')
 
     // Otherwise they go through!
 }
@@ -395,7 +413,7 @@ function store_block_data(eventss, user, tab_url, value) {
 		for(var i = 0; i < status.length; i++) {
 			var ob = status[i];
 			if(tab_url.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
-				status[i].user_offer = value;
+				status[i].user_offer = parseFloat(value);
 				if(status[i].our_offer >= value) {
 					earned = status[i].our_offer;
 				}
@@ -483,28 +501,33 @@ function process_network_queue() {
 }
 
 function process_network_item(id, url, payload) {
-    console.log('Firing on ' + url + ' ' + payload);
+    //console.log('Firing on ' + url + ' ' + payload);
 
+    ajax_post(url, payload, function () {
+        // Once an item is successfully sent, let's remove it
+        // from the network queue.
+        //   1. Get the old queue from localStorage
+        //   2. Filter it down to remove this item
+        //   3. Store it back into localStorage
+        var queue = localStorage.get_object('network_post_queue') || [];
+		queue = queue.filter(function (obj) {
+            return !(obj.url==url && obj.payload==payload && obj.id==id)
+		})
+        localStorage.set_object('network_post_queue', queue)
+    });
+}
+
+function ajax_post(url, payload, callback) {
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open("POST", url, true);
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xmlHttp.onreadystatechange = function() {
 	    if(xmlHttp.readyState == 4)
 			if(xmlHttp.status == 200) {
-                // Once an item is successfully sent, let's remove it
-                // from the network queue.
-                //   1. Get the old queue from localStorage
-                //   2. Filter it down to remove this item
-                //   3. Store it back into localStorage
-                var queue = localStorage.get_object('network_post_queue') || [];
-				queue = queue.filter(function (obj) {
-                    return !(obj.url==url && obj.payload==payload && obj.id==id)
-			    })
-                localStorage.set_object('network_post_queue', queue)
+                callback(xmlHttp)
             } else {
                 console.log('Got a weird status back: ' + xmlHttp.status)
             }
 	};
 	xmlHttp.send(payload);
-    
 }

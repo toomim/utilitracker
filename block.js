@@ -356,14 +356,6 @@ function is_valid_value() {
 }
 
 
-function time_left() {
-    var site = find_website(url); if (!site) return null;
-
-	var now = new Date();
-	var passed = now.getTime() - site.block_start_time;
-	return parseInt((block_milliseconds() - passed) / 1000);
-}
-
 var countdown_timer;
 function update_countdown () {
     var seconds = time_left();
