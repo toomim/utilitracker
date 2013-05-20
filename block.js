@@ -304,12 +304,8 @@ function submit() {
     store_block_data("value submitted", get_data('username'), url,
                      $("#valueInput").val());
     
-    // Sets last_check_date after submit button is pressed
-    // (Makes it so the countdown will only start after user submits a value)
-    update_last_day_check(url);
-
     store.refresh()
-    store.block_start_time = new Date().getTime();
+    find_website(url).block_start_time = new Date().getTime();
     store.save()
 
 	show_block_stuff();
@@ -364,7 +360,7 @@ function time_left() {
     var site = find_website(url); if (!site) return null;
 
 	var now = new Date();
-	var passed = now.getTime() - site.last_day_check;
+	var passed = now.getTime() - site.block_start_time;
 	return parseInt((block_milliseconds() - passed) / 1000);
 }
 

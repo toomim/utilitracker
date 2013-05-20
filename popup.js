@@ -26,7 +26,7 @@ function load_visited_sites() {
 	var states = get_data('websites');
     states.each(function (state) {
         var now = new Date();
-        var passed = now.getTime() - state.last_day_check;
+        var passed = now.getTime() - state.block_start_time;
         var hours_left = parseInt((block_milliseconds() - passed) / (1000*60*60));
         var secs_left = parseInt((block_milliseconds() - passed) / 1000);
         

@@ -61,7 +61,7 @@ function initialize_websites(urls) {
     var state = get_data('websites')
     set_data('websites',
              urls.map(function (url) {
-                 return find_website(url, state) ||
+                 return find_website(url) ||
                      {url_pattern: url,
                       user_offer: null,
                       our_offer: null,
@@ -131,11 +131,9 @@ function url_matches(url, websites) {
     url = get_hostname(url) || url
     return url.indexOf(websites.url_pattern) != -1
 }
-/** The second `state' parameter is optional */
-function find_website(url, optional_state) {
-    var state = optional_state || get_data('websites');
-    if(!state) return false;
-    return state.find(function (site) {
+function find_website(url) {
+    if (!store || !store.websites) return null;
+    return store.websites.find(function (site) {
         return url_matches(url, site)
     })
 }
@@ -166,11 +164,11 @@ function bypass_websites(url) {
  
 }
 
-function update_last_day_check(url) {
-    var site = find_website(url);
-    site.last_day_check = (new Date()).getTime();
-    set_websites(url, site);
-}
+// function update_last_day_check(url) {
+//     var site = find_website(url);
+//     site.last_day_check = (new Date()).getTime();
+//     set_websites(url, site);
+// }
 
 function random_offer_amount() {
     var result = 100;
@@ -187,49 +185,53 @@ function random_offer_amount() {
 }
 
 function get_todays_offer(url) {
-    var state = find_website(url)
+    var site = find_website(url)
     var now = new Date().getTime();
 
     // Is it time for a new offer?
-    if(!state.our_offer
-       || now - state.offer_day_check > (1000*60*60*store.hours_per_cycle)) {
+    // The answer is YES if:
+    //   - We don't have one yet
+    //   - Or we were blocking, but the timer on that has expired
+    if (!site.our_offer
+        || (site.block_start_time
+            && now > site.block_start_time + store.hours_per_block*60*60*1000)) {
+
         // Then let's make a new offer
-        state.offer_day_check = now
-        state.our_offer = random_offer_amount()
-        set_websites(url, state)
+        site.our_offer = random_offer_amount()
+        store.save()
     }
 
-    return state.our_offer
+    return site.our_offer
 }
 
 // Check to see if it's a new day/ over 24 hours
-function check_for_new_day (url) {
-	var now = new Date().getTime();
-	var states = get_data('websites');
-	states.each(function (state) {
-		if(url_matches(url, state)) {
-			var last_view = state.last_day_check;
-			if(last_view != null) {
-				// if the page is viewed before				
-				if(now - last_view >= (1000 * 60 * 60 * store.hours_per_cycle)) {
-   		   			// If so, reset offers
-   	 	  			console.log('reset offer for: ', url);
-					state.user_offer = null;
-					state.last_day_check = now;
-					// check server to get blocked data for next day cycle
-					fetch_study_status();
-       		 	}
-			} else {
-				// the page is not viewed before.
-				state.last_day_check = now;
-				// check server to get blocked data for next day cycle
-				fetch_study_status();
-			}
-		}
-	});
+// function check_for_new_day (url) {
+// 	var now = new Date().getTime();
+// 	var states = get_data('websites');
+// 	states.each(function (state) {
+// 		if(url_matches(url, state)) {
+// 			var last_view = state.last_day_check;
+// 			if(last_view != null) {
+// 				// if the page is viewed before				
+// 				if(now - last_view >= (1000 * 60 * 60 * store.hours_per_cycle)) {
+//    		   			// If so, reset offers
+//    	 	  			console.log('reset offer for: ', url);
+// 					state.user_offer = null;
+// 					state.last_day_check = now;
+// 					// check server to get blocked data for next day cycle
+// 					fetch_study_status();
+//        		 	}
+// 			} else {
+// 				// the page is not viewed before.
+// 				state.last_day_check = now;
+// 				// check server to get blocked data for next day cycle
+// 				fetch_study_status();
+// 			}
+// 		}
+// 	});
 
-	set_data('websites', states);
-}
+// 	set_data('websites', states);
+// }
 
 // "Main" function - checks for blocked sites whenever a tab is updated.
 // Redirects to our block page. 
@@ -331,15 +333,15 @@ function pass_listener(tab_id, change_info, tab) {
     // are ready to put it back in.
     return;
 
-    //console.log('pass_listener');
-    var site = find_website(tab.url);
-	if(site.user_offer == 'PASS') {
-	    // show timer in the upper right corner for 5 seconds
-	    var now = new Date();
-        var sec = parseInt((60*60*store.hours_per_cycle*1000 - (now.getTime() - site.last_day_check))/1000);
-        chrome.tabs.executeScript(tab_id, {code: "var seconds_left = " + sec + ";"});
-        chrome.tabs.executeScript(tab_id, {file: "inline.js"});
-	}   
+    // //console.log('pass_listener');
+    // var site = find_website(tab.url);
+	// if(site.user_offer == 'PASS') {
+	//     // show timer in the upper right corner for 5 seconds
+	//     var now = new Date();
+    //     var sec = parseInt((60*60*store.hours_per_cycle*1000 - (now.getTime() - site.last_day_check))/1000);
+    //     chrome.tabs.executeScript(tab_id, {code: "var seconds_left = " + sec + ";"});
+    //     chrome.tabs.executeScript(tab_id, {file: "inline.js"});
+	// }   
 }
 
 if (chrome.tabs) {
