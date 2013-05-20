@@ -112,51 +112,35 @@ if (!localStorage.get('username'))
             localStorage.set(k, defaults[k])
 */
 
-var store_ = {
-    read : function() {
-        var stg = localStorage;
-
-        // Load options from localStorage
-        var opts = JSON.parse(stg['urg_data'] || '{}')
-
-        // Now replace defaults that haven't been set yet
-	    if (! ("username" in opts))
-		    opts.username = "default_user";
-		
-		if (! ("totalearned" in opts))
-			opts.totalearned = 0  
-		  
-	    if (! ("websites" in opts))
-		    opts.websites = null;
-		  
-	    if (! ("real_money" in opts))
-	        opts.real_money = false;
-		
-		if (! ("block_urls" in opts))
-			opts.block_urls = ['facebook.com', 'google.com'];  
-		  
-        return opts;
-    },
-
-    write : function(opts, stg) {
-        var stg = localStorage;
-
-        stg['urg_data'] = JSON.stringify(opts);
-    }
-};
-
 // retrieve data from localStorage
 function get_data(key) {
-	// return JSON.parse(localStorage.getItem(key));
-	return store_.read()[key];
+    var data = JSON.parse(localStorage['urg_data'] || '{}')
+
+    // Now replace defaults that haven't been set yet
+	if (! ("username" in data))
+		data.username = "default_user";
+		
+	if (! ("totalearned" in data))
+		data.totalearned = 0  
+		  
+	if (! ("websites" in data))
+		data.websites = null;
+		  
+	if (! ("real_money" in data))
+	    data.real_money = false;
+		
+	if (! ("block_urls" in data))
+		data.block_urls = ['facebook.com', 'google.com'];  
+		  
+	return data[key];
 }
 
 // store data to localStorage
 function set_data(key, value) {
 	// localStorage.setItem(key, JSON.stringify(value));	
-	var temp_data = store_.read();
-    temp_data[key] = value;
-	store_.write(temp_data);	
+	var data = JSON.parse(localStorage['urg_data'] || '{}');
+    data[key] = value;
+    localStorage['urg_data'] = JSON.stringify(data)
 }
 function clear_data () {
     console.log('Clearing utilitracker data')

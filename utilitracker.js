@@ -324,30 +324,6 @@ function request_listener(details) {
     console.log('4')
 
     // Otherwise they go through!
-
-/*
-	// Calculate how much time is left until the next cycle
-    var now = new Date();
-    var passed = now.getTime() - site.last_day_check;
-    var secs_left = parseInt((60*60*store.hours_per_cycle*1000 - passed) / 1000);
-    
-    console.log('secs_left is ' + secs_left + ' cause last_day_check is '
-                + site.last_day_check)
-
-    // If it's not the next cycle yet, let them through
-    if (secs_left < 0) {
-        // If it's low enough, we are blocking them.
-        if (site.user_offer < get_todays_offer(details.url)) {
-            // Record the block event
-            store_block_data("blocked", get_username(), details.url, site.user_offer);    
-            
-            // Redirect tab to countdown.html
-            return { redirectUrl : chrome.extension.getURL("block.html")
-                + "?url=" + escape(details.url)};
-        }
-    }
-    // Otherwise, they go through!
- */
 }
 
 function pass_listener(tab_id, change_info, tab) {
@@ -477,29 +453,7 @@ function post_to_server(eventss, user, time_date, url, value, earned) {
 		"&url=" + escape(url);
 
     enqueue_network_post(tourl, params);
-    //process_network_queue();
     return;
-
-    /*
-	var xmlHttp = new XMLHttpRequest();
-	xmlHttp.open("POST", tourl, true);
-	
-	// Send the proper header information along with the request
-    // x-www-form-urlencoded
-	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-	//xmlHttp.setRequestHeader("Content-length", params.length);
-	//xmlHttp.setRequestHeader("Connection", "close");
-	xmlHttp.onreadystatechange = function() {//Call a function when the state changes.
-	    if(xmlHttp.readyState == 4) {
-			if(xmlHttp.status == 200) {
-				//console.log(xmlHttp.responseText);
-			}
-	    }
-		//console.log('response text: ', xmlHttp.responseText);
-	};
-	xmlHttp.send(params);
-    */
 }
 
 function enqueue_network_post(url, payload) {
