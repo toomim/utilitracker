@@ -1,6 +1,4 @@
 // Options
-store.hours_per_block = store.hours_per_block || 0.01;
-store.hours_per_block = store.hours_per_cycle || 0.02;
 var initial_urls = ['facebook.com', 'google.com'
             /* 'bing.com', 'reddit.com', 'renren.com',
             'quora.com', 'ycombinator.com', 'twitter.com',
