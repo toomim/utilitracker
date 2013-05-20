@@ -11,4 +11,5 @@ function refresh_expired_blocks () {
             site.block_start_time = null;
         }
     });
+    store.save()
 }
