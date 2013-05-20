@@ -142,7 +142,9 @@ function load_store() {
                     ['totalearned', 0],
                     ['real_money', false],
                     ['block_urls', ['facebook.com', 'google.com']],
-                    ['cycle_start_time', new Date().getTime()]
+                    ['cycle_start_time', new Date().getTime()],
+                    ['hours_per_block', 3],
+                    ['hours_per_cycle', 24]
                    ];
 
     defaults.each(function (d) {
