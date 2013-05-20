@@ -57,6 +57,12 @@ Array.prototype.find = function (predicate) {
 Array.prototype.contains = function (x) {
     return this.indexOf(x) != -1;}
 
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+
 if (window.$)
     $.fn.make_absolute = function(rebase) {
         return this.each(function() {
@@ -81,20 +87,20 @@ function rand_int (max) { return Math.floor(Math.random() * (max + 1)) }
 
 // Storage Read and Write
 
-Storage.prototype.set = function(key, value) {
+Storage.prototype.set_object = function(key, value) {
     this.setItem(key, JSON.stringify(value));
 }
-Storage.prototype.get = function(key) {
+Storage.prototype.get_object = function(key) {
     var value = this.getItem(key);
     return value && JSON.parse(value);
 }
 
-
+/*
 // Initialize localStorage
 var stg = localStorage;
 var defaults = {username : 'default_user',
                 totalearned : 0,
-                website_state : null,
+                websites : null,
                 real_money : false,
                 block_urls : ['facebook.com', 'google.com']};
 
@@ -104,9 +110,9 @@ if (!localStorage.get('username'))
     for (var k in defaults)
         if (defaults.hasOwnProperty(k))
             localStorage.set(k, defaults[k])
+*/
 
-
-var store = {
+var store_ = {
     read : function() {
         var stg = localStorage;
 
@@ -120,8 +126,8 @@ var store = {
 		if (! ("totalearned" in opts))
 			opts.totalearned = 0  
 		  
-	    if (! ("website_state" in opts))
-		    opts.website_state = null;
+	    if (! ("websites" in opts))
+		    opts.websites = null;
 		  
 	    if (! ("real_money" in opts))
 	        opts.real_money = false;
@@ -139,24 +145,52 @@ var store = {
     }
 };
 
-
 // retrieve data from localStorage
 function get_data(key) {
 	// return JSON.parse(localStorage.getItem(key));
-	return store.read()[key];
+	return store_.read()[key];
 }
 
 // store data to localStorage
 function set_data(key, value) {
 	// localStorage.setItem(key, JSON.stringify(value));	
-	var temp_data = store.read();
+	var temp_data = store_.read();
     temp_data[key] = value;
-	store.write(temp_data);	
+	store_.write(temp_data);	
 }
 function clear_data () {
     console.log('Clearing utilitracker data')
-    set_data('website_state', []);
-    initialize_website_state(urls);
+    set_data('websites', []);
+    initialize_websites(get_data('block_urls'));
     console.log('Cleared utilitracker data')
     //alert('Utilitracker data has been cleared');
 }
+
+var store;
+function load_store() {
+    store = JSON.parse(localStorage['urg_data'] || '{}')
+
+    // Now replace defaults that haven't been set yet
+    var defaults = [['username', 'default_user'],
+                    ['totalearned', 0],
+                    ['real_money', false],
+                    ['block_urls', ['facebook.com', 'google.com']],
+                    ['cycle_start_time', new Date().getTime()]
+                   ];
+
+    defaults.each(function (d) {
+        var key = d[0], val=d[1];
+        store[key] = store[key] || val;
+    });
+    store.save = save_store
+    store.refresh = store.load = load_store
+}
+function save_store() {
+    delete store.save
+    delete store.refresh
+    delete store.load
+
+    localStorage['urg_data'] = JSON.stringify(store);
+    load_store();
+}
+load_store()

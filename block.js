@@ -1,7 +1,7 @@
 // A/B test options go in here.
 var variants = [
  /*   {title: 'RANDOM CASH OFFER',
-     body: 'Yours if you accept ' + BLOCK_HOURS + ' hours of blocked <a class="url"></a> access.'
+     body: 'Yours if you accept ' + store.hours_per_block + ' hours of blocked <a class="url"></a> access.'
            + '<br>How much would it need to be?'}, 
     {title: 'CASH CHANCE',
      body: 'Sell your <a class="url"></a> access for 24 hours.'
@@ -10,17 +10,17 @@ var variants = [
      body: 'Sell your <a class="url"></a> access for 24 hours.'
      	   + '<br>Name your price.'},
     {title: 'REWARD OPPORTUNITY',
-     body: 'Yours if you accept ' + BLOCK_HOURS + ' hours of blocked <a class="url"></a> access.'
+     body: 'Yours if you accept ' + store.hours_per_block + ' hours of blocked <a class="url"></a> access.'
      	   + '<br>How much would it need to be?'},
     {title: 'FACEBOOK CASH',
-     body: 'How much money would you need us to give you in exchange for blocking your <a class="url"></a> access for ' + BLOCK_HOURS + ' hours?'},
+     body: 'How much money would you need us to give you in exchange for blocking your <a class="url"></a> access for ' + store.hours_per_block + ' hours?'},
     {title: 'CASH CHANCE',
-     body: "We will pay you to be blocked for " + BLOCK_HOURS + " hours from <a class=\"url\"></a>, if your bid is low enough."},
+     body: "We will pay you to be blocked for " + store.hours_per_block + " hours from <a class=\"url\"></a>, if your bid is low enough."},
     {title: 'RANDOM CASH OFFER',
-     body: "We could pay you to be blocked for " + BLOCK_HOURS + " hours from <a class=\"url\"></a>, how much is it worth to you?"},
+     body: "We could pay you to be blocked for " + store.hours_per_block + " hours from <a class=\"url\"></a>, how much is it worth to you?"},
 */
     {title: 'REWARD',
-     body: 'How much would we have to pay you for you to accept ' + BLOCK_HOURS + ' hours of blocked <a class=\"url\"></a> access?'}
+     body: 'How much would we have to pay you for you to accept ' + store.hours_per_block + ' hours of blocked <a class=\"url\"></a> access?'}
 ]
 
 function get_url () {
@@ -63,7 +63,7 @@ function show_block_stuff(instantly) {
     $('#status_bar').hide();
     
     // And ... the big moment ... DOES HE WIN THE FISH?
-    var site_state = find_website_state(url)
+    var site_state = find_website(url)
     if (site_state.user_offer > todays_offer) {
         exceeded_offer();
     } else {
@@ -82,7 +82,8 @@ function show_block_stuff(instantly) {
                     $('#skip_section').fadeIn(duration);
                     $('#status_bar').show();
                     // And animate the status bar to make it look real
-                    setTimeout(status_bar_init(1000), duration);
+
+                    setTimeout('status_bar_init(1000)', duration);
                 }
             }
         );
@@ -110,7 +111,7 @@ function onload() {
     todays_offer = get_todays_offer(url)
 	
     // Choose which stage of animation we're displaying
-	site = find_website_state(url);
+	site = find_website(url);
 	if(site.user_offer != null)
         show_block_stuff(true)
 
@@ -127,11 +128,11 @@ function onload() {
             $('#skip_prompt').hide();
         });
         $('#confirm_btn').click(function () {
-            bypass_website_state(url);
+            bypass_websites(url);
             unblock();
         });
         $('#money').html(todays_offer.toFixed(2));
-        $('#website').html(find_website_state(url).url_pattern); });
+        $('#website').html(find_website(url).url_pattern); });
         
     // Set up atm-style input box (taken from http://stackoverflow.com/questions/11746114/atm-style-decimal-places)
     /*$('#valueInput').val("  .    ");
@@ -161,7 +162,7 @@ function onload() {
     // Set up the reset this debugging button
 
     $('#resetthis') && $('#resetthis').click(function () {
-        remove_website_state(find_website_state(url).url_pattern);
+        remove_websites(find_website(url).url_pattern);
         unblock(); });
 
 	// set up the a/b test
@@ -189,7 +190,7 @@ function onload() {
     	document.body.style.background = "url(background/" + url_name[0] + ".png)"
     
     // Set the url for all class="url" objects
-    $('.url').attr('href', url).append(find_website_state(url).url_pattern);
+    $('.url').attr('href', url).append(find_website(url).url_pattern);
 
     // Focus on the text box
     var is_in_iframe = !(window.self === window.top);
@@ -217,7 +218,7 @@ var submit_clicked;
 // Checks if an offer for the current website has been submitted in another tab and reloads the page
 // if this is the case
 function checkForUserOffer() {
-    var site = find_website_state(url);
+    var site = find_website(url);
     if (site.user_offer != null) {
         if (!submit_clicked) {
             setTimeout(function() {document.location.reload()}, 3000);
@@ -228,7 +229,7 @@ function checkForUserOffer() {
 
 // Checks if a block page has been skipped in another tab and reloads the page if this is the case
 function checkForSkip() {
-    var site = find_website_state(url);
+    var site = find_website(url);
     if (site.user_offer == "PASS") {
         setTimeout(function() {window.location.replace(url)}, 3000);
         clearInterval(check_skip);
@@ -306,6 +307,11 @@ function submit() {
     // Sets last_check_date after submit button is pressed
     // (Makes it so the countdown will only start after user submits a value)
     update_last_day_check(url);
+
+    store.refresh()
+    store.block_start_time = new Date().getTime();
+    store.save()
+
 	show_block_stuff();
 	submit_clicked = true;
 }
@@ -355,11 +361,11 @@ function is_valid_value() {
 
 
 function time_left() {
-    var site = find_website_state(url); if (!site) return null;
+    var site = find_website(url); if (!site) return null;
 
 	var now = new Date();
 	var passed = now.getTime() - site.last_day_check;
-	return parseInt((60*60*BLOCK_HOURS*1000 - passed) / 1000);
+	return parseInt((block_milliseconds() - passed) / 1000);
 }
 
 var countdown_timer;
@@ -372,7 +378,7 @@ function update_countdown () {
 	$('#remaining_seconds').html(pad2(seconds % 60));
 
     // Update the dollar bill cover
-    $('#status_bar').css('width', (430.0 * seconds/(60*60*BLOCK_HOURS)))
+    $('#status_bar').css('width', (430.0 * seconds/(60*60*store.hours_per_block)))
 
     // Time's up?
 	if (seconds <= 1)
@@ -389,6 +395,6 @@ function status_bar_init(duration) {
 	var seconds = time_left();
 
 	$('#status_bar').css('width', 0);
-	$('#status_bar').animate({'width' : 430.0 * seconds/(60*60*BLOCK_HOURS)}, duration);
+	$('#status_bar').animate({'width' : 430.0 * seconds/(60*60*store.hours_per_block)}, duration);
 	
 }

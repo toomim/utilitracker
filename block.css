@@ -55,7 +55,7 @@ body {
 }
 
 #gift_box_top {
-	background-image: url('gift_box_top2.png');
+	background-image: url('Images/gift_box_top.png');
 	background-repeat: no-repeat;
 	height: 138px;
 	width: 516px;
@@ -75,7 +75,7 @@ body {
 	margin-top: 0px;
 	margin-left: auto;
 	margin-right: auto;
-	background-image: url('gift_box_bottom.png');
+	background-image: url('Images/gift_box_bottom.png');
 	background-repeat: no-repeat;
 	background-position:10px;
 	height: 204px;
@@ -83,7 +83,7 @@ body {
 }
 
 #gift_outline {
-	background-image: url('gift_outline_white.png');
+	background-image: url('Images/gift_outline_white.png');
 	background-repeat: no-repeat;
 	height: 357px;
 	width: 527px;
@@ -283,7 +283,7 @@ input {
 	width: 431px;
 	position: relative;
 	text-align: center;
-	background-image: url(dollar_bill.png);
+	background-image: url(Images/dollar_bill.png);
 }
 
 #dollar_amount {

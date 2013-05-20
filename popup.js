@@ -1,3 +1,9 @@
+// Check for registration
+if(store.username == "default_user")
+    window.location.href = (chrome.extension.getURL("set_up.html")
+                            + "?url=" + escape(window.location.href));
+
+
 document.addEventListener("DOMContentLoaded", onload);
 var background = chrome.extension.getBackgroundPage();
 
@@ -14,35 +20,41 @@ function onload() {
 }
 
 function load_visited_sites() {
-	var status = background.get_data("website_state");
+	var status = background.get_data("websites");
 	var sites_list = document.createElement('ul');
 	
-	var states = get_data('website_state');
+	var states = get_data('websites');
     states.each(function (state) {
-		if(state.user_offer != null) {
-        	var site_name = document.createElement('li');
-			if(state.user_offer <= state.our_offer) {
-	        	site_name.innerHTML = state.url_pattern + " - <span id='blocked_site'>BLOCKED</span>";
-
-	        	var site_earning = document.createElement('li');
-	        	site_earning.innerHTML = "Earned $" + state.our_offer.toFixed(2);
-	        	
-	        	var site_block_time = document.createElement('li');
-	        	var now = new Date();
-	            var passed = now.getTime() - state.last_day_check;
-	            var hours_left = parseInt((60*60*BLOCK_HOURS*1000 - passed) / (1000*60*60));
-
-	            site_block_time.innerHTML = "Blocked for <" + (hours_left + 1) + " more hours";
-	            
-	        	var site_info = document.createElement('ul');
-	        	site_info.appendChild(site_earning);
-	        	site_info.appendChild(site_block_time);
-	        	site_name.appendChild(site_info);
-			} else {
-				site_name.innerHTML = state.url_pattern + " - <span id='passed_site'>PASSED</span>";
-			}
-        	sites_list.appendChild(site_name);			
-		}
+        var now = new Date();
+        var passed = now.getTime() - state.last_day_check;
+        var hours_left = parseInt((block_milliseconds() - passed) / (1000*60*60));
+        var secs_left = parseInt((block_milliseconds() - passed) / 1000);
+        
+        if(state.user_offer != null) {
+            var site_name = document.createElement('li');
+            if(state.user_offer <= state.our_offer) {
+                if (secs_left > 0) {
+                    site_name.innerHTML = state.url_pattern + " - <span id='blocked_site'>BLOCKED</span>";
+    
+                    var site_earning = document.createElement('li');
+                    site_earning.innerHTML = "Earned $" + state.our_offer.toFixed(2);
+                    
+                    var site_block_time = document.createElement('li');
+    
+                    site_block_time.innerHTML = "Blocked for <" + (hours_left + 1) + " more hours";
+                    
+                    var site_info = document.createElement('ul');
+                    site_info.appendChild(site_earning);
+                    site_info.appendChild(site_block_time);
+                    site_name.appendChild(site_info);
+                    sites_list.appendChild(site_name);			
+                }
+            } else {
+                site_name.innerHTML = state.url_pattern + " - <span id='passed_site'>PASSED</span>";
+                sites_list.appendChild(site_name);			
+            }
+        }
+        
     });
     if(sites_list.childElementCount) {
         document.getElementById('data_part').appendChild(sites_list);
@@ -55,8 +67,8 @@ function load_visited_sites() {
 function clear_data () {
     console.log('Clearing utilitracker data')
     //localStorage.clear()
-    background.get_data('block_urls').each(function (url) {remove_website_state(url);});
-    initialize_website_state(background.get_data('block_urls'));
+    background.get_data('block_urls').each(function (url) {remove_websites(url);});
+    initialize_websites(background.get_data('block_urls'));
     console.log('Cleared utilitracker data')
     //alert('Utilitracker data has been cleared');
 }

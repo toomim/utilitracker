@@ -1,21 +1,20 @@
-if (get_data('urls_status'))
-    localStorage.clear()
-
 // Options
-var BLOCK_HOURS = 3;
+store.hours_per_block = store.hours_per_block || 0.01;
+store.hours_per_block = store.hours_per_cycle || 0.02;
 var initial_urls = ['facebook.com', 'google.com'
             /* 'bing.com', 'reddit.com', 'renren.com',
             'quora.com', 'ycombinator.com', 'twitter.com',
             'friendbo.com', 'youtube.com' */];
 var blacklisted_urls = {};
-get_data('block_urls').each(function (u) {blacklisted_urls[u] = true;});
+store.block_urls.each(function (u) {blacklisted_urls[u] = true;});
 
 var developers = ['Michael Toomim', 'derek', 'guan', 'siye liu', 'chet']
 function dev_mode() {
-    return get_data('is_developer')
-    return developers.contains(get_data('username')) }
-
-
+    return store.is_developer;
+    return developers.contains(store.username) }
+function block_milliseconds() { return 60*60*store.hours_per_block*1000 }
+function block_seconds() { return 60*60*store.hours_per_block }
+function block_hours() { return store.hours_per_block }
 // update_badge();
 
 function update_badge() {
@@ -57,30 +56,30 @@ function set_notification(title, body) {
 }
 
 
-/* Ensures the website_state has values for any that's missing. */
-function initialize_website_state(urls) {
-    var state = get_data('website_state')
-    set_data('website_state',
+/* Ensures the websites has values for any that's missing. */
+function initialize_websites(urls) {
+    var state = get_data('websites')
+    set_data('websites',
              urls.map(function (url) {
-                 return find_website_state(url, state) ||
+                 return find_website(url, state) ||
                      {url_pattern: url,
                       user_offer: null,
                       our_offer: null,
-                      offer_day_check:null,
-                      last_day_check: null} }));
+                      block_start_time: null,
+                     } }));
 	blacklisted_urls = {};
     get_data('block_urls').each(function (u) {blacklisted_urls[u] = true;});
 
 }
-initialize_website_state(get_data('block_urls'));
+initialize_websites(get_data('block_urls'));
 
-function remove_website_state(url) {
-    var tmp = get_data('website_state').filter(
+function remove_websites(url) {
+    var tmp = get_data('websites').filter(
         // Keep this one if it doesn't match any of the urls_to_remove
         function (website) {
             return url != website.url_pattern})
-    set_data('website_state', tmp);
-    initialize_website_state(get_data('block_urls'));
+    set_data('websites', tmp);
+    initialize_websites(get_data('block_urls'));
 }
 
 // can get blocked websites for today
@@ -93,22 +92,30 @@ function fetch_study_status() {
 
 	//Send the proper header information along with the request  //x-www-form-urlencoded
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xmlHttp.setRequestHeader("Content-length", params.length);
-	xmlHttp.setRequestHeader("Connection", "close");
+	//xmlHttp.setRequestHeader("Content-length", params.length);
+	//xmlHttp.setRequestHeader("Connection", "close");
 
 	xmlHttp.onreadystatechange = function() {
 		//Call a function when the state changes.
 		if(xmlHttp.readyState == 4) {
 			if(xmlHttp.status == 200) {
-				var response_json = JSON.parse(xmlHttp.responseText);
-				if(response_json.status == "succeed") {
-					// get the data successfully
-					var block_urls = new Array();
-					for (var i = 0; i < response_json.blocked.length; i++) {
-						block_urls[i] = response_json.blocked[i].url;
-					}
-					set_data('block_urls', block_urls);
-				    initialize_website_state(block_urls);
+				var json = JSON.parse(xmlHttp.responseText);
+				if(json.status == "succeed") {
+					// Update our stored data
+					store.block_urls = json.blocked.map(
+                        function (x) {return x.url});
+				    initialize_websites(store.block_urls);
+
+                    // Now set up the block cycling hours
+                    store.hours_per_block = json.hours_per_block
+                    store.hours_per_cycle = json.hours_per_cycle;
+
+                    if (!store.enabled_today && json.enabled_today)
+                        // Start a new cycle!
+                        store.cycle_start_time = new Date().getTime();
+
+                    store.enabled_today = json.enabled_today;
+                    save_store();
 				}
 
 			} else {
@@ -120,26 +127,26 @@ function fetch_study_status() {
 	xmlHttp.send(params);		
 }
 
-function url_matches(url, website_state) {
+function url_matches(url, websites) {
     url = get_hostname(url) || url
-    return url.indexOf(website_state.url_pattern) != -1
+    return url.indexOf(websites.url_pattern) != -1
 }
 /** The second `state' parameter is optional */
-function find_website_state(url, optional_state) {
-    var state = optional_state || get_data('website_state');
+function find_website(url, optional_state) {
+    var state = optional_state || get_data('websites');
     if(!state) return false;
     return state.find(function (site) {
         return url_matches(url, site)
     })
 }
-function set_website_state(url, new_state) {
-    set_data('website_state',
-             get_data('website_state').map(
+function set_websites(url, new_state) {
+    set_data('websites',
+             get_data('websites').map(
                  function (curr_state) {
                      return url_matches(url, curr_state) ? new_state : curr_state }))
 }
-function bypass_website_state(url) {
-    var state = get_data('website_state');
+function bypass_websites(url) {
+    var state = get_data('websites');
     if(!state) return false;
     var data = state.find(function (site) {
                     return url_matches(url, site)
@@ -151,28 +158,18 @@ function bypass_website_state(url) {
         return;
     }
     data.user_offer = 'PASS';
-    set_data('website_state', state);
+    set_data('websites', state);
     // Record the block event
     	
+    console.log('About to store this bypass.')
 	store_block_data("bypass", get_username(), url, data.our_offer);
  
 }
 
-function update_last_day_check2(url) {
-    var state = get_data('website_state');
-    if(!state) return false;
-    var data = state.find(function (site) {
-                    return url_matches(url, site)
-               })
-    var today_time = new Date();
-    data.last_day_check = today_time.getTime();
-    set_data('website_state', state);
-}
-
 function update_last_day_check(url) {
-    var site = find_website_state(url);
+    var site = find_website(url);
     site.last_day_check = (new Date()).getTime();
-    set_website_state(url, site);
+    set_websites(url, site);
 }
 
 function random_offer_amount() {
@@ -190,16 +187,16 @@ function random_offer_amount() {
 }
 
 function get_todays_offer(url) {
-    var state = find_website_state(url)
+    var state = find_website(url)
     var now = new Date().getTime();
 
     // Is it time for a new offer?
     if(!state.our_offer
-       || now - state.offer_day_check > (1000*60*60*BLOCK_HOURS)) {
+       || now - state.offer_day_check > (1000*60*60*store.hours_per_cycle)) {
         // Then let's make a new offer
         state.offer_day_check = now
         state.our_offer = random_offer_amount()
-        set_website_state(url, state)
+        set_websites(url, state)
     }
 
     return state.our_offer
@@ -207,32 +204,31 @@ function get_todays_offer(url) {
 
 // Check to see if it's a new day/ over 24 hours
 function check_for_new_day (url) {
-	var today_time = new Date();
-	var states = get_data('website_state');
+	var now = new Date().getTime();
+	var states = get_data('websites');
 	states.each(function (state) {
 		if(url_matches(url, state)) {
-			// console.log('matched: ', i, ' url: ', state.url_pattern);			
 			var last_view = state.last_day_check;
 			if(last_view != null) {
 				// if the page is viewed before				
-				if(today_time.getTime() - last_view >= (1000 * 60 * 60 * BLOCK_HOURS)) {
+				if(now - last_view >= (1000 * 60 * 60 * store.hours_per_cycle)) {
    		   			// If so, reset offers
    	 	  			console.log('reset offer for: ', url);
 					state.user_offer = null;
-					state.last_day_check = today_time.getTime();
+					state.last_day_check = now;
 					// check server to get blocked data for next day cycle
 					fetch_study_status();
        		 	}
 			} else {
 				// the page is not viewed before.
-				state.last_day_check = today_time.getTime();
+				state.last_day_check = now;
 				// check server to get blocked data for next day cycle
 				fetch_study_status();
 			}
 		}
 	});
 
-	set_data('website_state', states);
+	set_data('websites', states);
 }
 
 // "Main" function - checks for blocked sites whenever a tab is updated.
@@ -253,6 +249,7 @@ function whitelisted (url) {
                      'google.com/complete/search?',
                      //'output=embed', // For an embedded google map
                      'maps.google.com',
+                     'translate.google.com',
                      'twitter.com/scribe/',
                      'talkgadget.google.com/u/0/talkgadget',
                      'mail.google.com/mail/u/0/channel',
@@ -275,23 +272,34 @@ function whitelisted (url) {
 }
 
 function request_listener(details) {
-	// Check for registration
-    var registered_name = get_data('username');
-    if(registered_name == "default_user")
-        return {redirectUrl: chrome.extension.getURL("set_up.html")
-            + "?url=" + escape(details.url) };
+    store.refresh()
 
     // If we don't care about this site, let's go away
     var domain = get_domain(details.url);
     if (!domain || !blacklisted_urls[domain] || whitelisted(details.url))
         return {cancel: false};
 
-    // Initialize variables
-    check_for_new_day(details.url);
-    site = find_website_state(details.url);
+    // If study is disabled today, go away
+    if (!store.enabled_today)
+        return {cancel: false};
+
+    // If we're not registered yet, let's go away
+    if(store.username == "default_user")
+        return {cancel: false};
+
+    // Let's go!  Initialize some variables
+    var now = new Date().getTime()
+    var within_cycle = now < (store.cycle_start_time
+                              + store.hours_per_cycle*60*60*1000)
+    var site = find_website(details.url);
     if(!site) set_notification("Utility Error 3857! Tell the Utility Researchers!",
                                details.url);
 
+    // If we're out of cycle, go through
+    if (!within_cycle) return {cancel: false};
+
+    // If the user has explicitly passed out, go through
+    if (site.user_offer == 'PASS') return {cancel: false};
 
     // Has the user seen the gift box page yet?
     if (site.user_offer == null) {
@@ -302,17 +310,44 @@ function request_listener(details) {
               + "?url=" + escape(details.url) };
     }
 
+    console.log('3')
+
 	// Otherwise, we have a user's offer for this.
-    // If it's low enough, we are blocking them.
-    if (site.user_offer < get_todays_offer(details.url)) {
-        // Record the block event
-    	store_block_data("blocked", get_username(), details.url, site.user_offer);    
-    	
-		// Redirect tab to countdown.html
+	if (site.user_offer <= site.our_offer) {
+        store_block_data("blocked", get_username(), details.url, site.user_offer);    
+            
+        // Redirect tab to countdown.html
         return { redirectUrl : chrome.extension.getURL("block.html")
-            + "?url=" + escape(details.url)};
-	}
+                 + "?url=" + escape(details.url)};
+    }
+
+    console.log('4')
+
+    // Otherwise they go through!
+
+/*
+	// Calculate how much time is left until the next cycle
+    var now = new Date();
+    var passed = now.getTime() - site.last_day_check;
+    var secs_left = parseInt((60*60*store.hours_per_cycle*1000 - passed) / 1000);
+    
+    console.log('secs_left is ' + secs_left + ' cause last_day_check is '
+                + site.last_day_check)
+
+    // If it's not the next cycle yet, let them through
+    if (secs_left < 0) {
+        // If it's low enough, we are blocking them.
+        if (site.user_offer < get_todays_offer(details.url)) {
+            // Record the block event
+            store_block_data("blocked", get_username(), details.url, site.user_offer);    
+            
+            // Redirect tab to countdown.html
+            return { redirectUrl : chrome.extension.getURL("block.html")
+                + "?url=" + escape(details.url)};
+        }
+    }
     // Otherwise, they go through!
+ */
 }
 
 function pass_listener(tab_id, change_info, tab) {
@@ -321,11 +356,11 @@ function pass_listener(tab_id, change_info, tab) {
     return;
 
     //console.log('pass_listener');
-    var site = find_website_state(tab.url);
+    var site = find_website(tab.url);
 	if(site.user_offer == 'PASS') {
 	    // show timer in the upper right corner for 5 seconds
 	    var now = new Date();
-        var sec = parseInt((60*60*BLOCK_HOURS*1000 - (now.getTime() - site.last_day_check))/1000);
+        var sec = parseInt((60*60*store.hours_per_cycle*1000 - (now.getTime() - site.last_day_check))/1000);
         chrome.tabs.executeScript(tab_id, {code: "var seconds_left = " + sec + ";"});
         chrome.tabs.executeScript(tab_id, {file: "inline.js"});
 	}   
@@ -378,7 +413,7 @@ function store_block_data(eventss, user, tab_url, value) {
 	if(eventss == 'value submitted') {
 		// the user submit the data store in the sites
 		//console.log('store submit value');
-		var status = get_data('website_state');
+		var status = get_data('websites');
 		for(var i = 0; i < status.length; i++) {
 			var ob = status[i];
 			if(tab_url.indexOf(ob.url_pattern) != -1 && ob.user_offer == null) {
@@ -388,7 +423,7 @@ function store_block_data(eventss, user, tab_url, value) {
 				}
 			}
 		}
-		set_data('website_state', status);
+		set_data('websites', status);
 	} else if(eventss == 'bypass') {
 		earned = (-1.0) * value;
 	}
@@ -432,7 +467,6 @@ function store_block_data(eventss, user, tab_url, value) {
 // Type of block, user info, time, url, and surveyed value
 function post_to_server(eventss, user, time_date, url, value, earned) {
 	
-	var xmlHttp = new XMLHttpRequest();
 	var tourl = "http://yuno.us:8989/save_event";
 	var params = 
 		"paid=" + escape(value) +
@@ -441,23 +475,80 @@ function post_to_server(eventss, user, time_date, url, value, earned) {
 		"&who=" + escape(user) + 
 		"&when=" + escape(time_date) +
 		"&url=" + escape(url);
+
+    enqueue_network_post(tourl, params);
+    //process_network_queue();
+    return;
+
+    /*
+	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open("POST", tourl, true);
 	
-	//Send the proper header information along with the request  //x-www-form-urlencoded
+	// Send the proper header information along with the request
+    // x-www-form-urlencoded
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
 	//xmlHttp.setRequestHeader("Content-length", params.length);
 	//xmlHttp.setRequestHeader("Connection", "close");
-
 	xmlHttp.onreadystatechange = function() {//Call a function when the state changes.
 	    if(xmlHttp.readyState == 4) {
-	        // alert(xmlHttp.statusText);
 			if(xmlHttp.status == 200) {
 				//console.log(xmlHttp.responseText);
 			}
 	    }
 		//console.log('response text: ', xmlHttp.responseText);
 	};
-    //console.log(params);
 	xmlHttp.send(params);
-	// alert('wait for server response');
+    */
+}
+
+function enqueue_network_post(url, payload) {
+    var queue = localStorage.get_object('network_post_queue') || [];
+    queue.push({url:url, payload:payload,
+                last_attempt:null, id:new Date().getTime()})
+    localStorage.set_object('network_post_queue', queue)
+    //console.log('enqueued ' + url + ' with ' + payload)
+}
+
+function process_network_queue() {
+    var two_minutes = 1000 * 60 * 2;
+    var queue = localStorage.get_object('network_post_queue') || [];
+
+    for (var i=0; i<queue.length; i++) {
+        var item = queue[i];
+        if (!item.last_attempt
+            || item.last_attempt < new Date().getTime() - two_minutes) {
+            item.last_attempt = new Date().getTime();
+            localStorage.set_object('network_post_queue', queue)
+            process_network_item(item.id, item.url, item.payload);
+            return;
+        }
+    }
+}
+
+function process_network_item(id, url, payload) {
+    console.log('Firing on ' + url + ' ' + payload);
+
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.open("POST", url, true);
+	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlHttp.onreadystatechange = function() {
+	    if(xmlHttp.readyState == 4)
+			if(xmlHttp.status == 200) {
+                // Once an item is successfully sent, let's remove it
+                // from the network queue.
+                //   1. Get the old queue from localStorage
+                //   2. Filter it down to remove this item
+                //   3. Store it back into localStorage
+                var queue = localStorage.get_object('network_post_queue') || [];
+				queue = queue.filter(function (obj) {
+                    return !(obj.url==url && obj.payload==payload && obj.id==id)
+			    })
+                localStorage.set_object('network_post_queue', queue)
+            } else {
+                console.log('Got a weird status back: ' + xmlHttp.status)
+            }
+	};
+	xmlHttp.send(payload);
+    
 }
