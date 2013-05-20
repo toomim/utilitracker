@@ -95,23 +95,6 @@ Storage.prototype.get_object = function(key) {
     return value && JSON.parse(value);
 }
 
-/*
-// Initialize localStorage
-var stg = localStorage;
-var defaults = {username : 'default_user',
-                totalearned : 0,
-                websites : null,
-                real_money : false,
-                block_urls : ['facebook.com', 'google.com']};
-
-//localStorage.set('username', 'default_user')
-
-if (!localStorage.get('username'))
-    for (var k in defaults)
-        if (defaults.hasOwnProperty(k))
-            localStorage.set(k, defaults[k])
-*/
-
 // retrieve data from localStorage
 function get_data(key) {
     var data = JSON.parse(localStorage['urg_data'] || '{}')
