@@ -321,8 +321,8 @@ function request_listener(details) {
 	// Otherwise, we have a user's offer for this.
 
     // If the block has expired, get outa here
-    if (site.block_start_time + store.hours_per_cycle*60*60*1000 < now)
-        return 
+    if (!within_block)
+        return {cancel: false}
 	if (site.user_offer <= site.our_offer) {
         store_block_data("blocked", get_username(), details.url, site.user_offer);    
             
@@ -388,11 +388,7 @@ function get_username() {
 	return get_data('username');
 }
 
-// Stores url, time/date of block in localStorage
 function store_block_data(eventss, user, tab_url, value) {
-	// first store the data local:
-	// store the user_offer
-	
 	var earned = 0;
 	if(eventss == 'value submitted') {
 		// the user submit the data store in the sites
@@ -461,7 +457,6 @@ function post_to_server(eventss, user, time_date, url, value, earned) {
 		"&url=" + escape(url);
 
     enqueue_network_post(tourl, params);
-    return;
 }
 
 function enqueue_network_post(url, payload) {
@@ -473,19 +468,22 @@ function enqueue_network_post(url, payload) {
 }
 
 function process_network_queue() {
+    // Each item in the queue gets a last_attempt timestamp.
+    // We only process items that haven't been touched for 2 minutes.
     var two_minutes = 1000 * 60 * 2;
     var queue = localStorage.get_object('network_post_queue') || [];
+    var now = new Date().getTime();
 
-    for (var i=0; i<queue.length; i++) {
-        var item = queue[i];
-        if (!item.last_attempt
-            || item.last_attempt < new Date().getTime() - two_minutes) {
-            item.last_attempt = new Date().getTime();
-            localStorage.set_object('network_post_queue', queue)
-            process_network_item(item.id, item.url, item.payload);
-            return;
-        }
-    }
+    // Get the first item that hasn't been touched for 2 minutes
+    var item = queue.find(function (x) {
+        return (!x.last_attempt || x.last_attempt < now - two_minutes)});
+
+    if (!item) return;
+
+    // Process it
+    item.last_attempt = new Date().getTime();
+    localStorage.set_object('network_post_queue', queue)
+    process_network_item(item.id, item.url, item.payload);
 }
 
 function process_network_item(id, url, payload) {
@@ -497,10 +495,10 @@ function process_network_item(id, url, payload) {
         //   1. Get the old queue from localStorage
         //   2. Filter it down to remove this item
         //   3. Store it back into localStorage
-        var queue = localStorage.get_object('network_post_queue') || [];
-		queue = queue.filter(function (obj) {
-            return !(obj.url==url && obj.payload==payload && obj.id==id)
-		})
+        var queue = localStorage.get_object('network_post_queue') || []
+		        .filter(function (obj) {
+                    return !(obj.url==url && obj.payload==payload && obj.id==id)
+		        })
         localStorage.set_object('network_post_queue', queue)
     });
 }

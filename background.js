@@ -10,7 +10,7 @@ function refresh_expired_blocks () {
     //   - And have started before the current cycle started
     store.websites.each(function (site) {
         if (site.block_start_time && time_left(site) < 0
-            && site.block_start_time < store.cycle_start_time) {
+             && site.block_start_time < store.cycle_start_time) {
             site.our_offer = null;
             site.user_offer = null;
             site.block_start_time = null;
