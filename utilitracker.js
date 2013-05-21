@@ -208,38 +208,6 @@ function get_todays_offer(url) {
     return site.our_offer
 }
 
-// Check to see if it's a new day/ over 24 hours
-// function check_for_new_day (url) {
-// 	var now = new Date().getTime();
-// 	var states = get_data('websites');
-// 	states.each(function (state) {
-// 		if(url_matches(url, state)) {
-// 			var last_view = state.last_day_check;
-// 			if(last_view != null) {
-// 				// if the page is viewed before				
-// 				if(now - last_view >= (1000 * 60 * 60 * store.hours_per_cycle)) {
-//    		   			// If so, reset offers
-//    	 	  			console.log('reset offer for: ', url);
-// 					state.user_offer = null;
-// 					state.last_day_check = now;
-// 					// check server to get blocked data for next day cycle
-// 					fetch_study_status();
-//        		 	}
-// 			} else {
-// 				// the page is not viewed before.
-// 				state.last_day_check = now;
-// 				// check server to get blocked data for next day cycle
-// 				fetch_study_status();
-// 			}
-// 		}
-// 	});
-
-// 	set_data('websites', states);
-// }
-
-// "Main" function - checks for blocked sites whenever a tab is updated.
-// Redirects to our block page. 
-
 function whitelisted (url) {
     var whitelist = ['facebook.com/ajax/',
                      'channel.facebook.com/ping',
@@ -277,6 +245,8 @@ function whitelisted (url) {
     return false;
 }
 
+// "Main" function - checks for blocked sites whenever a tab is updated.
+// Redirects to our block page. 
 function request_listener(details) {
     store.refresh()
 
