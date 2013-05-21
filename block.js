@@ -50,8 +50,6 @@ function show_block_stuff(instantly) {
     // This takes gift box out of the DOM order, so that the block section
     // fades in underneath it intead of being pushed below it
     $('#gift_box').make_absolute()
-
-    //$('#gift_box').fadeOut(duration);
     
     // easeOutCirc from jQueryUI source code
     $.extend($.easing,
@@ -85,7 +83,7 @@ function show_block_stuff(instantly) {
                     $('#status_bar').show();
                     // And animate the status bar to make it look real
 
-                    setTimeout('status_bar_init(1000)', duration);
+                    setTimeout(status_bar_init(1000), duration);
                 }
             }
         );
