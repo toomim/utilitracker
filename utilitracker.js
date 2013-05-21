@@ -495,7 +495,7 @@ function process_network_item(id, url, payload) {
         //   1. Get the old queue from localStorage
         //   2. Filter it down to remove this item
         //   3. Store it back into localStorage
-        var queue = localStorage.get_object('network_post_queue') || []
+        var queue = (localStorage.get_object('network_post_queue') || [])
 		        .filter(function (obj) {
                     return !(obj.url==url && obj.payload==payload && obj.id==id)
 		        })
